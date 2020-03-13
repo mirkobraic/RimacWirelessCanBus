@@ -77,7 +77,7 @@ Window {
 
         Rectangle {
             anchors.fill: parent
-            color: "#e0e0e0"
+            color: "#e6e6e6"
             z: -1
         }
 
@@ -104,7 +104,7 @@ Window {
                         anchors.verticalCenter: parent.verticalCenter
                         width: parent.width * 0.7
                         font.pointSize: 12
-                        text: model.message
+                        text: model.data
                     }
                 }
             }
@@ -114,15 +114,15 @@ Window {
             id: listModel
             ListElement {
                 canId: "example id"
-                message: "example messages"
+                data: "example data"
             }
             ListElement {
                 canId: "0xBC1"
-                message: "0xff43daab34"
+                data: "0xff43daab34"
             }
             ListElement {
                 canId: "0101010101"
-                message: "0101011010100010"
+                data: "0101011010100010"
             }
         }
     }
@@ -146,7 +146,7 @@ Window {
         }
 
         TextField {
-            id: canMessageTextField
+            id: canDataTextField
             anchors.left: canIdTextField.right
             anchors.leftMargin: 10
             anchors.right: sendButton.left
