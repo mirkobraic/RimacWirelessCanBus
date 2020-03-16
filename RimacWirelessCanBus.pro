@@ -40,3 +40,13 @@ HEADERS += \
     CanBusManager.h \
     CanMessage.h \
     KvaserWirelessInterface.h
+
+# Kvaser libraries
+INCLUDEPATH += $$PWD/../CANlib/INC
+DEPENDPATH += $$PWD/../CANlib/INC
+
+LIBS += $$PWD/../CANlib/Lib/MS/canlib32.lib
+LIBS += $$PWD/../CANlib/Lib/x64/canlib32.lib
+
+LIBS += $$PWD/../CANlib/Lib/MS/kvrlib.lib
+LIBS += $$PWD/../CANlib/Lib/x64/kvrlib.lib

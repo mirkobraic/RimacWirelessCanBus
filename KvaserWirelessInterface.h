@@ -2,6 +2,8 @@
 #define KVASERWIRELESSINTERFACE_H
 
 #include "CanBusInterface.h"
+#include "kvrlib.h"
+#include "canlib.h"
 
 class KvaserWirelessInterface : public CanBusInterface
 {
