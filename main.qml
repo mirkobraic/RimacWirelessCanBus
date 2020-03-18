@@ -3,6 +3,8 @@ import QtQuick.Controls 2.14
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Window 2.12
 
+import com.RimacWirelessCanBus 1.0
+
 Window {
     id: mainWindow
     visible: true
@@ -39,7 +41,18 @@ Window {
                 id: connectionStatusText
                 anchors.bottom: connectButton.bottom
                 anchors.bottomMargin: 0
-                text: "Not connected"
+                text: {
+                    switch (canBusManager.connectionStatus) {
+                    case ConnectionStatus.NotConnected:
+                        return "Not connected"
+                    case ConnectionStatus.Connecting:
+                        return "Connecting..."
+                    case ConnectionStatus.Connected:
+                        return "Connected"
+                    default:
+                        return "Error"
+                    }
+                }
                 opacity: 0.6
                 font.pointSize: 9
             }
@@ -47,12 +60,15 @@ Window {
             Button {
                 id: connectButton
                 text: "Connect"
+                onClicked: canBusManager.connectTapped()
+                enabled: canBusManager.connectionStatus === ConnectionStatus.NotConnected
             }
 
             Button {
                 id: disconnectButton
                 text: "Disconnect"
-                enabled: false
+                onClicked: canBusManager.disconnectTapped()
+                enabled: canBusManager.connectionStatus === ConnectionStatus.Connected
             }
         }
    }
@@ -60,6 +76,7 @@ Window {
     ListView {
         id: canMessagesListView
         topMargin: 10
+        bottomMargin: 10
         anchors.top: headerContainer.bottom
         anchors.topMargin: 10
         anchors.bottom: footerContainer.top
@@ -87,7 +104,7 @@ Window {
             Rectangle {
                 height: 44
                 width: parent.width
-                color: "white"
+                color: "#fbfbfb"
 
                 Row {
                     anchors.fill: parent
@@ -125,6 +142,15 @@ Window {
                 data: "0101011010100010"
             }
         }
+
+        Connections {
+            target: canBusManager
+            onAddMessage: {
+                const message = {'canId': id, "data": data};
+                listModel.append(message)
+                canMessagesListView.currentIndex = listModel.count - 1
+            }
+        }
     }
 
     Item {
@@ -139,10 +165,14 @@ Window {
 
         TextField {
             id: canIdTextField
-            width: parent.width * 0.3
+            width: parent.width * 0.2
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
             placeholderText: "ID"
+
+            onFocusChanged: {
+                color = "black"
+            }
         }
 
         TextField {
@@ -154,6 +184,10 @@ Window {
             anchors.verticalCenterOffset: 0
             anchors.verticalCenter: parent.verticalCenter
             placeholderText: "data"
+
+            onFocusChanged: {
+                color = "black"
+            }
         }
 
         Button {
@@ -161,6 +195,18 @@ Window {
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
             text: "Send"
+            onClicked: canBusManager.sendTapped(canIdTextField.text, canDataTextField.text);
+        }
+
+        Connections {
+            target: canBusManager
+            onInvalidCanId: {
+                canIdTextField.color = "red";
+            }
+
+            onInvalidCanData: {
+                canDataTextField.color = "red";
+            }
         }
     }
 }

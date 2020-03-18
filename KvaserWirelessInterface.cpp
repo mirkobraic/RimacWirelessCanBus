@@ -15,12 +15,7 @@ void KvaserWirelessInterface::disconnect()
 
 }
 
-void KvaserWirelessInterface::sendCanMessage()
+void KvaserWirelessInterface::sendCanMessage(CanMessage message)
 {
-
-}
-
-void KvaserWirelessInterface::recievedDataFrame()
-{
-
+    emit newDataFrame(message);
 }
