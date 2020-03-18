@@ -3,15 +3,17 @@
 
 #include "CanBusInterface.h"
 
-class KvaserWirelessInterface : public CanBusInterface
-{
+class KvaserWirelessInterface : public CanBusInterface {
+    Q_OBJECT
 public:
     KvaserWirelessInterface();
 
     void connect() override;
     void disconnect() override;
-    void sendCanMessage() override;
-    void recievedDataFrame() override;
+    void sendCanMessage(CanMessage message) override;
+
+signals:
+    void newDataFrame(CanMessage message) override;
 };
 
 #endif // KVASERWIRELESSINTERFACE_H
