@@ -25,7 +25,7 @@ void KvaserWirelessInterface::connect(QString channelName, BaudRate baudRate)
     canStatus status = (canStatus)handle;
     checkStatus("canOpenChannel", status);
 
-    status = canSetBusParams(handle, canBITRATE_125K, 0, 0, 0, 0, 0);
+    status = canSetBusParams(handle, getBaudRate(baudRate), 0, 0, 0, 0, 0);
     checkStatus("canSetBusParams", status);
 
     status = canBusOn(handle);
@@ -79,8 +79,9 @@ void KvaserWirelessInterface::startListening()
                 qDebug() << "***ERROR FRAME RECEIVED***";
             } else {
                 try {
-                    CanMessage message((uint)id, (quint8)dlc, QByteArray::fromRawData(data, dlc));
+                    CanMessage message((uint32_t)id, (uint8_t)dlc, QByteArray::fromRawData(data, dlc));
                     emit newDataFrame(message);
+
                 } catch (CanMessageException error) {
                     qDebug() << "failed to make message: " << error;
                 }
@@ -115,5 +116,14 @@ void KvaserWirelessInterface::checkStatus(QString method, canStatus status)
 
 int KvaserWirelessInterface::getBaudRate(BaudRate baudRate)
 {
-    switch (baudRate)
+    switch (baudRate){
+    case Baud_125:
+        return canBITRATE_125K;
+    case Baud_250:
+        return canBITRATE_250K;
+    case Baud_500:
+        return canBITRATE_500K;
+    case Baud_1000:
+        return canBITRATE_1M;
+    }
 }

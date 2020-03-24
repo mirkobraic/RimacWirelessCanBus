@@ -44,6 +44,7 @@ void CanBusManager::sendTapped(QString messageId, QString messageData)
     try {
         CanMessage message(id, dlc, data);
         canBusInterface->sendCanMessage(message);
+
     } catch (CanMessageException error) {
         switch (error) {
         case IdOutOfRange:

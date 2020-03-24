@@ -1,11 +1,11 @@
 #include "CanMessage.h"
 
-uint CanMessage::getId() const
+uint32_t CanMessage::getId() const
 {
     return id;
 }
 
-quint8 CanMessage::getDlc() const
+uint8_t CanMessage::getDlc() const
 {
     return dlc;
 }
@@ -15,7 +15,7 @@ QByteArray CanMessage::getData() const
     return data;
 }
 
-CanMessage::CanMessage(uint id, quint8 dlc, QByteArray data)
+CanMessage::CanMessage(uint32_t id, uint8_t dlc, QByteArray data)
 {
     if (id > maxExtendedCanId) {
         throw IdOutOfRange;
