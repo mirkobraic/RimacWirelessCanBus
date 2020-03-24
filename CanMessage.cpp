@@ -17,11 +17,11 @@ QByteArray CanMessage::getData() const
 
 CanMessage::CanMessage(uint32_t id, uint8_t dlc, QByteArray data)
 {
-    if (id > maxExtendedCanId) {
-        throw IdOutOfRange;
+    if (id > maxExtendedCanId || id == 0) {
+        throw std::invalid_argument("Invalid ID");
     }
     if (dlc > 8) {
-        throw DataOutOfRange;
+        throw std::invalid_argument("Data length too big");
     }
 
     this->id = id;

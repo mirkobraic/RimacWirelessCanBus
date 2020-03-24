@@ -13,6 +13,35 @@ Window {
 
     property int screenMargin: 10
 
+    function getExtId(id) {
+        while (id.length < 8) {
+            id = "0" + id;
+        }
+        // highest extended can id is 0x1fffffff
+        if (id.charAt(0) > '1') {
+            id = "1FFFFFFF";
+        }
+        return id;
+    }
+
+    function getStdId(id) {
+        while (id.length < 3) {
+            id = "0" + id;
+        }
+        return id;
+    }
+
+    function isExtended(id) {
+        if (id.length > 3) {
+            return true;
+        }
+        // highest standard can id is 0x7ff
+        if (id.length === 3 && id.charAt(0) > '7') {
+            return true;
+        }
+        return false;
+    }
+
    Item {
         id: headerContainer
         anchors.top: parent.top
@@ -136,9 +165,21 @@ Window {
         Connections {
             target: canBusManager
             onAddMessage: {
-                const message = {'canId': id, "data": data};
+                let formattedData = data.replace(/\w{2}(?=.)/g, '$& ').toUpperCase();
+                let formattedId = getFormattedId(id);
+                const message = {'canId': formattedId, "data": formattedData};
                 listModel.append(message)
                 canMessagesListView.currentIndex = listModel.count - 1
+            }
+
+            function getFormattedId(id) {
+                let formatted = ""
+                if (isExtended(id)) {
+                    formatted = getExtId(id);
+                } else {
+                    formatted = getStdId(id);
+                }
+                return formatted.toUpperCase();
             }
         }
     }
@@ -155,28 +196,78 @@ Window {
 
         TextField {
             id: canIdTextField
-            width: parent.width * 0.2
+            width: parent.width * 0.18
+            font.capitalization: Font.AllUppercase
+            horizontalAlignment: Text.AlignHCenter
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
             placeholderText: "ID"
+            validator: RegExpValidator { regExp: /[0-9A-Fa-f]{0,8}/ }
 
+            onEditingFinished: {
+                if (text.length == 0) {
+                    return;
+                }
+
+                if (isExtended(text)) {
+                    text = getExtId(text);
+                } else {
+                    text = getStdId(text);
+                }
+            }
             onFocusChanged: {
                 color = "black"
             }
         }
 
-        TextField {
-            id: canDataTextField
+        Row {
+            id: canDataContainer
             anchors.left: canIdTextField.right
             anchors.leftMargin: 10
             anchors.right: sendButton.left
             anchors.rightMargin: 10
-            anchors.verticalCenterOffset: 0
             anchors.verticalCenter: parent.verticalCenter
-            placeholderText: "data"
+            spacing: -1
 
-            onFocusChanged: {
-                color = "black"
+            property real textFieldWidth: width / 8 + 1
+
+            Repeater {
+                id: canDataTextFields
+                model: 8
+
+                function checkTextFields() {
+                    let maxByte = 0;
+                    let i = 0;
+                    for (i = 0; i < count; i++) {
+                        if (itemAt(i).text) {
+                            maxByte = i;
+                        }
+                    }
+
+                    for (i = 0; i < maxByte; i++) {
+                        if (itemAt(i).text === "") {
+                            itemAt(i).text = "00";
+                        }
+                    }
+                }
+
+                TextField {
+                    placeholderText: index + 1
+                    width: canDataContainer.textFieldWidth
+                    padding: 1
+                    font.capitalization: Font.AllUppercase
+                    horizontalAlignment: Text.AlignHCenter
+                    validator: RegExpValidator { regExp: /[0-9A-Fa-f]{0,2}/ }
+
+                    onEditingFinished: {
+                        if (text.length == 1) {
+                            text = "0" + text;
+                        }
+                    }
+                    onFocusChanged: {
+                        color = "black"
+                    }
+                }
             }
         }
 
@@ -186,17 +277,20 @@ Window {
             anchors.verticalCenter: parent.verticalCenter
             text: "Send"
             enabled: canBusManager.connectionStatus === ConnectionStatus.Connected
-            onClicked: canBusManager.sendTapped(canIdTextField.text, canDataTextField.text);
-        }
+            onClicked: {
+                canDataTextFields.checkTextFields();
+                let data = "";
+                for (let i = 0; i < canDataTextFields.count; i++) {
+                    data += canDataTextFields.itemAt(i).text;
+                }
+                if (canIdTextField.text === "") {
+                    canIdTextField.color = "red";
+                }
+                if (data === "") {
+                    canDataTextFields.itemAt(0).color = "red";
+                }
 
-        Connections {
-            target: canBusManager
-            onInvalidCanId: {
-                canIdTextField.color = "red";
-            }
-
-            onInvalidCanData: {
-                canDataTextField.color = "red";
+                canBusManager.sendTapped(canIdTextField.text, data);
             }
         }
     }

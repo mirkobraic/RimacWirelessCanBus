@@ -27,33 +27,27 @@ void CanBusManager::disconnectTapped()
 void CanBusManager::sendTapped(QString messageId, QString messageData)
 {
     bool success;
-    uint id = messageId.toUInt(&success, 16);
-    if (!success) {
-        emit invalidCanId();
+    uint32_t id = messageId.toUInt(&success, 16);
+    if (!success){
+        qDebug() << "Invalid ID";
         return;
     }
-    // TODO: improve check allow spaces in data and maybe separate bytes
-    messageData.toLongLong(&success, 16);
-    if (!success) {
-        emit invalidCanData();
+
+    QRegularExpressionMatch match = hexMatcher.match(messageData);
+    if (match.hasMatch() == false){
+        qDebug() << "Invalid data";
         return;
     }
+
     QByteArray data = QByteArray::fromHex(messageData.toUtf8());
-    quint8 dlc = data.length();
+    uint8_t dlc = data.length();
 
     try {
         CanMessage message(id, dlc, data);
         canBusInterface->sendCanMessage(message);
 
-    } catch (CanMessageException error) {
-        switch (error) {
-        case IdOutOfRange:
-            emit invalidCanId();
-            break;
-        case DataOutOfRange:
-            emit invalidCanData();
-            break;
-        }
+    } catch (const std::exception& ex) {
+        qDebug() << "Exception: " << ex.what();
     }
 }
 
@@ -62,7 +56,6 @@ void CanBusManager::dataFrameRecieved(CanMessage message)
     QString hexId;
     hexId.setNum(message.getId(), 16);
     QString data = message.getData().toHex();
-    qDebug() << "Recieved id: " << hexId << " data: " << message.getData();
     emit addMessage(hexId, data);
 }
 

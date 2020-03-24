@@ -18,7 +18,7 @@ void KvaserWirelessInterface::connect(QString channelName, BaudRate baudRate)
     }
     qDebug() << "Number of channels: " << getChannelCount();
 
-    //TODO: implement channelName and baudRate
+    //TODO: implement channelName
     channelNumber = 0;
 
     handle = canOpenChannel(channelNumber, canOPEN_ACCEPT_VIRTUAL);
@@ -71,19 +71,20 @@ void KvaserWirelessInterface::startListening()
     char data[8];
     DWORD timestamp;
 
-    if(shouldListen) {
+    if (shouldListen) {
         stat = canReadWait(handle, &id, data, &dlc, &flags, &timestamp, 100);
 
-        if(stat == canOK) {
+        if (stat == canOK) {
             if (flags & canMSG_ERROR_FRAME){
                 qDebug() << "***ERROR FRAME RECEIVED***";
+
             } else {
                 try {
                     CanMessage message((uint32_t)id, (uint8_t)dlc, QByteArray::fromRawData(data, dlc));
                     emit newDataFrame(message);
 
-                } catch (CanMessageException error) {
-                    qDebug() << "failed to make message: " << error;
+                } catch (const std::exception& ex) {
+                    qDebug() << "Exception: " << ex.what();
                 }
             }
 
@@ -103,14 +104,12 @@ int KvaserWirelessInterface::getChannelCount()
 
 void KvaserWirelessInterface::checkStatus(QString method, canStatus status)
 {
-    //TODO: refactor throw
     if (status != canOK) {
         char buffer[50];
         buffer[0] = '\0';
         canGetErrorText(status, buffer, sizeof(buffer));
         QString errorMsg = method + " failed with status: " + status + " " + buffer;
         qDebug() << errorMsg;
-        throw errorMsg;
     }
 }
 

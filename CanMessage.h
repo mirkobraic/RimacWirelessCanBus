@@ -6,7 +6,7 @@
 
 class CanMessage {
     const uint32_t maxCanId = 0x7FF;
-    const uint32_t maxExtendedCanId = 0x1fffffff;
+    const uint32_t maxExtendedCanId = 0x1FFFFFFF;
 
     uint32_t id;
     uint8_t dlc;
@@ -18,11 +18,6 @@ public:
     uint32_t getId() const;
     uint8_t getDlc() const;
     QByteArray getData() const;
-};
-
-enum CanMessageException {
-    IdOutOfRange,
-    DataOutOfRange
 };
 
 #endif // CANMESSAGE_H

@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QDebug>
+#include <QRegularExpression>
 #include "CanBusInterfaceFactory.h"
 #include "CanMessage.h"
 
@@ -29,8 +30,6 @@ public:
 signals:
     void connectionStatusChanged();
     void addMessage(QString id, QString data);
-    void invalidCanId();
-    void invalidCanData();
 
 public slots:
       void dataFrameRecieved(CanMessage message);
@@ -39,6 +38,7 @@ private:
     CanBusInterface *canBusInterface = nullptr;
 
     ConnectionStatus connectionStatus = NotConnected;
+    QRegularExpression hexMatcher = QRegularExpression("^[0-9A-F]{2,16}$", QRegularExpression::CaseInsensitiveOption);
 };
 
 #endif // CANBUSMANAGER_H
