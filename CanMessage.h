@@ -9,14 +9,14 @@ class CanMessage {
     const uint maxExtendedCanId = 0x1fffffff;
 
     uint id;
-    quint8 length;
+    quint8 dlc;
     QByteArray data;
 
 public:
-    CanMessage(uint id, quint8 length, QByteArray data);
+    CanMessage(uint id, quint8 dlc, QByteArray data);
 
     uint getId() const;
-    quint8 getLength() const;
+    quint8 getDlc() const;
     QByteArray getData() const;
 };
 

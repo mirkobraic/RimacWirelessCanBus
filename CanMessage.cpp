@@ -5,9 +5,9 @@ uint CanMessage::getId() const
     return id;
 }
 
-quint8 CanMessage::getLength() const
+quint8 CanMessage::getDlc() const
 {
-    return length;
+    return dlc;
 }
 
 QByteArray CanMessage::getData() const
@@ -15,16 +15,16 @@ QByteArray CanMessage::getData() const
     return data;
 }
 
-CanMessage::CanMessage(uint id, quint8 length, QByteArray data)
+CanMessage::CanMessage(uint id, quint8 dlc, QByteArray data)
 {
     if (id > maxExtendedCanId) {
         throw IdOutOfRange;
     }
-    if (length > 8) {
+    if (dlc > 8) {
         throw DataOutOfRange;
     }
 
     this->id = id;
-    this->length = length;
+    this->dlc = dlc;
     this->data = data;
 }

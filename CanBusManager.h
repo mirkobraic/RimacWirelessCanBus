@@ -2,6 +2,7 @@
 #define CANBUSMANAGER_H
 
 #include <QObject>
+#include <QDebug>
 #include "CanBusInterfaceFactory.h"
 #include "CanMessage.h"
 
@@ -13,7 +14,6 @@ public:
 
     enum ConnectionStatus {
         NotConnected,
-        Connecting,
         Connected
     };
 

@@ -45,8 +45,6 @@ Window {
                     switch (canBusManager.connectionStatus) {
                     case ConnectionStatus.NotConnected:
                         return "Not connected"
-                    case ConnectionStatus.Connecting:
-                        return "Connecting..."
                     case ConnectionStatus.Connected:
                         return "Connected"
                     default:
@@ -133,14 +131,6 @@ Window {
                 canId: "example id"
                 data: "example data"
             }
-            ListElement {
-                canId: "0xBC1"
-                data: "0xff43daab34"
-            }
-            ListElement {
-                canId: "0101010101"
-                data: "0101011010100010"
-            }
         }
 
         Connections {
@@ -195,6 +185,7 @@ Window {
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
             text: "Send"
+            enabled: canBusManager.connectionStatus === ConnectionStatus.Connected
             onClicked: canBusManager.sendTapped(canIdTextField.text, canDataTextField.text);
         }
 

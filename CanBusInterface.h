@@ -2,13 +2,18 @@
 #define CANBUSINTERFACE_H
 
 #include <QObject>
+#include <QDebug>
 #include "CanMessage.h"
+
+enum BaudRate {
+    Baud_125, Baud_250, Baud_500, Baud_1000
+};
 
 class CanBusInterface : public QObject {
 public:
     virtual ~CanBusInterface() {}
 
-    virtual void connect() = 0;
+    virtual void connect(QString channelName, BaudRate baudRate) = 0;
     virtual void disconnect() = 0;
     virtual void sendCanMessage(CanMessage message) = 0;
 

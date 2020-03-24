@@ -1,7 +1,5 @@
 #include "CanBusManager.h"
 
-#include <QDebug>
-
 CanBusManager::CanBusManager(CanBusProvider provider, QObject *parent) : QObject(parent)
 {
     canBusInterface = CanBusInterfaceFactory::getInterfaceForProvider(provider);
@@ -10,13 +8,13 @@ CanBusManager::CanBusManager(CanBusProvider provider, QObject *parent) : QObject
 
 void CanBusManager::connectTapped()
 {
-    connectionStatus = Connecting;
-    emit connectionStatusChanged();
-
-    canBusInterface->connect();
-
-    connectionStatus = Connected;
-    emit connectionStatusChanged();
+    try {
+        canBusInterface->connect("Todo", Baud_500);
+        connectionStatus = Connected;
+        emit connectionStatusChanged();
+    } catch (QString error) {
+        qDebug() << error;
+    }
 }
 
 void CanBusManager::disconnectTapped()
@@ -34,17 +32,17 @@ void CanBusManager::sendTapped(QString messageId, QString messageData)
         emit invalidCanId();
         return;
     }
-    // TODO: allow spaces in data and maybe separate bytes
-    messageData.toUInt(&success, 16);
+    // TODO: improve check allow spaces in data and maybe separate bytes
+    messageData.toLongLong(&success, 16);
     if (!success) {
         emit invalidCanData();
         return;
     }
     QByteArray data = QByteArray::fromHex(messageData.toUtf8());
-    quint8 length = data.length();
+    quint8 dlc = data.length();
 
     try {
-        CanMessage message(id, length, data);
+        CanMessage message(id, dlc, data);
         canBusInterface->sendCanMessage(message);
     } catch (CanMessageException error) {
         switch (error) {
@@ -63,6 +61,7 @@ void CanBusManager::dataFrameRecieved(CanMessage message)
     QString hexId;
     hexId.setNum(message.getId(), 16);
     QString data = message.getData().toHex();
+    qDebug() << "Recieved id: " << hexId << " data: " << message.getData();
     emit addMessage(hexId, data);
 }
 
