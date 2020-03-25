@@ -3,7 +3,7 @@ import QtQuick.Controls 2.14
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Window 2.12
 
-import com.RimacWirelessCanBus 1.0
+//import com.RimacWirelessCanBus 1.0
 
 Window {
     id: mainWindow
@@ -11,7 +11,10 @@ Window {
     width: 480
     height: 720
 
-    property int screenMargin: 10
+    minimumWidth: 400
+    minimumHeight: 600
+
+    readonly property int screenMargin: 10
 
     function getExtId(id) {
         while (id.length < 8) {
@@ -68,34 +71,24 @@ Window {
 
             Text {
                 id: connectionStatusText
-                anchors.bottom: connectButton.bottom
+                anchors.bottom: chooseButton.bottom
                 anchors.bottomMargin: 0
-                text: {
-                    switch (canBusManager.connectionStatus) {
-                    case ConnectionStatus.NotConnected:
-                        return "Not connected"
-                    case ConnectionStatus.Connected:
-                        return "Connected"
-                    default:
-                        return "Error"
-                    }
-                }
+                text: canBusManager.isConnected ? "Connected" : "Not connected"
                 opacity: 0.6
                 font.pointSize: 9
             }
 
             Button {
-                id: connectButton
-                text: "Connect"
-                onClicked: canBusManager.connectTapped()
-                enabled: canBusManager.connectionStatus === ConnectionStatus.NotConnected
+                id: chooseButton
+                // TODO: show list of available devices
+                text: "Choose a device"
+                enabled: false
             }
 
             Button {
-                id: disconnectButton
-                text: "Disconnect"
-                onClicked: canBusManager.disconnectTapped()
-                enabled: canBusManager.connectionStatus === ConnectionStatus.Connected
+                id: connectToggle
+                text: canBusManager.isConnected ? "Disconnect" : "Connect"
+                onClicked: canBusManager.isConnected ? canBusManager.disconnectTapped() : canBusManager.connectTapped()
             }
         }
    }
@@ -229,7 +222,7 @@ Window {
             anchors.verticalCenter: parent.verticalCenter
             spacing: -1
 
-            property real textFieldWidth: width / 8 + 1
+            readonly property real textFieldWidth: width / 8 + 1
 
             Repeater {
                 id: canDataTextFields
@@ -276,7 +269,7 @@ Window {
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
             text: "Send"
-            enabled: canBusManager.connectionStatus === ConnectionStatus.Connected
+            enabled: canBusManager.isConnected
             onClicked: {
                 canDataTextFields.checkTextFields();
                 let data = "";

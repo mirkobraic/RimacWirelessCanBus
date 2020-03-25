@@ -17,8 +17,6 @@ int main(int argc, char *argv[])
             QCoreApplication::exit(-1);
     }, Qt::QueuedConnection);
 
-    qmlRegisterUncreatableType<CanBusManager>("com.RimacWirelessCanBus", 1, 0, "ConnectionStatus", "Cannot create enum in qml");
-
     CanBusManager manager(kvaser);
     engine.rootContext()->setContextProperty(QStringLiteral("canBusManager"), &manager);
     engine.load(url);

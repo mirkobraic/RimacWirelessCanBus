@@ -10,8 +10,8 @@ void CanBusManager::connectTapped()
 {
     try {
         canBusInterface->connect("Todo", Baud_500);
-        connectionStatus = Connected;
-        emit connectionStatusChanged();
+        isConnected = true;
+        emit connectionChanged();
     } catch (QString error) {
         qDebug() << error;
     }
@@ -20,8 +20,8 @@ void CanBusManager::connectTapped()
 void CanBusManager::disconnectTapped()
 {
     canBusInterface->disconnect();
-    connectionStatus = NotConnected;
-    emit connectionStatusChanged();
+    isConnected = false;
+    emit connectionChanged();
 }
 
 void CanBusManager::sendTapped(QString messageId, QString messageData)
@@ -59,7 +59,7 @@ void CanBusManager::dataFrameRecieved(CanMessage message)
     emit addMessage(hexId, data);
 }
 
-CanBusManager::ConnectionStatus CanBusManager::getConnectionStatus() const
+bool CanBusManager::getIsConnected() const
 {
-    return connectionStatus;
+    return isConnected;
 }

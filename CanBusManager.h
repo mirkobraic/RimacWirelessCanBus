@@ -13,22 +13,16 @@ public:
     explicit CanBusManager(QObject *parent = nullptr);
     CanBusManager(CanBusProvider, QObject *parent = nullptr);
 
-    enum ConnectionStatus {
-        NotConnected,
-        Connected
-    };
-
-    Q_ENUM(ConnectionStatus)
-    Q_PROPERTY(ConnectionStatus connectionStatus READ getConnectionStatus NOTIFY connectionStatusChanged)
+    Q_PROPERTY(bool isConnected READ getIsConnected NOTIFY connectionChanged)
 
     Q_INVOKABLE void connectTapped();
     Q_INVOKABLE void disconnectTapped();
     Q_INVOKABLE void sendTapped(QString messageId, QString messageData);
 
-    ConnectionStatus getConnectionStatus() const;
+    bool getIsConnected() const;
 
 signals:
-    void connectionStatusChanged();
+    void connectionChanged();
     void addMessage(QString id, QString data);
 
 public slots:
@@ -37,7 +31,7 @@ public slots:
 private:
     CanBusInterface *canBusInterface = nullptr;
 
-    ConnectionStatus connectionStatus = NotConnected;
+    bool isConnected = false;
     QRegularExpression hexMatcher = QRegularExpression("^[0-9A-F]{2,16}$", QRegularExpression::CaseInsensitiveOption);
 };
 
