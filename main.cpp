@@ -17,7 +17,11 @@ int main(int argc, char *argv[])
             QCoreApplication::exit(-1);
     }, Qt::QueuedConnection);
 
-    CanBusManager manager(kvaser);
+
+    CanMessageListModel recievedMessages;
+    engine.rootContext()->setContextProperty(QStringLiteral("recievedMessages"), &recievedMessages);
+
+    CanBusManager manager(kvaser, &recievedMessages);
     engine.rootContext()->setContextProperty(QStringLiteral("canBusManager"), &manager);
     engine.load(url);
 

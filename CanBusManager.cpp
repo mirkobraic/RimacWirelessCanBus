@@ -1,20 +1,23 @@
 #include "CanBusManager.h"
 
-CanBusManager::CanBusManager(CanBusProvider provider, QObject *parent) : QObject(parent)
+CanBusManager::CanBusManager(CanBusProvider provider, CanMessageListModel *recievedMessages, QObject *parent) : QObject(parent)
 {
     canBusInterface = CanBusInterfaceFactory::getInterfaceForProvider(provider);
+    this->recievedMessages = recievedMessages;
     QObject::connect(dynamic_cast<QObject*>(canBusInterface), SIGNAL(newDataFrame(CanMessage)), this, SLOT(dataFrameRecieved(CanMessage)));
+}
+
+CanBusManager::~CanBusManager()
+{
+    delete canBusInterface;
+    delete recievedMessages;
 }
 
 void CanBusManager::connectTapped()
 {
-    try {
-        canBusInterface->connect("Todo", Baud_500);
-        isConnected = true;
-        emit connectionChanged();
-    } catch (QString error) {
-        qDebug() << error;
-    }
+    canBusInterface->connect("Todo", Baud_500);
+    isConnected = true;
+    emit connectionChanged();
 }
 
 void CanBusManager::disconnectTapped()
@@ -53,10 +56,7 @@ void CanBusManager::sendTapped(QString messageId, QString messageData)
 
 void CanBusManager::dataFrameRecieved(CanMessage message)
 {
-    QString hexId;
-    hexId.setNum(message.getId(), 16);
-    QString data = message.getData().toHex();
-    emit addMessage(hexId, data);
+    recievedMessages->addMessage(message);
 }
 
 bool CanBusManager::getIsConnected() const

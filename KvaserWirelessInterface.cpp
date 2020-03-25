@@ -59,7 +59,8 @@ void KvaserWirelessInterface::disconnect()
 void KvaserWirelessInterface::sendCanMessage(CanMessage message)
 {
     char *data = message.getData().data();
-    status = canWriteWait(handle, message.getId(), data, message.getDlc(), 0, 100);
+    unsigned int flag = message.isExtended() ? canMSG_EXT : canMSG_STD;
+    status = canWriteWait(handle, message.getId(), data, message.getDlc(), flag, 100);
     checkStatus("canWriteWait", status);
 }
 
@@ -124,5 +125,7 @@ int KvaserWirelessInterface::getBaudRate(BaudRate baudRate)
         return canBITRATE_500K;
     case Baud_1000:
         return canBITRATE_1M;
+    default:
+        return canBITRATE_500K;
     }
 }

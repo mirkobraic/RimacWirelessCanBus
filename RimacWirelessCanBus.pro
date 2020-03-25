@@ -16,6 +16,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         CanBusManager.cpp \
         CanMessage.cpp \
+        CanMessageListModel.cpp \
         KvaserWirelessInterface.cpp \
         main.cpp
 
@@ -39,6 +40,7 @@ HEADERS += \
     CanBusInterfaceFactory.h \
     CanBusManager.h \
     CanMessage.h \
+    CanMessageListModel.h \
     KvaserWirelessInterface.h
 
 # Kvaser libraries

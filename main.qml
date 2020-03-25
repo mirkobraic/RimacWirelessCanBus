@@ -16,35 +16,6 @@ Window {
 
     readonly property int screenMargin: 10
 
-    function getExtId(id) {
-        while (id.length < 8) {
-            id = "0" + id;
-        }
-        // highest extended can id is 0x1fffffff
-        if (id.charAt(0) > '1') {
-            id = "1FFFFFFF";
-        }
-        return id;
-    }
-
-    function getStdId(id) {
-        while (id.length < 3) {
-            id = "0" + id;
-        }
-        return id;
-    }
-
-    function isExtended(id) {
-        if (id.length > 3) {
-            return true;
-        }
-        // highest standard can id is 0x7ff
-        if (id.length === 3 && id.charAt(0) > '7') {
-            return true;
-        }
-        return false;
-    }
-
    Item {
         id: headerContainer
         anchors.top: parent.top
@@ -110,7 +81,7 @@ Window {
         spacing: 1
 
         delegate: listViewDelegate
-        model: listModel
+        model: recievedMessages
 
         Rectangle {
             anchors.fill: parent
@@ -141,7 +112,7 @@ Window {
                         anchors.verticalCenter: parent.verticalCenter
                         width: parent.width * 0.7
                         font.pointSize: 12
-                        text: model.data
+                        text: model.canData
                     }
                 }
             }
@@ -152,27 +123,6 @@ Window {
             ListElement {
                 canId: "example id"
                 data: "example data"
-            }
-        }
-
-        Connections {
-            target: canBusManager
-            onAddMessage: {
-                let formattedData = data.replace(/\w{2}(?=.)/g, '$& ').toUpperCase();
-                let formattedId = getFormattedId(id);
-                const message = {'canId': formattedId, "data": formattedData};
-                listModel.append(message)
-                canMessagesListView.currentIndex = listModel.count - 1
-            }
-
-            function getFormattedId(id) {
-                let formatted = ""
-                if (isExtended(id)) {
-                    formatted = getExtId(id);
-                } else {
-                    formatted = getStdId(id);
-                }
-                return formatted.toUpperCase();
             }
         }
     }
@@ -196,6 +146,35 @@ Window {
             anchors.verticalCenter: parent.verticalCenter
             placeholderText: "ID"
             validator: RegExpValidator { regExp: /[0-9A-Fa-f]{0,8}/ }
+
+            function getExtId(id) {
+                while (id.length < 8) {
+                    id = "0" + id;
+                }
+                // highest extended can id is 0x1fffffff
+                if (id.charAt(0) > '1') {
+                    id = "1FFFFFFF";
+                }
+                return id;
+            }
+
+            function getStdId(id) {
+                while (id.length < 3) {
+                    id = "0" + id;
+                }
+                return id;
+            }
+
+            function isExtended(id) {
+                if (id.length > 3) {
+                    return true;
+                }
+                // highest standard can id is 0x7ff
+                if (id.length === 3 && id.charAt(0) > '7') {
+                    return true;
+                }
+                return false;
+            }
 
             onEditingFinished: {
                 if (text.length == 0) {

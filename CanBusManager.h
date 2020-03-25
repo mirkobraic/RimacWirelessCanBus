@@ -5,13 +5,14 @@
 #include <QDebug>
 #include <QRegularExpression>
 #include "CanBusInterfaceFactory.h"
-#include "CanMessage.h"
+#include "CanMessageListModel.h"
 
 class CanBusManager : public QObject {
     Q_OBJECT
 public:
     explicit CanBusManager(QObject *parent = nullptr);
-    CanBusManager(CanBusProvider, QObject *parent = nullptr);
+    CanBusManager(CanBusProvider provider, CanMessageListModel *recievedMessages, QObject *parent = nullptr);
+    ~CanBusManager();
 
     Q_PROPERTY(bool isConnected READ getIsConnected NOTIFY connectionChanged)
 
@@ -23,13 +24,13 @@ public:
 
 signals:
     void connectionChanged();
-    void addMessage(QString id, QString data);
 
 public slots:
       void dataFrameRecieved(CanMessage message);
 
 private:
     CanBusInterface *canBusInterface = nullptr;
+    CanMessageListModel *recievedMessages = nullptr;
 
     bool isConnected = false;
     QRegularExpression hexMatcher = QRegularExpression("^[0-9A-F]{2,16}$", QRegularExpression::CaseInsensitiveOption);
