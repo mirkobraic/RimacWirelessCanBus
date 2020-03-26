@@ -1,12 +1,15 @@
 #ifndef KVASERWIRELESSINTERFACE_H
 #define KVASERWIRELESSINTERFACE_H
 
+#include <QtConcurrent>
 #include "CanBusInterface.h"
-#include "kvrlib.h"
 #include "canlib.h"
+#include "kvrlib.h"
 
-class KvaserWirelessInterface : public CanBusInterface {
+class KvaserWirelessInterface : public CanBusInterface
+{
     Q_OBJECT
+
 public:
     KvaserWirelessInterface();
     ~KvaserWirelessInterface();
@@ -21,11 +24,11 @@ signals:
 private:
     void startListening();
     int getChannelCount();
-    void checkStatus(QString method, canStatus status);
+    void checkStatus(QString method, canStatus txStatus);
     int getBaudRate(BaudRate baudRate);
 
-    canHandle handle = -1;
-    canStatus status = canOK;
+    canHandle txHandle = canINVALID_HANDLE;
+    canStatus txStatus = canOK;
     int channelNumber = 0;
 
     bool isConnected = false;

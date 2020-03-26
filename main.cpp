@@ -17,7 +17,6 @@ int main(int argc, char *argv[])
             QCoreApplication::exit(-1);
     }, Qt::QueuedConnection);
 
-
     CanMessageListModel recievedMessages;
     engine.rootContext()->setContextProperty(QStringLiteral("recievedMessages"), &recievedMessages);
 

@@ -4,11 +4,8 @@
 #include <QtGlobal>
 #include <QByteArray>
 
-class CanMessage {
-    uint32_t id;
-    uint8_t dlc;
-    QByteArray data;
-
+class CanMessage
+{
 public:
     CanMessage(uint32_t id, uint8_t dlc, QByteArray data);
 
@@ -20,6 +17,13 @@ public:
     uint32_t getId() const;
     uint8_t getDlc() const;
     QByteArray getData() const;
+
+private:
+    uint32_t id;
+    uint8_t dlc;
+    QByteArray data;
+
+
 };
 
 #endif // CANMESSAGE_H

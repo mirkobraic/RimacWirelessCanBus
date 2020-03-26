@@ -30,6 +30,8 @@ public:
     // QML variable names
     virtual QHash<int, QByteArray> roleNames() const override;
 
+    void removeAll();
+
 private:
     QString formatCanId(CanMessage message) const;
     QString formatCanData(CanMessage messsage) const;

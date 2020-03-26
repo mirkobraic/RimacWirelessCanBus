@@ -57,6 +57,11 @@ QHash<int, QByteArray> CanMessageListModel::roleNames() const
     return names;
 }
 
+void CanMessageListModel::removeAll()
+{
+    removeRows(0, messages.count());
+}
+
 QString CanMessageListModel::formatCanId(CanMessage message) const
 {
     QString hexId;

@@ -80,6 +80,12 @@ Window {
         clip: true
         spacing: 1
 
+        onCountChanged: {
+            if (!dragging) {
+                currentIndex = count - 1
+            }
+        }
+
         delegate: listViewDelegate
         model: recievedMessages
 
@@ -147,47 +153,42 @@ Window {
             placeholderText: "ID"
             validator: RegExpValidator { regExp: /[0-9A-Fa-f]{0,8}/ }
 
-            function getExtId(id) {
-                while (id.length < 8) {
-                    id = "0" + id;
+            function adjustIdToLength(len) {
+                while (text.length < len) {
+                    text = '0' + text;
                 }
+                while (text.length > len) {
+                    text = text.substring(1);
+                }
+            }
+
+            function setExtId() {
+                adjustIdToLength(8)
                 // highest extended can id is 0x1fffffff
-                if (id.charAt(0) > '1') {
-                    id = "1FFFFFFF";
+                if (text.charAt(0) > '1') {
+                    text = "1FFFFFFF";
                 }
-                return id;
             }
 
-            function getStdId(id) {
-                while (id.length < 3) {
-                    id = "0" + id;
-                }
-                return id;
+            function setStdId() {
+                adjustIdToLength(3);
             }
 
-            function isExtended(id) {
-                if (id.length > 3) {
-                    return true;
-                }
+            function formatId() {
                 // highest standard can id is 0x7ff
-                if (id.length === 3 && id.charAt(0) > '7') {
-                    return true;
+                if (parseInt(text, 16) > 0x7FF) {
+                    setExtId();
+                } else {
+                    setStdId();
                 }
-                return false;
             }
 
             onEditingFinished: {
-                if (text.length == 0) {
-                    return;
-                }
-
-                if (isExtended(text)) {
-                    text = getExtId(text);
-                } else {
-                    text = getStdId(text);
+                if (text.length > 0) {
+                    formatId();
                 }
             }
-            onFocusChanged: {
+            onTextChanged: {
                 color = "black"
             }
         }
@@ -236,7 +237,7 @@ Window {
                             text = "0" + text;
                         }
                     }
-                    onFocusChanged: {
+                    onTextChanged: {
                         color = "black"
                     }
                 }

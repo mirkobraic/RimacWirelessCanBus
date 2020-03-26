@@ -21,38 +21,37 @@ void KvaserWirelessInterface::connect(QString channelName, BaudRate baudRate)
     //TODO: implement channelName
     channelNumber = 0;
 
-    handle = canOpenChannel(channelNumber, canOPEN_ACCEPT_VIRTUAL);
-    canStatus status = (canStatus)handle;
-    checkStatus("canOpenChannel", status);
+    txHandle = canOpenChannel(channelNumber, canOPEN_ACCEPT_VIRTUAL);
+    if (txHandle < 0){
+        txStatus = (canStatus)txHandle;
+        checkStatus("canOpenChannel", txStatus);
+    }
 
-    status = canSetBusParams(handle, getBaudRate(baudRate), 0, 0, 0, 0, 0);
-    checkStatus("canSetBusParams", status);
+    txStatus = canSetBusParams(txHandle, getBaudRate(baudRate), 0, 0, 0, 0, 0);
+    checkStatus("canSetBusParams", txStatus);
 
-    status = canBusOn(handle);
-    checkStatus("canBusOn", status);
+    txStatus = canBusOn(txHandle);
+    checkStatus("canBusOn", txStatus);
 
     isConnected = true;
     shouldListen = true;
 
-    //startListening();
-    // TODO: make separete thread for listening
-    QTimer *updateTimer = new QTimer(this);
-    QObject::connect(updateTimer, &QTimer::timeout, this, &KvaserWirelessInterface::startListening);
-    updateTimer->start(100);
+    // start rx thread
+    QtConcurrent::run(this, &KvaserWirelessInterface::startListening);
 }
 
 void KvaserWirelessInterface::disconnect()
 {
-    if (isConnected) {
-        status = canBusOff(handle);
-        checkStatus("canBusOff", status);
-
+    if (isConnected) {        
         isConnected = false;
         shouldListen = false;
 
-        status = canClose(handle);
-        checkStatus("canClose", status);
-        handle = canINVALID_HANDLE;
+        txStatus = canBusOff(txHandle);
+        checkStatus("canBusOff", txStatus);
+
+        txStatus = canClose(txHandle);
+        checkStatus("canClose", txStatus);
+        txHandle = canINVALID_HANDLE;
     }
 }
 
@@ -60,39 +59,65 @@ void KvaserWirelessInterface::sendCanMessage(CanMessage message)
 {
     char *data = message.getData().data();
     unsigned int flag = message.isExtended() ? canMSG_EXT : canMSG_STD;
-    status = canWriteWait(handle, message.getId(), data, message.getDlc(), flag, 100);
-    checkStatus("canWriteWait", status);
+    txStatus = canWriteWait(txHandle, message.getId(), data, message.getDlc(), flag, 100);
+    checkStatus("canWriteWait", txStatus);
 }
 
 void KvaserWirelessInterface::startListening()
 {
-    canStatus stat = canOK;
+    // different handle is reqired for running on a different thread
+    canHandle rxHandle = canINVALID_HANDLE;
+    canStatus rxStatus = canOK;
+
+    rxHandle = canOpenChannel(channelNumber, canOPEN_ACCEPT_VIRTUAL);
+    if (rxHandle < 0){
+        rxStatus = (canStatus)rxHandle;
+        checkStatus("canOpenChannel", rxStatus);
+    }
+
+    // TODO: implement this for final version, commented out because it interfers with virtual can
+    // stops messages sent from another thread from being recieved in this thread
+//    unsigned char buf = 0x00;
+//    rxStatus = canIoCtl(rxHandle, canIOCTL_SET_LOCAL_TXECHO, &buf, sizeof(buf));
+//    checkStatus("canIoCtl", rxStatus);
+
+    rxStatus = canBusOn(rxHandle);
+    checkStatus("canBusOn", rxStatus);
+
     long id;
     unsigned int dlc, flags;
     char data[8];
     DWORD timestamp;
 
-    if (shouldListen) {
-        stat = canReadWait(handle, &id, data, &dlc, &flags, &timestamp, 100);
+    while (shouldListen) {
+        rxStatus = canReadWait(rxHandle, &id, data, &dlc, &flags, &timestamp, 100);
+        if (rxStatus == canERR_NOMSG){
+            // QUESTION: should we add sleep?
+            continue;
+        }
 
-        if (stat == canOK) {
+        if (rxStatus == canOK) {
             if (flags & canMSG_ERROR_FRAME){
                 qDebug() << "***ERROR FRAME RECEIVED***";
-
             } else {
                 try {
                     CanMessage message((uint32_t)id, (uint8_t)dlc, QByteArray::fromRawData(data, dlc));
                     emit newDataFrame(message);
-
                 } catch (const std::exception& ex) {
                     qDebug() << "Exception: " << ex.what();
                 }
             }
-
-        } else if (stat != canERR_NOMSG){
-            checkStatus("canReadWait", stat);
+        } else {
+            checkStatus("canReadWait", rxStatus);
         }
     }
+
+    rxStatus = canBusOff(rxHandle);
+    checkStatus("canBusOff", rxStatus);
+
+    rxStatus = canClose(rxHandle);
+    checkStatus("canClose", rxStatus);
+    rxHandle = canINVALID_HANDLE;
 }
 
 int KvaserWirelessInterface::getChannelCount()
@@ -109,7 +134,7 @@ void KvaserWirelessInterface::checkStatus(QString method, canStatus status)
         char buffer[50];
         buffer[0] = '\0';
         canGetErrorText(status, buffer, sizeof(buffer));
-        QString errorMsg = method + " failed with status: " + status + " " + buffer;
+        QString errorMsg = method + " failed with status: " + QString::number(status) + " " + buffer;
         qDebug() << errorMsg;
     }
 }

@@ -7,9 +7,8 @@ enum CanBusProvider {
     kvaser
 };
 
-class CanBusInterfaceFactory {
-private:
-    CanBusInterfaceFactory();
+class CanBusInterfaceFactory
+{
 public:
     static CanBusInterface* getInterfaceForProvider(CanBusProvider provider) {
         switch (provider) {
@@ -19,6 +18,9 @@ public:
             return nullptr;
         }
     }
+
+private:
+    CanBusInterfaceFactory();
 };
 
 #endif // CANBUSINTERFACEFACTORY_H

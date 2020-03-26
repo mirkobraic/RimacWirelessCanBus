@@ -1,4 +1,4 @@
-QT += quick
+QT += quick concurrent
 
 CONFIG += c++11
 

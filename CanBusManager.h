@@ -7,8 +7,10 @@
 #include "CanBusInterfaceFactory.h"
 #include "CanMessageListModel.h"
 
-class CanBusManager : public QObject {
+class CanBusManager : public QObject
+{
     Q_OBJECT
+
 public:
     explicit CanBusManager(QObject *parent = nullptr);
     CanBusManager(CanBusProvider provider, CanMessageListModel *recievedMessages, QObject *parent = nullptr);

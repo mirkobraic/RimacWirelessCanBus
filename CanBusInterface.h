@@ -2,14 +2,14 @@
 #define CANBUSINTERFACE_H
 
 #include <QObject>
-#include <QDebug>
 #include "CanMessage.h"
 
 enum BaudRate {
     Baud_125, Baud_250, Baud_500, Baud_1000
 };
 
-class CanBusInterface : public QObject {
+class CanBusInterface : public QObject
+{
 public:
     virtual ~CanBusInterface() {}
 
