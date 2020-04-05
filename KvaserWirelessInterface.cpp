@@ -136,6 +136,7 @@ void KvaserWirelessInterface::checkStatus(QString method, canStatus status)
         canGetErrorText(status, buffer, sizeof(buffer));
         QString errorMsg = method + " failed with status: " + QString::number(status) + " " + buffer;
         qDebug() << errorMsg;
+        throw errorMsg;
     }
 }
 

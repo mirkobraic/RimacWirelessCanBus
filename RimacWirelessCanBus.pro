@@ -17,6 +17,7 @@ SOURCES += \
         CanBusManager.cpp \
         CanMessage.cpp \
         CanMessageListModel.cpp \
+        IsotpCanProvider.cpp \
         KvaserWirelessInterface.cpp \
         main.cpp
 
@@ -41,9 +42,10 @@ HEADERS += \
     CanBusManager.h \
     CanMessage.h \
     CanMessageListModel.h \
+    IsotpCanProvider.h \
     KvaserWirelessInterface.h
 
-# Kvaser libraries
+# Kvaser
 INCLUDEPATH += $$PWD/../CANlib/INC
 DEPENDPATH += $$PWD/../CANlib/INC
 
@@ -52,3 +54,10 @@ LIBS += $$PWD/../CANlib/Lib/x64/canlib32.lib
 
 LIBS += $$PWD/../CANlib/Lib/MS/kvrlib.lib
 LIBS += $$PWD/../CANlib/Lib/x64/kvrlib.lib
+
+# Isotp
+INCLUDEPATH += $$PWD/../udsclient_and_isotp/Isotp/Include
+DEPENDPATH += $$PWD/../udsclient_and_isotp/Isotp/Include
+
+LIBS += $$PWD/../udsclient_and_isotp/Isotp/Windows/isotp_lib.dll
+LIBS += $$PWD/../udsclient_and_isotp/Isotp/Windows/isotp_lib.lib

@@ -5,7 +5,6 @@ CanBusManager::CanBusManager(CanBusProvider provider, CanMessageListModel *recie
     canBusInterface = CanBusInterfaceFactory::getInterfaceForProvider(provider);
     this->recievedMessages = recievedMessages;
     QObject::connect(dynamic_cast<QObject*>(canBusInterface), SIGNAL(newDataFrame(CanMessage)), this, SLOT(dataFrameRecieved(CanMessage)), Qt::BlockingQueuedConnection);
-
 }
 
 CanBusManager::~CanBusManager()
