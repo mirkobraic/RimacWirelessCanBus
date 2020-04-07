@@ -1,34 +1,43 @@
-#include "CanBusManager.h"
+#include "ViewController.h"
 
-CanBusManager::CanBusManager(CanBusProvider provider, CanMessageListModel *recievedMessages, QObject *parent) : QObject(parent)
+ViewController::ViewController(CanMessageListModel *recievedMessages, QObject *parent) : QObject(parent)
 {
-    canBusInterface = CanBusInterfaceFactory::getInterfaceForProvider(provider);
+    canBusInterface = CanBusInterfaceFactory::getInterfaceForProvider(kvaser);
     this->recievedMessages = recievedMessages;
     QObject::connect(dynamic_cast<QObject*>(canBusInterface), SIGNAL(newDataFrame(CanMessage)), this, SLOT(dataFrameRecieved(CanMessage)), Qt::BlockingQueuedConnection);
+
+    // ISOTP
+//    isotpManager = IsotpManager();
 }
 
-CanBusManager::~CanBusManager()
+ViewController::~ViewController()
 {
     delete canBusInterface;
     delete recievedMessages;
 }
 
-void CanBusManager::connectTapped()
+void ViewController::connectTapped()
 {
     canBusInterface->connect("Todo", Baud_500);
     recievedMessages->removeAll();
     isConnected = true;
     emit connectionChanged();
+
+    // ISOTP
+//    isotpManager.connect();
 }
 
-void CanBusManager::disconnectTapped()
+void ViewController::disconnectTapped()
 {
     canBusInterface->disconnect();
     isConnected = false;
     emit connectionChanged();
+
+    // ISOTP
+//    isotpManager.disconnect();
 }
 
-void CanBusManager::sendTapped(QString messageId, QString messageData)
+void ViewController::sendTapped(QString messageId, QString messageData)
 {
     bool success;
     uint32_t id = messageId.toUInt(&success, 16);
@@ -53,14 +62,20 @@ void CanBusManager::sendTapped(QString messageId, QString messageData)
     } catch (const std::exception& ex) {
         qDebug() << "Exception: " << ex.what();
     }
+
+    // ISOTP
+//    isotp::can_layer_message msg;
+//    msg.id = id;
+//    msg.data.assign(messageData.begin(), messageData.end());
+//    isotpManager.sendMessage(msg);
 }
 
-void CanBusManager::dataFrameRecieved(CanMessage message)
+void ViewController::dataFrameRecieved(CanMessage message)
 {
     recievedMessages->addMessage(message);
 }
 
-bool CanBusManager::getIsConnected() const
+bool ViewController::getIsConnected() const
 {
     return isConnected;
 }

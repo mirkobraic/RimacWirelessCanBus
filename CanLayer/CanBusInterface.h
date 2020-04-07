@@ -2,7 +2,7 @@
 #define CANBUSINTERFACE_H
 
 #include <QObject>
-#include "CanMessage.h"
+#include "../Models/CanMessage.h"
 
 enum BaudRate {
     Baud_125, Baud_250, Baud_500, Baud_1000

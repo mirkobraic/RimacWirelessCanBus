@@ -1,20 +1,22 @@
-#ifndef CANBUSMANAGER_H
-#define CANBUSMANAGER_H
+#ifndef VIEWCONTROLLER_H
+#define VIEWCONTROLLER_H
 
 #include <QObject>
 #include <QDebug>
 #include <QRegularExpression>
-#include "CanBusInterfaceFactory.h"
-#include "CanMessageListModel.h"
+#include "CanLayer/CanBusInterfaceFactory.h"
+#include "Models/CanMessageListModel.h"
 
-class CanBusManager : public QObject
+#include "IsotpLayer/IsotpManager.h"
+
+class ViewController : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit CanBusManager(QObject *parent = nullptr);
-    CanBusManager(CanBusProvider provider, CanMessageListModel *recievedMessages, QObject *parent = nullptr);
-    ~CanBusManager();
+    explicit ViewController(QObject *parent = nullptr);
+    ViewController(CanMessageListModel *recievedMessages, QObject *parent = nullptr);
+    ~ViewController();
 
     Q_PROPERTY(bool isConnected READ getIsConnected NOTIFY connectionChanged)
 
@@ -34,8 +36,10 @@ private:
     CanBusInterface *canBusInterface = nullptr;
     CanMessageListModel *recievedMessages = nullptr;
 
+    IsotpManager isotpManager;
+
     bool isConnected = false;
     QRegularExpression hexMatcher = QRegularExpression("^[0-9A-F]{2,16}$", QRegularExpression::CaseInsensitiveOption);
 };
 
-#endif // CANBUSMANAGER_H
+#endif // VIEWCONTROLLER_H

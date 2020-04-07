@@ -1,21 +1,21 @@
-#include "KvaserWirelessInterface.h"
-#include <QTimer>
+#include "KvaserWirelessCan.h"
 
-KvaserWirelessInterface::KvaserWirelessInterface()
+KvaserWirelessCan::KvaserWirelessCan()
 {
     canInitializeLibrary();
 }
 
-KvaserWirelessInterface::~KvaserWirelessInterface()
+KvaserWirelessCan::~KvaserWirelessCan()
 {
     disconnect();
 }
 
-void KvaserWirelessInterface::connect(QString channelName, BaudRate baudRate)
+void KvaserWirelessCan::connect(QString channelName, BaudRate baudRate)
 {
     if (isConnected) {
         return;
     }
+//    kvrGetVersion();
     qDebug() << "Number of channels: " << getChannelCount();
 
     //TODO: implement channelName
@@ -37,10 +37,10 @@ void KvaserWirelessInterface::connect(QString channelName, BaudRate baudRate)
     shouldListen = true;
 
     // start rx thread
-    QtConcurrent::run(this, &KvaserWirelessInterface::startListening);
+    QtConcurrent::run(this, &KvaserWirelessCan::startListening);
 }
 
-void KvaserWirelessInterface::disconnect()
+void KvaserWirelessCan::disconnect()
 {
     if (isConnected) {        
         isConnected = false;
@@ -55,7 +55,7 @@ void KvaserWirelessInterface::disconnect()
     }
 }
 
-void KvaserWirelessInterface::sendCanMessage(CanMessage message)
+void KvaserWirelessCan::sendCanMessage(CanMessage message)
 {
     char *data = message.getData().data();
     unsigned int flag = message.isExtended() ? canMSG_EXT : canMSG_STD;
@@ -63,7 +63,7 @@ void KvaserWirelessInterface::sendCanMessage(CanMessage message)
     checkStatus("canWriteWait", txStatus);
 }
 
-void KvaserWirelessInterface::startListening()
+void KvaserWirelessCan::startListening()
 {
     // different handle is reqired for running on a different thread
     canHandle rxHandle = canINVALID_HANDLE;
@@ -120,7 +120,7 @@ void KvaserWirelessInterface::startListening()
     rxHandle = canINVALID_HANDLE;
 }
 
-int KvaserWirelessInterface::getChannelCount()
+int KvaserWirelessCan::getChannelCount()
 {
     int count = 0;
     canStatus stat = canGetNumberOfChannels(&count);
@@ -128,7 +128,7 @@ int KvaserWirelessInterface::getChannelCount()
     return count;
 }
 
-void KvaserWirelessInterface::checkStatus(QString method, canStatus status)
+void KvaserWirelessCan::checkStatus(QString method, canStatus status)
 {
     if (status != canOK) {
         char buffer[50];
@@ -136,11 +136,10 @@ void KvaserWirelessInterface::checkStatus(QString method, canStatus status)
         canGetErrorText(status, buffer, sizeof(buffer));
         QString errorMsg = method + " failed with status: " + QString::number(status) + " " + buffer;
         qDebug() << errorMsg;
-        throw errorMsg;
     }
 }
 
-int KvaserWirelessInterface::getBaudRate(BaudRate baudRate)
+int KvaserWirelessCan::getBaudRate(BaudRate baudRate)
 {
     switch (baudRate){
     case Baud_125:
