@@ -3,9 +3,7 @@
 
 #include <QObject>
 #include <QDebug>
-#include "CanLayer/CanBusInterfaceFactory.h"
 #include "Models/CanMessageListModel.h"
-
 #include "IsotpLayer/IsotpManager.h"
 
 class ViewController : public QObject
@@ -29,13 +27,12 @@ signals:
     void connectionChanged();
 
 public slots:
-      void dataFrameRecieved(CanMessage message);
+      void recievedMessageHandler(CanMessage message);
 
 private:
-    CanBusInterface *canBusInterface = nullptr;
     CanMessageListModel *recievedMessages = nullptr;
 
-    IsotpManager isotpManager;
+    IsotpManager *isotpManager = nullptr;
 
     bool isConnected = false;
 };

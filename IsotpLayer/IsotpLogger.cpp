@@ -1,9 +1,7 @@
 #include "IsotpLogger.h"
 
 IsotpLogger::IsotpLogger()
-{
-
-}
+{ }
 
 void IsotpLogger::log_debug(const std::string &message)
 {

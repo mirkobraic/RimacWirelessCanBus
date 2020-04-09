@@ -1,40 +1,35 @@
 #include "ViewController.h"
 
-ViewController::ViewController(CanMessageListModel *recievedMessages, QObject *parent) : QObject(parent)
+ViewController::ViewController(CanMessageListModel *recievedMessages, QObject *parent)
+    : QObject(parent),
+      recievedMessages(recievedMessages)
 {
-    canBusInterface = CanBusInterfaceFactory::getInterfaceForProvider(kvaser);
-    this->recievedMessages = recievedMessages;
-    QObject::connect(dynamic_cast<QObject*>(canBusInterface), SIGNAL(newDataFrame(CanMessage)), this, SLOT(dataFrameRecieved(CanMessage)), Qt::BlockingQueuedConnection);
+    std::vector<std::pair<uint32_t, uint32_t>> rxTxPairs;
+    rxTxPairs.push_back(std::make_pair(1, 2));
+    isotpManager = new IsotpManager(kvaser, rxTxPairs);
 
-    // ISOTP
-//    isotpManager = IsotpManager();
+    QObject::connect(isotpManager, SIGNAL(newMessageRecieved(CanMessage)), this, SLOT(recievedMessageHandler(CanMessage)), Qt::BlockingQueuedConnection);
 }
 
 ViewController::~ViewController()
 {
-    delete canBusInterface;
     delete recievedMessages;
+    delete isotpManager;
 }
 
 void ViewController::connectTapped()
 {
-    canBusInterface->connect("Todo", Baud_500);
+    isotpManager->connect("Todo", Baud_500);
     recievedMessages->removeAll();
     isConnected = true;
     emit connectionChanged();
-
-    // ISOTP
-//    isotpManager.connect();
 }
 
 void ViewController::disconnectTapped()
 {
-    canBusInterface->disconnect();
+    isotpManager->disconnect();
     isConnected = false;
     emit connectionChanged();
-
-    // ISOTP
-//    isotpManager.disconnect();
 }
 
 void ViewController::sendTapped(QString messageId, const QVector<QString> &bytes)
@@ -57,25 +52,15 @@ void ViewController::sendTapped(QString messageId, const QVector<QString> &bytes
         }
        data.push_back(byte);
     }
-    uint8_t dlc = data.size();
 
-    try {
-        CanMessage message(id, dlc, data);
-        canBusInterface->sendCanMessage(message);
-
-    } catch (const std::exception& ex) {
-        qDebug() << "Exception: " << ex.what();
-    }
-
-    // ISOTP
-//    isotp_message msg;
-//    msg.id = id;
-//    std::string messageString = messageData.toStdString();
-//    msg.data.assign(messageString.begin(), messageString.end());
-//    isotpManager.sendMessage(msg);
+    uds::uds_message<uint32_t> msg;
+    msg.data = data;
+    msg.sender_id = 1;
+    msg.recipient_id = id;
+    isotpManager->sendMessage(msg);
 }
 
-void ViewController::dataFrameRecieved(CanMessage message)
+void ViewController::recievedMessageHandler(CanMessage message)
 {
     recievedMessages->addMessage(message);
 }

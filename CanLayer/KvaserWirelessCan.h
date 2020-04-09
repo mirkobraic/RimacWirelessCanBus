@@ -8,18 +8,13 @@
 
 class KvaserWirelessCan : public CanBusInterface
 {
-    Q_OBJECT
-
 public:
     KvaserWirelessCan();
     ~KvaserWirelessCan();
 
-    void connect(QString channelName, BaudRate baudRate) override;
+    void connect(std::string channelName, BaudRate baudRate) override;
     void disconnect() override;
-    void sendCanMessage(CanMessage message) override;
-
-signals:
-    void newDataFrame(CanMessage message) override;
+    void sendCanMessage(isotp::can_layer_message &message) override;
 
 private:
     void startListening();
