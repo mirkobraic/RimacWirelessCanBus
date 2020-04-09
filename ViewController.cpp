@@ -37,23 +37,27 @@ void ViewController::disconnectTapped()
 //    isotpManager.disconnect();
 }
 
-void ViewController::sendTapped(QString messageId, QString messageData)
+void ViewController::sendTapped(QString messageId, const QVector<QString> &bytes)
 {
     bool success;
     uint32_t id = messageId.toUInt(&success, 16);
     if (!success){
-        qDebug() << "Invalid ID";
+        qDebug() << "Parsing qml error: Invalid ID";
         return;
     }
 
-    QRegularExpressionMatch match = hexMatcher.match(messageData);
-    if (match.hasMatch() == false){
-        qDebug() << "Invalid data";
-        return;
+    std::vector<uint8_t> data;
+    QVectorIterator<QString> it(bytes);
+    while (it.hasNext()) {
+        QString stringByte = it.next();
+        uint8_t byte = stringByte.toUInt(&success, 16);
+        if (!success){
+            qDebug() << "Parsing qml error: Invalid data";
+            return;
+        }
+       data.push_back(byte);
     }
-
-    QByteArray data = QByteArray::fromHex(messageData.toUtf8());
-    uint8_t dlc = data.length();
+    uint8_t dlc = data.size();
 
     try {
         CanMessage message(id, dlc, data);
@@ -64,9 +68,10 @@ void ViewController::sendTapped(QString messageId, QString messageData)
     }
 
     // ISOTP
-//    isotp::can_layer_message msg;
+//    isotp_message msg;
 //    msg.id = id;
-//    msg.data.assign(messageData.begin(), messageData.end());
+//    std::string messageString = messageData.toStdString();
+//    msg.data.assign(messageString.begin(), messageString.end());
 //    isotpManager.sendMessage(msg);
 }
 

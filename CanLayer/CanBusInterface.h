@@ -2,7 +2,9 @@
 #define CANBUSINTERFACE_H
 
 #include <QObject>
+#include <memory>
 #include "../Models/CanMessage.h"
+#include "isotp_api/can/can_layer_message.hpp"
 
 enum BaudRate {
     Baud_125, Baud_250, Baud_500, Baud_1000
@@ -17,18 +19,10 @@ public:
     virtual void disconnect() = 0;
     virtual void sendCanMessage(CanMessage message) = 0;
 
+    std::function<void(std::unique_ptr<isotp::can_layer_message>)> recievedMessageCallback;
+
 signals:
     virtual void newDataFrame(CanMessage message) = 0;
-
-    // QUESTION: why is this not working
-//    static CanBusInterface* getBusInterfaceForProvider(CanBusProvider provider) {
-//        switch (provider) {
-//        case kvaser:
-//            return new KvaserWirelessInterface();
-//        default:
-//            return nullptr;
-//        }
-//    }
 };
 
 #endif // CANBUSINTERFACE_H

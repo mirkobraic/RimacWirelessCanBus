@@ -36,8 +36,6 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-DISTFILES +=
-
 HEADERS += \
     CanLayer/CanBusInterface.h \
     CanLayer/CanBusInterfaceFactory.h \
@@ -49,19 +47,25 @@ HEADERS += \
     Models/CanMessageListModel.h \
     ViewController.h
 
-# Kvaser
-INCLUDEPATH += $$PWD/../CANlib/INC
-DEPENDPATH += $$PWD/../CANlib/INC
+LIBS += -L$$PWD/../udsclient_and_isotp/Isotp/Windows/ -lisotp_lib
 
-LIBS += $$PWD/../CANlib/Lib/MS/canlib32.lib
-LIBS += $$PWD/../CANlib/Lib/x64/canlib32.lib
-
-LIBS += $$PWD/../CANlib/Lib/MS/kvrlib.lib
-LIBS += $$PWD/../CANlib/Lib/x64/kvrlib.lib
-
-# Isotp
 INCLUDEPATH += $$PWD/../udsclient_and_isotp/Isotp/Include
 DEPENDPATH += $$PWD/../udsclient_and_isotp/Isotp/Include
 
-LIBS += $$PWD/../udsclient_and_isotp/Isotp/Windows/isotp_lib.dll
-LIBS += $$PWD/../udsclient_and_isotp/Isotp/Windows/isotp_lib.lib
+PRE_TARGETDEPS += $$PWD/../udsclient_and_isotp/Isotp/Windows/isotp_lib.lib
+
+
+LIBS += -L$$PWD/../CANlib/Lib/x64/ -lcanlib32
+
+INCLUDEPATH += $$PWD/../CANlib/INC
+DEPENDPATH += $$PWD/../CANlib/INC
+
+PRE_TARGETDEPS += $$PWD/../CANlib/Lib/x64/canlib32.lib
+
+
+LIBS += -L$$PWD/../CANlib/Lib/x64/ -lkvrlib
+
+INCLUDEPATH += $$PWD/../CANlib/INC
+DEPENDPATH += $$PWD/../CANlib/INC
+
+PRE_TARGETDEPS += $$PWD/../CANlib/Lib/x64/kvrlib.lib

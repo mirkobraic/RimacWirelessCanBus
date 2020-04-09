@@ -250,14 +250,17 @@ Window {
             enabled: viewController.isConnected
             onClicked: {
                 canDataTextFields.checkTextFields();
-                let data = "";
+                let data = [];
                 for (let i = 0; i < canDataTextFields.count; i++) {
-                    data += canDataTextFields.itemAt(i).text;
+                    if (canDataTextFields.itemAt(i).text) {
+                        data.push(canDataTextFields.itemAt(i).text);
+                    }
                 }
+
                 if (canIdTextField.text === "") {
                     canIdTextField.color = "red";
                 }
-                if (data === "") {
+                if (data.length === 0) {
                     canDataTextFields.itemAt(0).color = "red";
                 }
 

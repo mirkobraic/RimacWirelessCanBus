@@ -2,12 +2,13 @@
 #define CANMESSAGE_H
 
 #include <QtGlobal>
-#include <QByteArray>
+#include <stdexcept>
+#include <vector>
 
 class CanMessage
 {
 public:
-    CanMessage(uint32_t id, uint8_t dlc, QByteArray data);
+    CanMessage(uint32_t id, uint8_t dlc, std::vector<uint8_t> data);
 
     const static uint32_t maxStdCanId = 0x7FF;
     const static uint32_t maxExtCanId = 0x1FFFFFFF;
@@ -16,12 +17,12 @@ public:
 
     uint32_t getId() const;
     uint8_t getDlc() const;
-    QByteArray getData() const;
+    std::vector<uint8_t> getData() const;
 
 private:
     uint32_t id;
     uint8_t dlc;
-    QByteArray data;
+    std::vector<uint8_t> data;
 
 
 };

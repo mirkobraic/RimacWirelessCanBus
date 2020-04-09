@@ -75,8 +75,12 @@ QString CanMessageListModel::formatCanId(CanMessage message) const
 
 QString CanMessageListModel::formatCanData(CanMessage message) const
 {
-    QString data = message.getData().toHex();
-    // adds space after every two characters
-    data.replace(QRegularExpression("(.{2})"), "\\1 ");
-    return data.toUpper();
+    QString formatted;
+    for(const uint8_t &byte: message.getData()) {
+        if (byte < 16) {
+            formatted += "0";
+        }
+        formatted += QString::number(byte, 16) + " ";
+    }
+    return formatted.toUpper();
 }

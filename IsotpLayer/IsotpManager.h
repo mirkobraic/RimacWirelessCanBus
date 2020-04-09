@@ -12,10 +12,11 @@ public:
 
     void connect();
     void disconnect();
-    void sendMessage(isotp::can_layer_message message);
-    void switchCanProvider(CanBusProvider provider);
+    void sendMessage(isotp_message message);
 
 private:
+    static void recievedMessageHandler(isotp_message *message);
+
     isotp_provider_handle* isotpHanlde = nullptr;
     std::shared_ptr<IsotpCanProvider> isotpCanProvider;
     std::shared_ptr<IsotpLogger> isotpLogger;

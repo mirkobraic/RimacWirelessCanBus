@@ -57,7 +57,7 @@ void KvaserWirelessCan::disconnect()
 
 void KvaserWirelessCan::sendCanMessage(CanMessage message)
 {
-    char *data = message.getData().data();
+    char *data = reinterpret_cast<char*>(message.getData().data());
     unsigned int flag = message.isExtended() ? canMSG_EXT : canMSG_STD;
     txStatus = canWriteWait(txHandle, message.getId(), data, message.getDlc(), flag, 100);
     checkStatus("canWriteWait", txStatus);
@@ -101,11 +101,27 @@ void KvaserWirelessCan::startListening()
                 qDebug() << "***ERROR FRAME RECEIVED***";
             } else {
                 try {
-                    CanMessage message((uint32_t)id, (uint8_t)dlc, QByteArray::fromRawData(data, dlc));
+                    unsigned int arraySize = sizeof(data) / sizeof(char);
+                    if (dlc > arraySize) {
+                        dlc = arraySize;
+                    }
+                    std::vector<uint8_t> vecData = std::vector<uint8_t>(data, data + dlc);
+                    CanMessage message((uint32_t)id, (uint8_t)dlc, vecData);
                     emit newDataFrame(message);
                 } catch (const std::exception& ex) {
                     qDebug() << "Exception: " << ex.what();
                 }
+
+                // ISOTP
+//                isotp::can_layer_message msg;
+//                msg.id = id;
+//                unsigned int arraySize = sizeof(data) / sizeof(char);
+//                // assure that dlc is not greater than array size
+//                if (dlc > arraySize) {
+//                    dlc = arraySize;
+//                }
+//                msg.data = std::vector<uint8_t>(data, data + dlc);
+//                recievedMessageCallback(std::make_unique<isotp::can_layer_message>(msg));
             }
         } else {
             checkStatus("canReadWait", rxStatus);

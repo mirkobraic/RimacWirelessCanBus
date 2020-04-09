@@ -3,7 +3,6 @@
 
 #include <QObject>
 #include <QDebug>
-#include <QRegularExpression>
 #include "CanLayer/CanBusInterfaceFactory.h"
 #include "Models/CanMessageListModel.h"
 
@@ -22,7 +21,7 @@ public:
 
     Q_INVOKABLE void connectTapped();
     Q_INVOKABLE void disconnectTapped();
-    Q_INVOKABLE void sendTapped(QString messageId, QString messageData);
+    Q_INVOKABLE void sendTapped(QString messageId, const QVector<QString> &bytes);
 
     bool getIsConnected() const;
 
@@ -39,7 +38,6 @@ private:
     IsotpManager isotpManager;
 
     bool isConnected = false;
-    QRegularExpression hexMatcher = QRegularExpression("^[0-9A-F]{2,16}$", QRegularExpression::CaseInsensitiveOption);
 };
 
 #endif // VIEWCONTROLLER_H
