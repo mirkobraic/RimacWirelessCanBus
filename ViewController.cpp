@@ -56,7 +56,7 @@ void ViewController::sendTapped(QString messageId, const QVector<QString> &bytes
     uds::uds_message<uint32_t> msg;
     msg.data = data;
     msg.sender_id = 1;
-    msg.recipient_id = id;
+    msg.recipient_id = 2;
     isotpManager->sendMessage(msg);
 }
 

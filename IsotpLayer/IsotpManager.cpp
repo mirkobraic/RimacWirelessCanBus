@@ -7,10 +7,14 @@ IsotpManager::IsotpManager(CanBusProvider provider, std::vector<std::pair<uint32
       isotpLogger(std::make_shared<IsotpLogger>()),
       isotpTransport(isotp::isotp_transport_layer(isotpCanProvider, rxTxPairs, isotpLogger))
 {
+    // QUESTION: what exacly are sender and recipient id and how do they relate to can message id
     isotpTransport.set_received_message_callback([this] (std::shared_ptr<uds::uds_message<uint32_t>> message) {
-        // QUESTION: what exacly are sender and recipient id
-        CanMessage canMessage = CanMessage(message->sender_id, message->data.size(), message->data);
-        emit newMessageRecieved(canMessage);
+        try {
+            CanMessage canMessage = CanMessage(message->recipient_id, message->data.size(), message->data);
+            emit newMessageRecieved(canMessage);
+        } catch (std::exception e) {
+            qDebug() << "CanMessage constructor error:  " << e.what();
+        }
     });
 }
 

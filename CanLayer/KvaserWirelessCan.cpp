@@ -60,6 +60,9 @@ void KvaserWirelessCan::sendCanMessage(isotp::can_layer_message &message)
     char *data = reinterpret_cast<char*>(message.data.data());
     unsigned int flag = message.id > maxStdCanId ? canMSG_EXT : canMSG_STD;
     txStatus = canWriteWait(txHandle, message.id, data, message.data.size(), flag, 100);
+    if (txStatus != canOK) {
+        canFlushTransmitQueue(txHandle);
+    }
     checkStatus("canWriteWait", txStatus);
 }
 
