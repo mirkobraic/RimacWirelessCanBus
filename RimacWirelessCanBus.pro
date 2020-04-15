@@ -47,34 +47,14 @@ HEADERS += \
     Models/CanMessageListModel.h \
     ViewController.h
 
-#isotp
-LIBS += -L$$PWD/../udsclient_and_isotp/Isotp/Windows/ -lisotp_lib
+
+unix:!macx: LIBS += -L$$PWD/../linuxcan/canlib/ -lcanlib
+
+INCLUDEPATH += $$PWD/../linuxcan/include
+DEPENDPATH += $$PWD/../linuxcan/include
+
+
+unix:!macx: LIBS += -L$$PWD/../udsclient_and_isotp/Isotp/Ubuntu/ -lisotp_lib
 
 INCLUDEPATH += $$PWD/../udsclient_and_isotp/Isotp/Include
 DEPENDPATH += $$PWD/../udsclient_and_isotp/Isotp/Include
-
-PRE_TARGETDEPS += $$PWD/../udsclient_and_isotp/Isotp/Windows/isotp_lib.lib
-
-#uds
-LIBS += -L$$PWD/../udsclient_and_isotp/UdsClient/Windows/ -luds_client
-
-INCLUDEPATH += $$PWD/../udsclient_and_isotp/Isotp/Include
-DEPENDPATH += $$PWD/../udsclient_and_isotp/Isotp/Include
-
-PRE_TARGETDEPS += $$PWD/../udsclient_and_isotp/UdsClient/Windows/uds_client.lib
-
-#kvaser canlib
-LIBS += -L$$PWD/../CANlib/Lib/x64/ -lcanlib32
-
-INCLUDEPATH += $$PWD/../CANlib/INC
-DEPENDPATH += $$PWD/../CANlib/INC
-
-PRE_TARGETDEPS += $$PWD/../CANlib/Lib/x64/canlib32.lib
-
-#kvaser kvrlib
-LIBS += -L$$PWD/../CANlib/Lib/x64/ -lkvrlib
-
-INCLUDEPATH += $$PWD/../CANlib/INC
-DEPENDPATH += $$PWD/../CANlib/INC
-
-PRE_TARGETDEPS += $$PWD/../CANlib/Lib/x64/kvrlib.lib

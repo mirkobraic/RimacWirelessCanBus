@@ -87,7 +87,7 @@ void KvaserWirelessCan::startListening()
     long id;
     unsigned int dlc, flags;
     char data[8];
-    DWORD timestamp;
+    unsigned long timestamp;
 
     while (shouldListen) {
         rxStatus = canReadWait(rxHandle, &id, data, &dlc, &flags, &timestamp, 100);
