@@ -16,7 +16,7 @@ CanBusManager::~CanBusManager()
 
 void CanBusManager::connectTapped()
 {
-    canBusInterface->connect("Todo", Baud_500);
+    canBusInterface->connect("Todo", Baud_1000);
     recievedMessages->removeAll();
     isConnected = true;
     emit connectionChanged();

@@ -4,7 +4,6 @@
 #include <QtConcurrent>
 #include "CanBusInterface.h"
 #include "canlib.h"
-#include "kvrlib.h"
 
 class KvaserWirelessInterface : public CanBusInterface
 {
