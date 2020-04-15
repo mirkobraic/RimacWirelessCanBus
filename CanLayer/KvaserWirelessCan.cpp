@@ -1,21 +1,21 @@
-#include "KvaserWirelessInterface.h"
-#include <QTimer>
+#include "KvaserWirelessCan.h"
 
-KvaserWirelessInterface::KvaserWirelessInterface()
+KvaserWirelessCan::KvaserWirelessCan()
 {
     canInitializeLibrary();
 }
 
-KvaserWirelessInterface::~KvaserWirelessInterface()
+KvaserWirelessCan::~KvaserWirelessCan()
 {
     disconnect();
 }
 
-void KvaserWirelessInterface::connect(QString channelName, BaudRate baudRate)
+void KvaserWirelessCan::connect(std::string channelName, BaudRate baudRate)
 {
     if (isConnected) {
         return;
     }
+
     qDebug() << "Number of channels: " << getChannelCount();
 
     //TODO: implement channelName
@@ -37,10 +37,10 @@ void KvaserWirelessInterface::connect(QString channelName, BaudRate baudRate)
     shouldListen = true;
 
     // start rx thread
-    QtConcurrent::run(this, &KvaserWirelessInterface::startListening);
+    QtConcurrent::run(this, &KvaserWirelessCan::startListening);
 }
 
-void KvaserWirelessInterface::disconnect()
+void KvaserWirelessCan::disconnect()
 {
     if (isConnected) {        
         isConnected = false;
@@ -55,15 +55,18 @@ void KvaserWirelessInterface::disconnect()
     }
 }
 
-void KvaserWirelessInterface::sendCanMessage(CanMessage message)
+void KvaserWirelessCan::sendCanMessage(isotp::can_layer_message &message)
 {
-    char *data = message.getData().data();
-    unsigned int flag = message.isExtended() ? canMSG_EXT : canMSG_STD;
-    txStatus = canWriteWait(txHandle, message.getId(), data, message.getDlc(), flag, 100);
+    char *data = reinterpret_cast<char*>(message.data.data());
+    unsigned int flag = message.id > maxStdCanId ? canMSG_EXT : canMSG_STD;
+    txStatus = canWriteWait(txHandle, message.id, data, message.data.size(), flag, 100);
+    if (txStatus != canOK) {
+        canFlushTransmitQueue(txHandle);
+    }
     checkStatus("canWriteWait", txStatus);
 }
 
-void KvaserWirelessInterface::startListening()
+void KvaserWirelessCan::startListening()
 {
     // different handle is reqired for running on a different thread
     canHandle rxHandle = canINVALID_HANDLE;
@@ -100,12 +103,15 @@ void KvaserWirelessInterface::startListening()
             if (flags & canMSG_ERROR_FRAME){
                 qDebug() << "***ERROR FRAME RECEIVED***";
             } else {
-                try {
-                    CanMessage message((uint32_t)id, (uint8_t)dlc, QByteArray::fromRawData(data, dlc));
-                    emit newDataFrame(message);
-                } catch (const std::exception& ex) {
-                    qDebug() << "Exception: " << ex.what();
+                isotp::can_layer_message msg;
+                msg.id = id;
+                unsigned int arraySize = sizeof(data) / sizeof(char);
+                // assure that dlc is not greater than array size
+                if (dlc > arraySize) {
+                    dlc = arraySize;
                 }
+                msg.data = std::vector<uint8_t>(data, data + dlc);
+                recievedMessageCallback(std::make_unique<isotp::can_layer_message>(msg));
             }
         } else {
             checkStatus("canReadWait", rxStatus);
@@ -120,7 +126,7 @@ void KvaserWirelessInterface::startListening()
     rxHandle = canINVALID_HANDLE;
 }
 
-int KvaserWirelessInterface::getChannelCount()
+int KvaserWirelessCan::getChannelCount()
 {
     int count = 0;
     canStatus stat = canGetNumberOfChannels(&count);
@@ -128,7 +134,7 @@ int KvaserWirelessInterface::getChannelCount()
     return count;
 }
 
-void KvaserWirelessInterface::checkStatus(QString method, canStatus status)
+void KvaserWirelessCan::checkStatus(QString method, canStatus status)
 {
     if (status != canOK) {
         char buffer[50];
@@ -139,7 +145,7 @@ void KvaserWirelessInterface::checkStatus(QString method, canStatus status)
     }
 }
 
-int KvaserWirelessInterface::getBaudRate(BaudRate baudRate)
+int KvaserWirelessCan::getBaudRate(BaudRate baudRate)
 {
     switch (baudRate){
     case Baud_125:

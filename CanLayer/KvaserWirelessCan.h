@@ -1,24 +1,19 @@
-#ifndef KVASERWIRELESSINTERFACE_H
-#define KVASERWIRELESSINTERFACE_H
+#ifndef KVASERWIRELESSCAN_H
+#define KVASERWIRELESSCAN_H
 
 #include <QtConcurrent>
 #include "CanBusInterface.h"
 #include "canlib.h"
 
-class KvaserWirelessInterface : public CanBusInterface
+class KvaserWirelessCan : public CanBusInterface
 {
-    Q_OBJECT
-
 public:
-    KvaserWirelessInterface();
-    ~KvaserWirelessInterface();
+    KvaserWirelessCan();
+    ~KvaserWirelessCan();
 
-    void connect(QString channelName, BaudRate baudRate) override;
+    void connect(std::string channelName, BaudRate baudRate) override;
     void disconnect() override;
-    void sendCanMessage(CanMessage message) override;
-
-signals:
-    void newDataFrame(CanMessage message) override;
+    void sendCanMessage(isotp::can_layer_message &message) override;
 
 private:
     void startListening();
@@ -34,4 +29,4 @@ private:
     bool shouldListen = true;
 };
 
-#endif // KVASERWIRELESSINTERFACE_H
+#endif // KVASERWIRELESSCAN_H

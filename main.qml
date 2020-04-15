@@ -3,8 +3,6 @@ import QtQuick.Controls 2.14
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Window 2.12
 
-//import com.RimacWirelessCanBus 1.0
-
 Window {
     id: mainWindow
     visible: true
@@ -44,7 +42,7 @@ Window {
                 id: connectionStatusText
                 anchors.bottom: chooseButton.bottom
                 anchors.bottomMargin: 0
-                text: canBusManager.isConnected ? "Connected" : "Not connected"
+                text: viewController.isConnected ? "Connected" : "Not connected"
                 opacity: 0.6
                 font.pointSize: 9
             }
@@ -58,8 +56,8 @@ Window {
 
             Button {
                 id: connectToggle
-                text: canBusManager.isConnected ? "Disconnect" : "Connect"
-                onClicked: canBusManager.isConnected ? canBusManager.disconnectTapped() : canBusManager.connectTapped()
+                text: viewController.isConnected ? "Disconnect" : "Connect"
+                onClicked: viewController.isConnected ? viewController.disconnectTapped() : viewController.connectTapped()
             }
         }
    }
@@ -249,21 +247,24 @@ Window {
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
             text: "Send"
-            enabled: canBusManager.isConnected
+            enabled: viewController.isConnected
             onClicked: {
                 canDataTextFields.checkTextFields();
-                let data = "";
+                let data = [];
                 for (let i = 0; i < canDataTextFields.count; i++) {
-                    data += canDataTextFields.itemAt(i).text;
+                    if (canDataTextFields.itemAt(i).text) {
+                        data.push(canDataTextFields.itemAt(i).text);
+                    }
                 }
+
                 if (canIdTextField.text === "") {
                     canIdTextField.color = "red";
                 }
-                if (data === "") {
+                if (data.length === 0) {
                     canDataTextFields.itemAt(0).color = "red";
                 }
 
-                canBusManager.sendTapped(canIdTextField.text, data);
+                viewController.sendTapped(canIdTextField.text, data);
             }
         }
     }

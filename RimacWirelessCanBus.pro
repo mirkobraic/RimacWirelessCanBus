@@ -1,6 +1,6 @@
 QT += quick concurrent
 
-CONFIG += c++11
+CONFIG += c++14
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
@@ -14,10 +14,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-        CanBusManager.cpp \
-        CanMessage.cpp \
-        CanMessageListModel.cpp \
-        KvaserWirelessInterface.cpp \
+        CanLayer/KvaserWirelessCan.cpp \
+        IsotpLayer/IsotpCanProvider.cpp \
+        IsotpLayer/IsotpLogger.cpp \
+        IsotpLayer/IsotpManager.cpp \
+        Models/CanMessage.cpp \
+        Models/CanMessageListModel.cpp \
+        ViewController.cpp \
         main.cpp
 
 RESOURCES += qml.qrc
@@ -33,18 +36,24 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-DISTFILES +=
-
 HEADERS += \
-    CanBusInterface.h \
-    CanBusInterfaceFactory.h \
-    CanBusManager.h \
-    CanMessage.h \
-    CanMessageListModel.h \
-    KvaserWirelessInterface.h
-
+    CanLayer/CanBusInterface.h \
+    CanLayer/CanBusInterfaceFactory.h \
+    CanLayer/KvaserWirelessCan.h \
+    IsotpLayer/IsotpCanProvider.h \
+    IsotpLayer/IsotpLogger.h \
+    IsotpLayer/IsotpManager.h \
+    Models/CanMessage.h \
+    Models/CanMessageListModel.h \
+    ViewController.h
 
 unix:!macx: LIBS += -L$$PWD/../linuxcan/canlib/ -lcanlib
 
 INCLUDEPATH += $$PWD/../linuxcan/include
 DEPENDPATH += $$PWD/../linuxcan/include
+
+
+unix:!macx: LIBS += -L$$PWD/../udsclient_and_isotp/Isotp/Ubuntu/ -lisotp_lib
+
+INCLUDEPATH += $$PWD/../udsclient_and_isotp/Isotp/Include
+DEPENDPATH += $$PWD/../udsclient_and_isotp/Isotp/Include
