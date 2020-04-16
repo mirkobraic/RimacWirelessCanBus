@@ -5,21 +5,21 @@ ViewController::ViewController(CanMessageListModel *recievedMessages, QObject *p
       recievedMessages(recievedMessages)
 {
     std::vector<std::pair<uint32_t, uint32_t>> rxTxPairs;
-    rxTxPairs.push_back(std::make_pair(1, 2));
-    isotpManager = new IsotpManager(kvaser, rxTxPairs);
+    rxTxPairs.push_back(std::make_pair(rx, tx));
+    communicationManager = new CommunicationManager(kvaser, rxTxPairs);
 
-    QObject::connect(isotpManager, SIGNAL(newMessageRecieved(CanMessage)), this, SLOT(recievedMessageHandler(CanMessage)), Qt::BlockingQueuedConnection);
+    QObject::connect(communicationManager, SIGNAL(newMessageRecieved(CanMessage)), this, SLOT(recievedMessageHandler(CanMessage)), Qt::BlockingQueuedConnection);
 }
 
 ViewController::~ViewController()
 {
     delete recievedMessages;
-    delete isotpManager;
+    delete communicationManager;
 }
 
 void ViewController::connectTapped()
 {
-    isotpManager->connect("Todo", Baud_500);
+    communicationManager->connect("Todo", Baud_500);
     recievedMessages->removeAll();
     isConnected = true;
     emit connectionChanged();
@@ -27,7 +27,7 @@ void ViewController::connectTapped()
 
 void ViewController::disconnectTapped()
 {
-    isotpManager->disconnect();
+    communicationManager->disconnect();
     isConnected = false;
     emit connectionChanged();
 }
@@ -55,9 +55,9 @@ void ViewController::sendTapped(QString messageId, const QVector<QString> &bytes
 
     uds::uds_message<uint32_t> msg;
     msg.data = data;
-    msg.sender_id = 1;
-    msg.recipient_id = 2;
-    isotpManager->sendMessage(msg);
+    msg.sender_id = rx;
+    msg.recipient_id = tx;
+    communicationManager->sendMessage(msg);
 }
 
 void ViewController::recievedMessageHandler(CanMessage message)

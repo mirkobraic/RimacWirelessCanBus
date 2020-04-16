@@ -1,13 +1,13 @@
-#ifndef ISOTPLOGGER_H
-#define ISOTPLOGGER_H
+#ifndef LOGGER_H
+#define LOGGER_H
 
 #include <QDebug>
 #include "isotp_api/logger.hpp"
 
-class IsotpLogger : public logger
+class Logger : public logger
 {
 public:
-    IsotpLogger();
+    Logger();
 
     void log_debug(const std::string& message) override;
     void log_info(const std::string& message) override;
@@ -16,4 +16,4 @@ public:
     bool is_debug_active() override;
 };
 
-#endif // ISOTPLOGGER_H
+#endif // LOGGER_H
