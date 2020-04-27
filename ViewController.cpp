@@ -5,7 +5,7 @@ ViewController::ViewController(CanMessageListModel *recievedMessages, QObject *p
       recievedMessages(recievedMessages)
 {
     std::vector<std::pair<uint32_t, uint32_t>> rxTxPairs;
-    rxTxPairs.push_back(std::make_pair(1, 2));
+    rxTxPairs.push_back(std::make_pair(2, 1));
     isotpManager = new IsotpManager(kvaser, rxTxPairs);
 
     QObject::connect(isotpManager, SIGNAL(newMessageRecieved(CanMessage)), this, SLOT(recievedMessageHandler(CanMessage)), Qt::BlockingQueuedConnection);
@@ -55,8 +55,8 @@ void ViewController::sendTapped(QString messageId, const QVector<QString> &bytes
 
     uds::uds_message<uint32_t> msg;
     msg.data = data;
-    msg.sender_id = 1;
-    msg.recipient_id = 2;
+    msg.sender_id = 2;
+    msg.recipient_id = 1;
     isotpManager->sendMessage(msg);
 }
 
