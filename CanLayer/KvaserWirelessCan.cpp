@@ -16,7 +16,7 @@ void KvaserWirelessCan::connect(std::string channelName, BaudRate baudRate)
         return;
     }
 
-    qDebug() << "Number of channels: " << getChannelCount();
+    qDebug() << "--CanLayer: number of channels: " << getChannelCount();
 
     //TODO: implement channelName
     channelNumber = 0;
@@ -59,11 +59,14 @@ void KvaserWirelessCan::sendCanMessage(isotp::can_layer_message &message)
 {
     char *data = reinterpret_cast<char*>(message.data.data());
     unsigned int flag = message.id > maxStdCanId ? canMSG_EXT : canMSG_STD;
-    txStatus = canWriteWait(txHandle, message.id, data, message.data.size(), flag, 100);
-    if (txStatus != canOK) {
-        canFlushTransmitQueue(txHandle);
-    }
-    checkStatus("canWriteWait", txStatus);
+
+    canFlushTransmitQueue(txHandle);
+    txStatus = canWrite(txHandle, message.id, data, message.data.size(), flag);
+    checkStatus("canWrite", txStatus);
+    qDebug() << "--CanLayer: writing ID =" << message.id << " data =" << message.data;
+
+//    txStatus = canWriteSync(txHandle, 100);
+//    checkStatus("canWriteSync", txStatus);
 }
 
 void KvaserWirelessCan::startListening()
@@ -111,6 +114,7 @@ void KvaserWirelessCan::startListening()
                     dlc = arraySize;
                 }
                 msg.data = std::vector<uint8_t>(data, data + dlc);
+                qDebug() << "--CanLayer: recieved ID =" << id << " data =" << msg.data;
                 recievedMessageCallback(std::make_unique<isotp::can_layer_message>(msg));
             }
         } else {
@@ -140,7 +144,7 @@ void KvaserWirelessCan::checkStatus(QString method, canStatus status)
         char buffer[50];
         buffer[0] = '\0';
         canGetErrorText(status, buffer, sizeof(buffer));
-        QString errorMsg = method + " failed with status: " + QString::number(status) + " " + buffer;
+        QString errorMsg = "CanLayer: " + method + " failed with status: " + QString::number(status) + " " + buffer;
         qDebug() << errorMsg;
     }
 }
