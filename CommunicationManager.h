@@ -20,6 +20,8 @@ public:
     void disconnect();
     void sendMessage(uds::uds_message<uint32_t> msg);
 
+    std::vector<std::pair<uint32_t, uint32_t> > getRxTxPairs() const;
+
 signals:
     void newMessageRecieved(CanMessage message);
 

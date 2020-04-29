@@ -4,7 +4,6 @@
 #include <QObject>
 #include <QDebug>
 #include "Models/CanMessageListModel.h"
-//#include "IsotpLayer/IsotpManager.h"
 #include "CommunicationManager.h"
 
 class ViewController : public QObject
@@ -36,10 +35,6 @@ private:
     CommunicationManager *communicationManager = nullptr;
 
     bool isConnected = false;
-
-    // USED FOR DEVELOPMENT
-    uint32_t rx = 1;
-    uint32_t tx = 2;
 };
 
 #endif // VIEWCONTROLLER_H
