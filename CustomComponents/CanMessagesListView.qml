@@ -22,6 +22,7 @@ Item {
 
         delegate: listViewDelegate
         model: recievedMessages
+        // TODO: maybe replace this with viewController.recievedMessages
 
         Rectangle {
             anchors.fill: parent

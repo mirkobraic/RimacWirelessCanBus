@@ -6,5 +6,6 @@
         <file>CustomComponents/RxTxPicker.qml</file>
         <file>CustomComponents/CanMessagesListView.qml</file>
         <file>CustomComponents/SendCanMessageField.qml</file>
+        <file>CustomComponents/AlertPopup.qml</file>
     </qresource>
 </RCC>

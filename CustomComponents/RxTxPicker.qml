@@ -8,6 +8,7 @@ Item {
     property alias currentIndex: comboBox.currentIndex
 
     signal addButtonClicked()
+    enabled: !viewController.isConnected
 
     ComboBox {
         id: comboBox

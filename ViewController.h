@@ -17,17 +17,21 @@ public:
 
     Q_PROPERTY(bool isConnected READ getIsConnected NOTIFY connectionChanged)
 
-    Q_INVOKABLE void connectTapped();
+    Q_INVOKABLE void connectTapped(int provider, const QVariantList& rxTxPairs);
     Q_INVOKABLE void disconnectTapped();
-    Q_INVOKABLE void sendTapped(QString messageId, const QVector<QString> &bytes);
+
+    Q_INVOKABLE void sendDirectCanMessage(QString messageId, const QVector<QString> &bytes);
+
+    Q_INVOKABLE void checkVersion(int tx);
 
     bool getIsConnected() const;
 
 signals:
     void connectionChanged();
+    void showAlert(QString title, QString message);
 
 public slots:
-      void recievedMessageHandler(CanMessage message);
+      void onNewCanMessageRecieved(CanMessage message);
 
 private:
     CanMessageListModel *recievedMessages = nullptr;

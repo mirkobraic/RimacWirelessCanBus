@@ -129,7 +129,7 @@ Item {
                 canDataTextFields.itemAt(0).color = "red";
             }
 
-            viewController.sendTapped(canIdTextField.text, data);
+            viewController.sendDirectCanMessage(canIdTextField.text, data);
         }
     }
 }

@@ -18,12 +18,13 @@ public:
 
     void connect(std::string name, BaudRate baudRate);
     void disconnect();
-    void sendMessage(uds::uds_message<uint32_t> msg);
 
-    std::vector<std::pair<uint32_t, uint32_t> > getRxTxPairs() const;
+    void sendDirectCanMessage(std::vector<uint8_t> data, uint32_t id);
+
+    void udsCheckVersion(uint32_t tx, std::function<void(QString, QString)> callback);
 
 signals:
-    void newMessageRecieved(CanMessage message);
+    void newCanMessageRecieved(CanMessage message);
 
 private:
     std::vector<std::pair<uint32_t, uint32_t>> rxTxPairs;

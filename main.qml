@@ -15,6 +15,13 @@ Window {
 
     readonly property int screenMargin: 10
 
+    Connections {
+        target: viewController
+        onShowAlert: {
+            alertPopup.open(title, message)
+        }
+    }
+
     Item {
         id: headerContainer
         height: 40
@@ -32,6 +39,7 @@ Window {
             width: 110
             anchors.left: parent.left
 
+            enabled: !viewController.isConnected
             textRole: "text"
             indicator: Canvas { }
             model: ListModel {
@@ -68,7 +76,19 @@ Window {
 
             text: viewController.isConnected ? "Disconnect" : "Connect"
             font.preferShaping: true
-            onClicked: viewController.isConnected ? viewController.disconnectTapped() : viewController.connectTapped()
+            onClicked: {
+                if (viewController.isConnected) {
+                    viewController.disconnectTapped()
+                } else  {
+                    let currentProvider = providerComboBox.model.get(providerComboBox.currentIndex).value;
+                    let rxTxPairs = [];
+                    for (var i = 0; i < rxTxComboBox.model.count; i++) {
+                        rxTxPairs.push({ rx: rxTxComboBox.model.get(i).rx, tx: rxTxComboBox.model.get(i).tx })
+                    }
+
+                    viewController.connectTapped(currentProvider, rxTxPairs);
+                }
+            }
         }
     }
 
@@ -80,6 +100,13 @@ Window {
             rxTxComboBox.model.append({ rx: rx, tx: tx, desc: "rx: " + rx + "  tx: " + tx });
             rxTxComboBox.currentIndex = rxTxComboBox.model.count - 1
         }
+    }
+
+    AlertPopup {
+        id: alertPopup
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: parent.width * 0.5
     }
 
     CanMessagesListView {
@@ -120,12 +147,18 @@ Window {
 
             Row {
                 spacing: 10
-
                 Button {
                     id: checkVersionButton
                     text: "Check version"
+                    enabled: viewController.isConnected
+                    onClicked: {
+                        viewController.checkVersion(2)
+                        // TODO: show ProgressBar
+                    }
                 }
                 Button {
+
+                    enabled: viewController.isConnected
                     text: "Some other functionality"
                 }
             }
