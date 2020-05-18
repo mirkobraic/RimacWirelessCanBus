@@ -2,6 +2,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.14
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Window 2.12
+import QtQuick.Layouts 1.14
 import "CustomComponents"
 
 Window {
@@ -145,8 +146,9 @@ Window {
             }
             spacing: 10
 
-            Row {
+            RowLayout {
                 spacing: 10
+                width: parent.width
                 Button {
                     id: checkVersionButton
                     text: "Check version"
@@ -161,6 +163,13 @@ Window {
                     enabled: viewController.isConnected
                     text: "Some other functionality"
                 }
+
+                Switch {
+                    id: rawCanSwitch
+                    Layout.alignment: Qt.AlignRight
+                    text: "Raw CAN"
+                    onToggled: viewController.isRawCanEnabled = (rawCanSwitch.position > 0.5)
+                }
             }
 
             SendCanMessageField {
@@ -169,6 +178,7 @@ Window {
                     right: parent.right
                     left: parent.left
                 }
+                enabled: viewController.isRawCanEnabled
             }
         }
     }
@@ -176,10 +186,9 @@ Window {
 
 /*##^##
 Designer {
-    D{i:8;anchors_x:"-420"}D{i:9;anchors_x:"-420"}D{i:10;anchors_x:147}D{i:12;anchors_x:"-420"}
-D{i:14;anchors_x:"-420"}D{i:18;anchors_x:"-420"}D{i:19;anchors_x:147}D{i:17;anchors_x:147}
-D{i:16;anchors_x:147}D{i:15;anchors_x:"-420"}D{i:21;anchors_x:"-420"}D{i:20;anchors_x:147}
-D{i:13;anchors_x:147}D{i:24;anchors_x:147}D{i:23;anchors_x:"-420"}D{i:25;anchors_x:147}
-D{i:22;anchors_x:147}
+    D{i:9;anchors_x:"-420"}D{i:10;anchors_x:147}D{i:8;anchors_x:"-420"}D{i:12;anchors_x:"-420"}
+D{i:13;anchors_x:147}D{i:14;anchors_x:"-420"}D{i:15;anchors_x:"-420"}D{i:19;anchors_x:147}
+D{i:20;anchors_x:147}D{i:21;anchors_x:"-420"}D{i:18;anchors_x:"-420"}D{i:22;anchors_x:147}
+D{i:17;anchors_x:147}D{i:16;anchors_x:147}
 }
 ##^##*/

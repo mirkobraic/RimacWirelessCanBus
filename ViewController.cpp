@@ -24,7 +24,7 @@ void ViewController::connectTapped(int provider, const QVariantList& rxTxPairs)
     communicationManager = new CommunicationManager((CanBusProvider)provider, pairs);
     QObject::connect(communicationManager, SIGNAL(newCanMessageRecieved(CanMessage)), this, SLOT(onNewCanMessageRecieved(CanMessage)), Qt::BlockingQueuedConnection);
 
-    communicationManager->connect("Todo", Baud_500);
+    communicationManager->connect("Todo", Baud_1000);
     recievedMessages->removeAll();
     isConnected = true;
     emit connectionChanged();
@@ -63,7 +63,9 @@ void ViewController::sendDirectCanMessage(QString messageId, const QVector<QStri
 
 void ViewController::onNewCanMessageRecieved(CanMessage message)
 {
-    recievedMessages->addMessage(message);
+    if (isRawCanEnabled) {
+        recievedMessages->addMessage(message);
+    }
 }
 
 void ViewController::checkVersion(int tx)
@@ -76,4 +78,15 @@ void ViewController::checkVersion(int tx)
 bool ViewController::getIsConnected() const
 {
     return isConnected;
+}
+
+bool ViewController::getIsRawCanEnabled() const
+{
+    return isRawCanEnabled;
+}
+
+void ViewController::setIsRawCanEnabled(bool value)
+{
+    isRawCanEnabled = value;
+    emit isRawCanEnabledChanged();
 }

@@ -7,6 +7,14 @@ CommunicationManager::CommunicationManager(CanBusProvider provider, std::vector<
     logger = std::make_shared<Logger>();
 
     canBusInterface = CanBusInterfaceFactory::getInterfaceForProvider(provider);
+    canBusInterface->messageRecievedDirectCallback = [this] (uint32_t id, std::vector<uint8_t> data) {
+        try {
+            CanMessage canMessage = CanMessage(id, data.size(), data);
+            emit newCanMessageRecieved(canMessage);
+        } catch (std::exception e) {
+            qDebug() << "CanMessage constructor error:  " << e.what();
+        }
+    };
 
     isotpTransport = IsotpManager::makeTransportLayer(canBusInterface, rxTxPairs, logger);
 
