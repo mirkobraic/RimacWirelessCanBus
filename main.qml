@@ -2,6 +2,8 @@ import QtQuick 2.12
 import QtQuick.Controls 2.14
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Window 2.12
+import QtQuick.Layouts 1.14
+import "CustomComponents"
 
 Window {
     id: mainWindow
@@ -14,257 +16,209 @@ Window {
 
     readonly property int screenMargin: 10
 
-   Item {
-        id: headerContainer
-        anchors.top: parent.top
-        anchors.topMargin: screenMargin
-        anchors.right: parent.right
-        anchors.rightMargin: screenMargin
-        anchors.left: parent.left
-        anchors.leftMargin: screenMargin
-        height: 40
+    Connections {
+        target: viewController
+        onShowAlert: {
+            alertPopup.open(title, message)
+        }
+    }
 
-        Image {
-            id: logoImgae
-            anchors.left: parent.left
-            anchors.verticalCenter: connectionButtonsRow.verticalCenter
-            fillMode: Image.PreserveAspectFit
-            height: 40
-            source: "images/rimacLogo.png"
+    RxTxPopup {
+        id: rxTxPopup
+        anchors.centerIn: parent
+
+        onRxTxPairAdded: {
+            rxTxComboBox.model.append({ rx: rx, tx: tx, desc: "rx: " + rx + "  tx: " + tx });
+            rxTxComboBox.currentIndex = rxTxComboBox.model.count - 1
+        }
+    }
+
+    AlertPopup {
+        id: alertPopup
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: parent.width * 0.5
+    }
+
+    Item {
+        id: headerContainer
+        height: headerColumn.height
+        anchors {
+            top: parent.top
+            topMargin: screenMargin
+            right: parent.right
+            rightMargin: screenMargin
+            left: parent.left
+            leftMargin: screenMargin
         }
 
-        Row {
-            id: connectionButtonsRow
-            anchors.right: parent.right
+        Column {
+            id: headerColumn
+            anchors {
+                right: parent.right
+                left: parent.left
+            }
             spacing: 10
 
-            Text {
-                id: connectionStatusText
-                anchors.bottom: chooseButton.bottom
-                anchors.bottomMargin: 0
-                text: viewController.isConnected ? "Connected" : "Not connected"
-                opacity: 0.6
-                font.pointSize: 9
-            }
-
-            Button {
-                id: chooseButton
-                // TODO: show list of available devices
-                text: "Choose a device"
-                enabled: false
-            }
-
-            Button {
-                id: connectToggle
-                text: viewController.isConnected ? "Disconnect" : "Connect"
-                onClicked: viewController.isConnected ? viewController.disconnectTapped() : viewController.connectTapped()
-            }
-        }
-   }
-
-    ListView {
-        id: canMessagesListView
-        topMargin: 10
-        bottomMargin: 10
-        anchors.top: headerContainer.bottom
-        anchors.topMargin: 10
-        anchors.bottom: footerContainer.top
-        anchors.bottomMargin: 10
-        anchors.right: parent.right
-        anchors.rightMargin: 0
-        anchors.left: parent.left
-        anchors.leftMargin: 0
-
-        clip: true
-        spacing: 1
-
-        onCountChanged: {
-            if (!dragging) {
-                currentIndex = count - 1
-            }
-        }
-
-        delegate: listViewDelegate
-        model: recievedMessages
-
-        Rectangle {
-            anchors.fill: parent
-            color: "#e6e6e6"
-            z: -1
-        }
-
-        Component {
-            id: listViewDelegate
-
-            Rectangle {
-                height: 44
+            RowLayout {
                 width: parent.width
-                color: "#fbfbfb"
+                spacing: 10
+                clip: true
 
-                Row {
-                    anchors.fill: parent
-                    anchors.leftMargin: screenMargin
+                ComboBox {
+                    id: providerComboBox
+                    Layout.fillWidth: true
+                    Layout.minimumWidth: 80
+                    Layout.maximumWidth: parent.width / 3
 
-                    Text {
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: parent.width * 0.3
-                        font.pointSize: 12
-                        text: model.canId
+                    enabled: !viewController.isConnected
+                    textRole: "text"
+                    indicator: Canvas { }
+                    model: ListModel {
+                        ListElement { text: "Kvaser"; rawValue: 0 }
+                        ListElement { text: "Wiicom"; rawValue: 1 }
+                    }
+                }
+
+                ComboBox {
+                    id: baudRateComboBox
+                    Layout.fillWidth: true
+                    Layout.minimumWidth: 80
+                    Layout.maximumWidth: parent.width / 3
+
+                    enabled: !viewController.isConnected
+                    textRole: "text"
+                    indicator: Canvas { }
+                    model: ListModel {
+                        ListElement { text: "125k"; rawValue: 0 }
+                        ListElement { text: "250k"; rawValue: 1 }
+                        ListElement { text: "500k"; rawValue: 2 }
+                        ListElement { text: "1000k"; rawValue: 3 }
+                    }
+                }
+
+                RxTxPicker {
+                    id: rxTxComboBox
+                    Layout.fillWidth: true
+                    Layout.minimumWidth: 130
+                    Layout.maximumWidth: parent.width / 3
+
+                    model: ListModel {
+                        ListElement { rx: 0; tx: 1; desc: "rx: 0  tx: 1" }
+                        ListElement { rx: 1; tx: 2; desc: "rx: 1  tx: 2" }
                     }
 
-                    Text {
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: parent.width * 0.7
-                        font.pointSize: 12
-                        text: model.canData
+                    onAddButtonClicked: rxTxPopup.open()
+                }
+            }
+
+            RowLayout {
+                width: parent.width
+                spacing: 10
+                Button {
+                    id: connectToggle
+                    width: 100
+                    Layout.alignment: Qt.AlignRight
+
+                    enabled: {
+                        if (viewController.isConnected) {
+                            return true
+                        } else {
+                            return rxTxComboBox.model.count && providerComboBox.model.count
+                        }
+                    }
+
+                    text: viewController.isConnected ? "Disconnect" : "Connect"
+                    font.preferShaping: true
+                    onClicked: {
+                        if (viewController.isConnected) {
+                            viewController.disconnectTapped()
+                        } else  {
+                            let currentProvider = providerComboBox.model.get(providerComboBox.currentIndex).rawValue;
+                            let baudRate = baudRateComboBox.model.get(baudRateComboBox.currentIndex).rawValue;
+                            let rxTxPairs = [];
+                            for (var i = 0; i < rxTxComboBox.model.count; i++) {
+                                rxTxPairs.push({ rx: rxTxComboBox.model.get(i).rx, tx: rxTxComboBox.model.get(i).tx })
+                            }
+
+                            viewController.connectTapped(currentProvider, baudRate, rxTxPairs);
+                        }
                     }
                 }
             }
-        }
 
-        ListModel {
-            id: listModel
-            ListElement {
-                canId: "example id"
-                data: "example data"
-            }
+        }
+    }
+
+    CanMessagesListView {
+        topMargin: 10
+        bottomMargin: 10
+        contentInset: screenMargin
+        anchors {
+            top: headerContainer.bottom
+            topMargin: 10
+            bottom: footerContainer.top
+            bottomMargin: 10
+            right: parent.right
+            rightMargin: 0
+            left: parent.left
+            leftMargin: 0
         }
     }
 
     Item {
         id: footerContainer
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: screenMargin
-        anchors.right: parent.right
-        anchors.rightMargin: screenMargin
-        anchors.left: parent.left
-        anchors.leftMargin: screenMargin
-        height: 40
-
-        TextField {
-            id: canIdTextField
-            width: parent.width * 0.18
-            font.capitalization: Font.AllUppercase
-            horizontalAlignment: Text.AlignHCenter
-            anchors.left: parent.left
-            anchors.verticalCenter: parent.verticalCenter
-            placeholderText: "ID"
-            validator: RegExpValidator { regExp: /[0-9A-Fa-f]{0,8}/ }
-
-            function adjustIdToLength(len) {
-                while (text.length < len) {
-                    text = '0' + text;
-                }
-                while (text.length > len) {
-                    text = text.substring(1);
-                }
-            }
-
-            function setExtId() {
-                adjustIdToLength(8)
-                // highest extended can id is 0x1fffffff
-                if (text.charAt(0) > '1') {
-                    text = "1FFFFFFF";
-                }
-            }
-
-            function setStdId() {
-                adjustIdToLength(3);
-            }
-
-            function formatId() {
-                // highest standard can id is 0x7ff
-                if (parseInt(text, 16) > 0x7FF) {
-                    setExtId();
-                } else {
-                    setStdId();
-                }
-            }
-
-            onEditingFinished: {
-                if (text.length > 0) {
-                    formatId();
-                }
-            }
-            onTextChanged: {
-                color = "black"
-            }
+        height: footerColumn.height
+        anchors {
+            bottom: parent.bottom
+            bottomMargin: screenMargin
+            right: parent.right
+            rightMargin: screenMargin
+            left: parent.left
+            leftMargin: screenMargin
         }
 
-        Row {
-            id: canDataContainer
-            anchors.left: canIdTextField.right
-            anchors.leftMargin: 10
-            anchors.right: sendButton.left
-            anchors.rightMargin: 10
-            anchors.verticalCenter: parent.verticalCenter
-            spacing: -1
+        Column {
+            id: footerColumn
+            anchors {
+                right: parent.right
+                left: parent.left
+            }
+            spacing: 10
 
-            readonly property real textFieldWidth: width / 8 + 1
-
-            Repeater {
-                id: canDataTextFields
-                model: 8
-
-                function checkTextFields() {
-                    let maxByte = 0;
-                    let i = 0;
-                    for (i = 0; i < count; i++) {
-                        if (itemAt(i).text) {
-                            maxByte = i;
-                        }
-                    }
-
-                    for (i = 0; i < maxByte; i++) {
-                        if (itemAt(i).text === "") {
-                            itemAt(i).text = "00";
-                        }
+            RowLayout {
+                spacing: 10
+                width: parent.width
+                Button {
+                    id: checkVersionButton
+                    text: "Check version"
+                    enabled: viewController.isConnected
+                    onClicked: {
+                        viewController.checkVersion(2)
+                        // TODO: show ProgressBar
                     }
                 }
+                Button {
 
-                TextField {
-                    placeholderText: index + 1
-                    width: canDataContainer.textFieldWidth
-                    padding: 1
-                    font.capitalization: Font.AllUppercase
-                    horizontalAlignment: Text.AlignHCenter
-                    validator: RegExpValidator { regExp: /[0-9A-Fa-f]{0,2}/ }
+                    enabled: viewController.isConnected
+                    text: "Some other functionality"
+                }
 
-                    onEditingFinished: {
-                        if (text.length == 1) {
-                            text = "0" + text;
-                        }
-                    }
-                    onTextChanged: {
-                        color = "black"
-                    }
+                Switch {
+                    id: rawCanSwitch
+                    Layout.alignment: Qt.AlignRight
+                    text: "Raw CAN"
+                    onToggled: viewController.isRawCanEnabled = (rawCanSwitch.position > 0.5)
                 }
             }
-        }
 
-        Button {
-            id: sendButton
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-            text: "Send"
-            enabled: viewController.isConnected
-            onClicked: {
-                canDataTextFields.checkTextFields();
-                let data = [];
-                for (let i = 0; i < canDataTextFields.count; i++) {
-                    if (canDataTextFields.itemAt(i).text) {
-                        data.push(canDataTextFields.itemAt(i).text);
-                    }
+            SendCanMessageField {
+                height: 40
+                anchors {
+                    right: parent.right
+                    left: parent.left
                 }
-
-                if (canIdTextField.text === "") {
-                    canIdTextField.color = "red";
-                }
-                if (data.length === 0) {
-                    canDataTextFields.itemAt(0).color = "red";
-                }
-
-                viewController.sendTapped(canIdTextField.text, data);
+                enabled: viewController.isRawCanEnabled
             }
         }
     }
@@ -272,7 +226,9 @@ Window {
 
 /*##^##
 Designer {
-    D{i:10;anchors_x:147}D{i:9;anchors_x:"-420"}D{i:16;anchors_x:147}D{i:17;anchors_x:147}
-D{i:15;anchors_x:"-420"}
+    D{i:9;anchors_x:"-420"}D{i:10;anchors_x:147}D{i:8;anchors_x:"-420"}D{i:12;anchors_x:"-420"}
+D{i:13;anchors_x:147}D{i:14;anchors_x:"-420"}D{i:15;anchors_x:"-420"}D{i:19;anchors_x:147}
+D{i:20;anchors_x:147}D{i:21;anchors_x:"-420"}D{i:18;anchors_x:"-420"}D{i:22;anchors_x:147}
+D{i:17;anchors_x:147}D{i:16;anchors_x:147}
 }
 ##^##*/

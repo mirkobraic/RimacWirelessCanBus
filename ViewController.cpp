@@ -3,23 +3,28 @@
 ViewController::ViewController(CanMessageListModel *recievedMessages, QObject *parent)
     : QObject(parent),
       recievedMessages(recievedMessages)
-{
-    std::vector<std::pair<uint32_t, uint32_t>> rxTxPairs;
-    rxTxPairs.push_back(std::make_pair(1, 2));
-    isotpManager = new IsotpManager(kvaser, rxTxPairs);
-
-    QObject::connect(isotpManager, SIGNAL(newMessageRecieved(CanMessage)), this, SLOT(recievedMessageHandler(CanMessage)), Qt::BlockingQueuedConnection);
-}
+{ }
 
 ViewController::~ViewController()
 {
     delete recievedMessages;
-    delete isotpManager;
+    delete communicationManager;
 }
 
-void ViewController::connectTapped()
+void ViewController::connectTapped(int provider, int baudRate, const QVariantList& rxTxPairs)
 {
-    isotpManager->connect("Todo", Baud_500);
+    delete communicationManager;
+
+    std::vector<std::pair<uint32_t, uint32_t>> pairs;
+    for (const QVariant& pair : rxTxPairs) {
+        QMap<QString, QVariant> pairMap = pair.toMap();
+        pairs.push_back(std::make_pair(pairMap["rx"].toUInt(), pairMap["tx"].toUInt()));
+    }
+
+    communicationManager = new CommunicationManager((CanBusProvider)provider, pairs);
+    QObject::connect(communicationManager, SIGNAL(newCanMessageRecieved(CanMessage)), this, SLOT(onNewCanMessageRecieved(CanMessage)), Qt::BlockingQueuedConnection);
+
+    communicationManager->connect("Todo", (BaudRate)baudRate);
     recievedMessages->removeAll();
     isConnected = true;
     emit connectionChanged();
@@ -27,12 +32,12 @@ void ViewController::connectTapped()
 
 void ViewController::disconnectTapped()
 {
-    isotpManager->disconnect();
+    communicationManager->disconnect();
     isConnected = false;
     emit connectionChanged();
 }
 
-void ViewController::sendTapped(QString messageId, const QVector<QString> &bytes)
+void ViewController::sendDirectCanMessage(QString messageId, const QVector<QString> &bytes)
 {
     bool success;
     uint32_t id = messageId.toUInt(&success, 16);
@@ -53,19 +58,35 @@ void ViewController::sendTapped(QString messageId, const QVector<QString> &bytes
        data.push_back(byte);
     }
 
-    uds::uds_message<uint32_t> msg;
-    msg.data = data;
-    msg.sender_id = 1;
-    msg.recipient_id = 2;
-    isotpManager->sendMessage(msg);
+    communicationManager->sendDirectCanMessage(data, id);
 }
 
-void ViewController::recievedMessageHandler(CanMessage message)
+void ViewController::onNewCanMessageRecieved(CanMessage message)
 {
-    recievedMessages->addMessage(message);
+    if (isRawCanEnabled) {
+        recievedMessages->addMessage(message);
+    }
+}
+
+void ViewController::checkVersion(int tx)
+{
+    communicationManager->udsCheckVersion(uint32_t(tx), [this] (QString title, QString message) {
+        emit showAlert(title, message);
+    });
 }
 
 bool ViewController::getIsConnected() const
 {
     return isConnected;
+}
+
+bool ViewController::getIsRawCanEnabled() const
+{
+    return isRawCanEnabled;
+}
+
+void ViewController::setIsRawCanEnabled(bool value)
+{
+    isRawCanEnabled = value;
+    emit isRawCanEnabledChanged();
 }

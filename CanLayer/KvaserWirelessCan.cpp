@@ -64,9 +64,6 @@ void KvaserWirelessCan::sendCanMessage(isotp::can_layer_message &message)
     txStatus = canWrite(txHandle, message.id, data, message.data.size(), flag);
     checkStatus("canWrite", txStatus);
     qDebug() << "--CanLayer: writing ID =" << message.id << " data =" << message.data;
-
-//    txStatus = canWriteSync(txHandle, 100);
-//    checkStatus("canWriteSync", txStatus);
 }
 
 void KvaserWirelessCan::startListening()
@@ -114,8 +111,9 @@ void KvaserWirelessCan::startListening()
                     dlc = arraySize;
                 }
                 msg.data = std::vector<uint8_t>(data, data + dlc);
+                messageRecievedUdsCallback(std::make_unique<isotp::can_layer_message>(msg));
+                messageRecievedDirectCallback(msg.id, msg.data);
                 qDebug() << "--CanLayer: recieved ID =" << id << " data =" << msg.data;
-                recievedMessageCallback(std::make_unique<isotp::can_layer_message>(msg));
             }
         } else {
             checkStatus("canReadWait", rxStatus);

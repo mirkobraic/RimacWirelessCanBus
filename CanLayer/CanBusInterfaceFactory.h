@@ -4,7 +4,8 @@
 #include "KvaserWirelessCan.h"
 
 enum CanBusProvider {
-    kvaser
+    kvaser = 0,
+    wiicom = 1
 };
 
 class CanBusInterfaceFactory

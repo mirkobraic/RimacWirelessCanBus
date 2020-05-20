@@ -6,7 +6,10 @@
 #include "isotp_api/can/can_layer_message.hpp"
 
 enum BaudRate {
-    Baud_125, Baud_250, Baud_500, Baud_1000
+    Baud_125 = 0,
+    Baud_250 = 1,
+    Baud_500 = 2,
+    Baud_1000 = 3
 };
 
 class CanBusInterface
@@ -18,7 +21,8 @@ public:
     virtual void disconnect() = 0;
     virtual void sendCanMessage(isotp::can_layer_message &message) = 0;
 
-    std::function<void(std::unique_ptr<isotp::can_layer_message>)> recievedMessageCallback;
+    std::function<void(std::unique_ptr<isotp::can_layer_message>)> messageRecievedUdsCallback;
+    std::function<void(uint32_t, std::vector<uint8_t>)> messageRecievedDirectCallback;
 
 protected:
     uint32_t maxStdCanId = 0x7FF;

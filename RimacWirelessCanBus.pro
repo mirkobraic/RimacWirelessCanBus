@@ -1,6 +1,8 @@
 QT += quick concurrent
 
-CONFIG += c++14
+CONFIG += c++17
+
+QMAKE_CXXFLAGS += -std=c++11
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
@@ -15,11 +17,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         CanLayer/KvaserWirelessCan.cpp \
+        CommunicationManager.cpp \
         IsotpLayer/IsotpCanProvider.cpp \
-        IsotpLayer/IsotpLogger.cpp \
         IsotpLayer/IsotpManager.cpp \
+        Logger.cpp \
         Models/CanMessage.cpp \
         Models/CanMessageListModel.cpp \
+        UdsLayer/UdsConfigManager.cpp \
+        UdsLayer/UdsManager.cpp \
         ViewController.cpp \
         main.cpp
 
@@ -40,20 +45,30 @@ HEADERS += \
     CanLayer/CanBusInterface.h \
     CanLayer/CanBusInterfaceFactory.h \
     CanLayer/KvaserWirelessCan.h \
+    CommunicationManager.h \
     IsotpLayer/IsotpCanProvider.h \
-    IsotpLayer/IsotpLogger.h \
     IsotpLayer/IsotpManager.h \
+    Logger.h \
     Models/CanMessage.h \
     Models/CanMessageListModel.h \
+    UdsLayer/UdsConfigManager.h \
+    UdsLayer/UdsManager.h \
     ViewController.h
 
+#kvaser
 unix:!macx: LIBS += -L$$PWD/../linuxcan/canlib/ -lcanlib
 
 INCLUDEPATH += $$PWD/../linuxcan/include
 DEPENDPATH += $$PWD/../linuxcan/include
 
-
+#isotp
 unix:!macx: LIBS += -L$$PWD/../udsclient_and_isotp/Isotp/Ubuntu/ -lisotp_lib
 
 INCLUDEPATH += $$PWD/../udsclient_and_isotp/Isotp/Include
 DEPENDPATH += $$PWD/../udsclient_and_isotp/Isotp/Include
+
+#uds
+unix:!macx: LIBS += -L$$PWD/../udsclient_and_isotp/UdsClient/Ubuntu/ -luds_client
+
+INCLUDEPATH += $$PWD/../udsclient_and_isotp/UdsClient/Include
+DEPENDPATH += $$PWD/../udsclient_and_isotp/UdsClient/Include

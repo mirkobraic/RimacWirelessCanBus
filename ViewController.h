@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QDebug>
 #include "Models/CanMessageListModel.h"
-#include "IsotpLayer/IsotpManager.h"
+#include "CommunicationManager.h"
 
 class ViewController : public QObject
 {
@@ -16,25 +16,35 @@ public:
     ~ViewController();
 
     Q_PROPERTY(bool isConnected READ getIsConnected NOTIFY connectionChanged)
+    Q_PROPERTY(bool isRawCanEnabled READ getIsRawCanEnabled WRITE setIsRawCanEnabled NOTIFY isRawCanEnabledChanged)
 
-    Q_INVOKABLE void connectTapped();
+    Q_INVOKABLE void connectTapped(int provider, int baudRate, const QVariantList& rxTxPairs);
     Q_INVOKABLE void disconnectTapped();
-    Q_INVOKABLE void sendTapped(QString messageId, const QVector<QString> &bytes);
+
+    Q_INVOKABLE void sendDirectCanMessage(QString messageId, const QVector<QString> &bytes);
+
+    Q_INVOKABLE void checkVersion(int tx);
 
     bool getIsConnected() const;
 
+    bool getIsRawCanEnabled() const;
+    void setIsRawCanEnabled(bool value);
+
 signals:
     void connectionChanged();
+    void isRawCanEnabledChanged();
+    void showAlert(QString title, QString message);
 
 public slots:
-      void recievedMessageHandler(CanMessage message);
+      void onNewCanMessageRecieved(CanMessage message);
 
 private:
     CanMessageListModel *recievedMessages = nullptr;
 
-    IsotpManager *isotpManager = nullptr;
+    CommunicationManager *communicationManager = nullptr;
 
     bool isConnected = false;
+    bool isRawCanEnabled = false;
 };
 
 #endif // VIEWCONTROLLER_H
