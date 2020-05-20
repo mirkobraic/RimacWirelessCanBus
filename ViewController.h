@@ -18,7 +18,7 @@ public:
     Q_PROPERTY(bool isConnected READ getIsConnected NOTIFY connectionChanged)
     Q_PROPERTY(bool isRawCanEnabled READ getIsRawCanEnabled WRITE setIsRawCanEnabled NOTIFY isRawCanEnabledChanged)
 
-    Q_INVOKABLE void connectTapped(int provider, const QVariantList& rxTxPairs);
+    Q_INVOKABLE void connectTapped(int provider, int baudRate, const QVariantList& rxTxPairs);
     Q_INVOKABLE void disconnectTapped();
 
     Q_INVOKABLE void sendDirectCanMessage(QString messageId, const QVector<QString> &bytes);

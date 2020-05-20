@@ -11,7 +11,7 @@ ViewController::~ViewController()
     delete communicationManager;
 }
 
-void ViewController::connectTapped(int provider, const QVariantList& rxTxPairs)
+void ViewController::connectTapped(int provider, int baudRate, const QVariantList& rxTxPairs)
 {
     delete communicationManager;
 
@@ -24,7 +24,7 @@ void ViewController::connectTapped(int provider, const QVariantList& rxTxPairs)
     communicationManager = new CommunicationManager((CanBusProvider)provider, pairs);
     QObject::connect(communicationManager, SIGNAL(newCanMessageRecieved(CanMessage)), this, SLOT(onNewCanMessageRecieved(CanMessage)), Qt::BlockingQueuedConnection);
 
-    communicationManager->connect("Todo", Baud_1000);
+    communicationManager->connect("Todo", (BaudRate)baudRate);
     recievedMessages->removeAll();
     isConnected = true;
     emit connectionChanged();

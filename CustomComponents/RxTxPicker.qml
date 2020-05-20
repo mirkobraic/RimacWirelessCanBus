@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.14
+import QtQuick.Layouts 1.14
 
 Item {
     id: root
@@ -10,74 +11,78 @@ Item {
     signal addButtonClicked()
     enabled: !viewController.isConnected
 
-    ComboBox {
-        id: comboBox
-        width: 120
-        textRole: "desc"
-        indicator: Canvas { }
+    Layout.fillWidth: true
+    Layout.fillHeight: true
 
-        delegate: SwipeDelegate {
-            id: swipeDelegate
-            width: parent.width
-            text:  "rx: " + model.rx + "  tx: " + model.tx
+    Row {
+        anchors.fill: parent
+        spacing: 1
 
-            swipe.right: Rectangle {
+        ComboBox {
+            id: comboBox
+            width: parent.width - parent.height - 1
+
+            textRole: "desc"
+            indicator: Canvas { }
+
+            delegate: SwipeDelegate {
+                id: swipeDelegate
                 width: parent.width
-                height: parent.height
-                clip: true
-                color: Qt.darker("tomato", 1.1)
+                text:  "rx: " + model.rx + "  tx: " + model.tx
 
-                Label {
-                    padding: 20
-                    anchors.fill: parent
+                swipe.right: Rectangle {
+                    width: parent.width
+                    height: parent.height
+                    clip: true
+                    color: Qt.darker("tomato", 1.1)
 
-                    horizontalAlignment: Qt.AlignRight
-                    verticalAlignment: Qt.AlignVCenter
-                    color: "white"
-                    text: "Delete"
-                    opacity: 2 * -swipeDelegate.swipe.position
+                    Label {
+                        padding: 20
+                        anchors.fill: parent
+
+                        horizontalAlignment: Qt.AlignRight
+                        verticalAlignment: Qt.AlignVCenter
+                        color: "white"
+                        text: "Delete"
+                        opacity: 2 * -swipeDelegate.swipe.position
+                    }
+                    SwipeDelegate.onClicked: swipeDelegate.swipe.close()
                 }
-                SwipeDelegate.onClicked: swipeDelegate.swipe.close()
-            }
 
-            swipe.onCompleted: comboBox.model.remove(index)
+                swipe.onCompleted: comboBox.model.remove(index)
 
-            ListView.onRemove: SequentialAnimation {
-                PropertyAction {
-                    target: swipeDelegate
-                    property: "ListView.delayRemove"
-                    value: true
-                }
-                NumberAnimation {
-                    target: swipeDelegate
-                    property: "height"
-                    to: 0
-                    easing.type: Easing.InOutQuad
-                }
-                PropertyAction {
-                    target: swipeDelegate
-                    property: "ListView.delayRemove"
-                    value: false
+                ListView.onRemove: SequentialAnimation {
+                    PropertyAction {
+                        target: swipeDelegate
+                        property: "ListView.delayRemove"
+                        value: true
+                    }
+                    NumberAnimation {
+                        target: swipeDelegate
+                        property: "height"
+                        to: 0
+                        easing.type: Easing.InOutQuad
+                    }
+                    PropertyAction {
+                        target: swipeDelegate
+                        property: "ListView.delayRemove"
+                        value: false
+                    }
                 }
             }
         }
-    }
 
-    Button {
-        id: addButton
-        height: comboBox.height
-        width: height
-        anchors {
-            left: comboBox.right
-            leftMargin: 1
-            verticalCenter: comboBox.verticalCenter
+        Button {
+            id: addButton
+            height: comboBox.height
+            width: height
+            leftPadding: 6
+            bottomPadding: 10
+
+            text: "+"
+            font.bold: false
+            font.pointSize: 20
+            onClicked: root.addButtonClicked()
         }
-        leftPadding: 6
-        bottomPadding: 10
-
-        text: "+"
-        font.bold: false
-        font.pointSize: 20
-        onClicked: root.addButtonClicked()
     }
 }

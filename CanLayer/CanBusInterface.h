@@ -6,7 +6,10 @@
 #include "isotp_api/can/can_layer_message.hpp"
 
 enum BaudRate {
-    Baud_125, Baud_250, Baud_500, Baud_1000
+    Baud_125 = 0,
+    Baud_250 = 1,
+    Baud_500 = 2,
+    Baud_1000 = 3
 };
 
 class CanBusInterface
