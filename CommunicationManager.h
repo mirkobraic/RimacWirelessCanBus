@@ -16,7 +16,7 @@ class CommunicationManager : public QObject
 public:
     CommunicationManager(CanBusProvider provider, std::vector<std::pair<uint32_t, uint32_t>> rxTxPairs, QObject *parent = nullptr);
 
-    void connect(std::string name, BaudRate baudRate);
+    void connect(QString ipAddress, BaudRate baudRate);
     void disconnect();
 
     void sendDirectCanMessage(std::vector<uint8_t> data, uint32_t id);

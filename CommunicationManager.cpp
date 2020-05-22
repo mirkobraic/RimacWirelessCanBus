@@ -21,14 +21,14 @@ CommunicationManager::CommunicationManager(CanBusProvider provider, std::vector<
     udsClient = UdsManager::makeUdsClient(isotpTransport, rxTxPairs, logger);
 }
 
-void CommunicationManager::connect(std::string name, BaudRate baudRate)
+void CommunicationManager::connect(QString ipAddress, BaudRate baudRate)
 {
-    canBusInterface->connect(name, baudRate);
+    canBusInterface->connectToDevice(ipAddress, baudRate);
 }
 
 void CommunicationManager::disconnect()
 {
-    canBusInterface->disconnect();
+    canBusInterface->disconnectFromDevice();
 }
 
 void CommunicationManager::sendDirectCanMessage(std::vector<uint8_t> data, uint32_t id)

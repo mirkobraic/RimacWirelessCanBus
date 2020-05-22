@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <functional>
+#include <QObject>
 #include "isotp_api/can/can_layer_message.hpp"
 
 enum BaudRate {
@@ -12,13 +13,14 @@ enum BaudRate {
     Baud_1000 = 3
 };
 
-class CanBusInterface
+class CanBusInterface : public QObject
 {
+    Q_OBJECT
 public:
     virtual ~CanBusInterface() {}
 
-    virtual void connect(std::string channelName, BaudRate baudRate) = 0;
-    virtual void disconnect() = 0;
+    virtual void connectToDevice(QString deviceIpAddress, BaudRate baudRate) = 0;
+    virtual void disconnectFromDevice() = 0;
     virtual void sendCanMessage(isotp::can_layer_message &message) = 0;
 
     std::function<void(std::unique_ptr<isotp::can_layer_message>)> messageRecievedUdsCallback;

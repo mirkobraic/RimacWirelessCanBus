@@ -1,4 +1,4 @@
-QT += quick concurrent
+QT += quick concurrent network
 
 CONFIG += c++17
 
@@ -16,7 +16,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-        CanLayer/KvaserWirelessCan.cpp \
+        CanLayer/Kvaser/KvaserNetworkService.cpp \
+        CanLayer/Kvaser/KvaserWirelessCan.cpp \
         CommunicationManager.cpp \
         IsotpLayer/IsotpCanProvider.cpp \
         IsotpLayer/IsotpManager.cpp \
@@ -44,7 +45,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     CanLayer/CanBusInterface.h \
     CanLayer/CanBusInterfaceFactory.h \
-    CanLayer/KvaserWirelessCan.h \
+    CanLayer/Kvaser/KvaserNetworkService.h \
+    CanLayer/Kvaser/KvaserWirelessCan.h \
     CommunicationManager.h \
     IsotpLayer/IsotpCanProvider.h \
     IsotpLayer/IsotpManager.h \
