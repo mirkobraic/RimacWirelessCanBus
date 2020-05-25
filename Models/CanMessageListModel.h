@@ -2,6 +2,7 @@
 #define CANMESSAGESLISTMODEL_H
 
 #include <QAbstractListModel>
+#include <QDebug>
 #include "CanMessage.h"
 
 class CanMessageListModel : public QAbstractListModel
@@ -25,6 +26,9 @@ public:
 
     // Remove data:
     bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
+
+    // Editable:
+    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
 
     // QML variable names
     virtual QHash<int, QByteArray> roleNames() const override;

@@ -15,6 +15,21 @@ std::vector<uint8_t> CanMessage::getData() const
     return data;
 }
 
+void CanMessage::setData(const std::vector<uint8_t> &value)
+{
+    data = value;
+}
+
+void CanMessage::setId(const uint32_t &value)
+{
+    id = value;
+}
+
+void CanMessage::setDlc(const uint8_t &value)
+{
+    dlc = value;
+}
+
 CanMessage::CanMessage(uint32_t id, uint8_t dlc, std::vector<uint8_t> data)
 {
     if (id > maxExtCanId || id == 0) {

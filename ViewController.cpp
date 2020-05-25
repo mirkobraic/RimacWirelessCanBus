@@ -1,5 +1,4 @@
 #include "ViewController.h"
-#include <QtConcurrent>
 
 ViewController::ViewController(CanMessageListModel *recievedMessages, QObject *parent)
     : QObject(parent),
