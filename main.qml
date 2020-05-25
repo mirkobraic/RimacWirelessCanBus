@@ -18,9 +18,7 @@ Window {
 
     Connections {
         target: viewController
-        onShowAlert: {
-            alertPopup.open(title, message)
-        }
+        onShowAlert: alertPopup.open(title, message)
     }
 
     RxTxPopup {
@@ -38,6 +36,25 @@ Window {
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
         width: parent.width * 0.5
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        enabled: busyIndicator.running
+        visible: busyIndicator.running
+        color: "#11000000"
+        z: 1
+
+        MouseArea {
+            anchors.fill: parent
+        }
+
+        BusyIndicator {
+            id: busyIndicator
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.horizontalCenter: parent.horizontalCenter
+            running: viewController.fetchingInProgress
+        }
     }
 
     Item {
@@ -150,7 +167,7 @@ Window {
                         if (viewController.isConnected) {
                             return true
                         } else {
-                            return rxTxComboBox.model.count && providerComboBox.model.count
+                            return rxTxComboBox.model.count && providerComboBox.model.count && ipAddressTextField.text && portTextField.text
                         }
                     }
 
@@ -221,8 +238,8 @@ Window {
                     text: "Check version"
                     enabled: viewController.isConnected
                     onClicked: {
-                        viewController.checkVersion(2)
-                        // TODO: show ProgressBar
+                        let tx = rxTxComboBox.model.get(rxTxComboBox.currentIndex).tx
+                        viewController.checkVersion(tx)
                     }
                 }
                 Button {

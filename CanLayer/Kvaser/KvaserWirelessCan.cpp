@@ -19,30 +19,35 @@ void KvaserWirelessCan::connectToDevice(QString deviceIpAddress, QString port, B
     this->port = port;
     kvNetService.setupDevice(this->deviceIpAddress, this->port);
 
+    emit fetchingInProgress(true);
     kvNetService.initializeLibrary([=](KvaserResponse res, QString sessionId) {
         if (checkStatus("initializeLibrary", res) == false) {
-            emit showAlert("Error", res.message);
+            emit fetchingInProgress(false);
             return;
         }
         this->sessionId = sessionId;
 
         kvNetService.openChannel(this->sessionId, channelNumber, canOPEN_EXCLUSIVE, [=](KvaserResponse res, int handle) {
             if (checkStatus("openChannel", res) == false) {
+                emit fetchingInProgress(false);
                 return;
             }
             this->handle = handle;
 
             kvNetService.setBaudRate(this->sessionId, this->handle, baudRate, [=](KvaserResponse res) {
                 if (checkStatus("setBusParams", res) == false) {
+                    emit fetchingInProgress(false);
                     return;
                 }
 
                 kvNetService.canBusOn(this->sessionId, this->handle, [=](KvaserResponse res) {
                     if (checkStatus("canBusOn", res)) {
+                        emit fetchingInProgress(false);
                         isConnected = true;
+                        toggleConnection(true);
                         rxTimer = new QTimer(this);
                         QObject::connect(rxTimer, &QTimer::timeout, this, &KvaserWirelessCan::readMessage);
-                        rxTimer->start(500);
+                        rxTimer->start(400);
                     }
                 });
             });
@@ -57,16 +62,25 @@ void KvaserWirelessCan::disconnectFromDevice()
     }
 
     isConnected = false;
+    toggleConnection(false);
     rxTimer->stop();
 
+    emit fetchingInProgress(true);
     kvNetService.canBusOff(sessionId, handle, [=](KvaserResponse res) {
-        checkStatus("canBusOff", res);
+        if (checkStatus("canBusOff", res) == false) {
+            emit fetchingInProgress(false);
+            return;
+        }
 
         kvNetService.closeChannel(sessionId, handle, [=](KvaserResponse res) {
-            checkStatus("closeChannel", res);
+            if (checkStatus("closeChannel", res) == false) {
+                emit fetchingInProgress(false);
+                return;
+            }
 
             kvNetService.unloadLibrary(sessionId, [=](KvaserResponse res) {
-                checkStatus("closeChannel", res);
+                checkStatus("unloadLibrary", res);
+                emit fetchingInProgress(false);
             });
         });
     });
@@ -107,7 +121,7 @@ void KvaserWirelessCan::readMessage()
         msg.id = id;
         msg.data = data;
         messageRecievedUdsCallback(std::make_unique<isotp::can_layer_message>(msg));
-        messageRecievedDirectCallback(id, data);
+        emit newDirectCanMessage(id, data);
     });
 }
 

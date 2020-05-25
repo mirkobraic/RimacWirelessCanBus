@@ -26,9 +26,14 @@ public:
 signals:
     void newCanMessageRecieved(CanMessage message);
     void showAlert(QString title, QString message);
+    void toggleBusyIndicator(bool value);
+    void toggleConnection(bool value);
 
 public slots:
-      void onShowAlert(QString title, QString message);
+    void onNewDirectCanMessage(uint32_t id, std::vector<uint8_t> data);
+    void onShowAlert(QString title, QString message);
+    void onFetchingInProgress(bool value);
+    void onToggleConnection(bool value);
 
 private:
     std::vector<std::pair<uint32_t, uint32_t>> rxTxPairs;
