@@ -1,44 +1,62 @@
 #include "KvaserNetworkService.h"
 
 KvaserNetworkService::KvaserNetworkService(QObject *parent) : QObject(parent)
-{
-
-}
+{ }
 
 void KvaserNetworkService::setupDevice(QString ipAddress, QString port)
 {
     baseUrl.setUrl("http://" + ipAddress + ":" + port);
 }
 
-void KvaserNetworkService::initializeLibrary(std::function<void (Status, QString)> callback)
+int KvaserNetworkService::getKvaserBaudRate(BaudRate baudRate)
+{
+    switch (baudRate){
+    case Baud_125:
+        return -4;
+    case Baud_250:
+        return -3;
+    case Baud_500:
+        return -2;
+    case Baud_1000:
+        return -1;
+    default:
+        return -2;
+    }
+}
+
+void KvaserNetworkService::initializeLibrary(std::function<void (ResponseStatus, QString)> callback)
 {
     baseUrl.setPath("/canInitializeLibrary");
     // TODO: used in development
-    baseUrl.setQuery("timeout=10");
+    QUrlQuery query;
+    query.addQueryItem("timeout", QString::number(10));
+    baseUrl.setQuery(query.query());
 
     QNetworkReply *reply = networkManager.get(QNetworkRequest(baseUrl));
     auto completion = [=]() {
         if (reply->error()) {
             qDebug() << reply->errorString();
+            reply->deleteLater();
             return;
         }
 
-        QJsonDocument jsdoc = QJsonDocument::fromJson(reply->readAll());
-        QJsonObject jsobj = jsdoc.object();
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
+        QJsonObject jsonObj = jsonDoc.object();
 
-        Status stat = (Status)jsobj["stat"].toInt();
-        QString sessionId = jsobj["session"].toString();
+        ResponseStatus stat = (ResponseStatus)jsonObj["stat"].toInt();
+        QString sessionId = jsonObj["session"].toString();
 
+        reply->deleteLater();
         callback(stat, sessionId);
     };
     QObject::connect(reply, &QNetworkReply::finished, this, completion);
 }
 
-void KvaserNetworkService::openChannel(QString sessionId, std::function<void (KvaserNetworkService::Status, int)> callback)
+void KvaserNetworkService::openChannel(QString sessionId, int channel, OpenFlags flags, std::function<void (ResponseStatus, int)> callback)
 {
     QUrlQuery query;
-    query.addQueryItem("channel", "0");
-    query.addQueryItem("flags", "8");
+    query.addQueryItem("channel", QString::number(channel));
+    query.addQueryItem("flags", QString::number(flags));
 
     baseUrl.setPath("/" + sessionId + "/canOpenChannel");
     baseUrl.setQuery(query.query());
@@ -47,25 +65,27 @@ void KvaserNetworkService::openChannel(QString sessionId, std::function<void (Kv
     auto completion = [=]() {
         if (reply->error()) {
             qDebug() << reply->errorString();
+            reply->deleteLater();
             return;
         }
 
-        QJsonDocument jsdoc = QJsonDocument::fromJson(reply->readAll());
-        QJsonObject jsobj = jsdoc.object();
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
+        QJsonObject jsonObj = jsonDoc.object();
 
-        Status stat = (Status)jsobj["stat"].toInt();
-        int handle = jsobj["hnd"].toInt();
+        ResponseStatus stat = (ResponseStatus)jsonObj["stat"].toInt();
+        int handle = jsonObj["hnd"].toInt();
 
+        reply->deleteLater();
         callback(stat, handle);
     };
     QObject::connect(reply, &QNetworkReply::finished, this, completion);
 }
 
-void KvaserNetworkService::setBusParams(QString sessionId, int handle, int baudRate, std::function<void (Status)> callback)
+void KvaserNetworkService::setBaudRate(QString sessionId, int handle, BaudRate baudRate, std::function<void (ResponseStatus)> callback)
 {
     QUrlQuery query;
     query.addQueryItem("hnd", QString::number(handle));
-    query.addQueryItem("freq", QString::number(baudRate));
+    query.addQueryItem("freq", QString::number(getKvaserBaudRate(baudRate)));
 
     baseUrl.setPath("/" + sessionId + "/canSetBusParams");
     baseUrl.setQuery(query.query());
@@ -74,19 +94,22 @@ void KvaserNetworkService::setBusParams(QString sessionId, int handle, int baudR
     auto completion = [=]() {
         if (reply->error()) {
             qDebug() << reply->errorString();
+            reply->deleteLater();
             return;
         }
 
-        QJsonDocument jsdoc = QJsonDocument::fromJson(reply->readAll());
-        QJsonObject jsobj = jsdoc.object();
-        Status stat = (Status)jsobj["stat"].toInt();
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
+        QJsonObject jsonObj = jsonDoc.object();
 
+        ResponseStatus stat = (ResponseStatus)jsonObj["stat"].toInt();
+
+        reply->deleteLater();
         callback(stat);
     };
     QObject::connect(reply, &QNetworkReply::finished, this, completion);
 }
 
-void KvaserNetworkService::canBusOn(QString sessionId, int handle, std::function<void (KvaserNetworkService::Status)> callback)
+void KvaserNetworkService::canBusOn(QString sessionId, int handle, std::function<void (ResponseStatus)> callback)
 {
     QUrlQuery query;
     query.addQueryItem("hnd", QString::number(handle));
@@ -98,18 +121,21 @@ void KvaserNetworkService::canBusOn(QString sessionId, int handle, std::function
     auto completion = [=]() {
         if (reply->error()) {
             qDebug() << reply->errorString();
+            reply->deleteLater();
             return;
         }
-        QJsonDocument jsdoc = QJsonDocument::fromJson(reply->readAll());
-        QJsonObject jsobj = jsdoc.object();
-        Status stat = (Status)jsobj["stat"].toInt();
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
+        QJsonObject jsonObj = jsonDoc.object();
 
+        ResponseStatus stat = (ResponseStatus)jsonObj["stat"].toInt();
+
+        reply->deleteLater();
         callback(stat);
     };
     QObject::connect(reply, &QNetworkReply::finished, this, completion);
 }
 
-void KvaserNetworkService::canWrite(QString sessionId, int handle, uint32_t id, uint flag, QString data, size_t dlc, std::function<void (KvaserNetworkService::Status)> callback)
+void KvaserNetworkService::canWrite(QString sessionId, int handle, uint32_t id, uint flag, QString data, size_t dlc, std::function<void (ResponseStatus)> callback)
 {
     QUrlQuery query;
     query.addQueryItem("hnd", QString::number(handle));
@@ -125,57 +151,62 @@ void KvaserNetworkService::canWrite(QString sessionId, int handle, uint32_t id, 
     auto completion = [=]() {
         if (reply->error()) {
             qDebug() << reply->errorString();
+            reply->deleteLater();
             return;
         }
-        QJsonDocument jsdoc = QJsonDocument::fromJson(reply->readAll());
-        QJsonObject jsobj = jsdoc.object();
-        Status stat = (Status)jsobj["stat"].toInt();
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
+        QJsonObject jsonObj = jsonDoc.object();
+        ResponseStatus stat = (ResponseStatus)jsonObj["stat"].toInt();
 
+        reply->deleteLater();
         callback(stat);
     };
     QObject::connect(reply, &QNetworkReply::finished, this, completion);
 }
 
-void KvaserNetworkService::canRead(QString sessionId, int handle, std::function<void (KvaserNetworkService::Status, uint32_t, std::vector<uint8_t>)> callback)
+void KvaserNetworkService::canRead(QString sessionId, int handle, int max, std::function<void (ResponseStatus, uint32_t, uint, std::vector<uint8_t>)> callback)
 {
     QUrlQuery query;
     query.addQueryItem("hnd", QString::number(handle));
+    query.addQueryItem("max", QString::number(max));
 
     baseUrl.setPath("/" + sessionId + "/canRead");
     baseUrl.setQuery(query.query());
 
-    QNetworkAccessManager networkManager;
     QNetworkReply *reply = networkManager.get(QNetworkRequest(baseUrl));
     auto completion = [=]() {
         if (reply->error()) {
             qDebug() << reply->errorString();
+            reply->deleteLater();
             return;
         }
 
-        QJsonDocument jsdoc = QJsonDocument::fromJson(reply->readAll());
-        QJsonObject jsobj = jsdoc.object();
-        Status stat = (Status)jsobj["stat"].toInt();
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
+        QJsonObject jsonObj = jsonDoc.object();
 
-        QJsonArray messages = jsobj["msgs"].toArray();
-        foreach (const QJsonValue &messageJson, messages) {
-            QJsonObject message = messageJson.toObject();
+        ResponseStatus stat = (ResponseStatus)jsonObj["stat"].toInt();
+
+        foreach (const QJsonValue &jsonMessage, jsonObj["msgs"].toArray()) {
+            QJsonObject message = jsonMessage.toObject();
             uint32_t id;
-            id = message["id"].toInt();
-
-            QJsonArray bytes = jsobj["msg"].toArray();
+            uint flag;
             std::vector<uint8_t> data;
-            foreach (const QJsonValue &byte, bytes) {
+
+            id = message["id"].toInt();
+            flag = message["flag"].toInt();
+            foreach (const QJsonValue &byte, message["msg"].toArray()) {
                 data.push_back(byte.toInt());
             }
 
-            callback(stat, id, data);
+            reply->deleteLater();
+            callback(stat, id, flag, data);
         }
 
     };
     QObject::connect(reply, &QNetworkReply::finished, this, completion);
 }
 
-void KvaserNetworkService::canBusOff(QString sessionId, int handle, std::function<void (KvaserNetworkService::Status)> callback)
+void KvaserNetworkService::canBusOff(QString sessionId, int handle, std::function<void (ResponseStatus)> callback)
 {
     QUrlQuery query;
     query.addQueryItem("hnd", QString::number(handle));
@@ -187,18 +218,22 @@ void KvaserNetworkService::canBusOff(QString sessionId, int handle, std::functio
     auto completion = [=]() {
         if (reply->error()) {
             qDebug() << reply->errorString();
+            reply->deleteLater();
             return;
         }
-        QJsonDocument jsdoc = QJsonDocument::fromJson(reply->readAll());
-        QJsonObject jsobj = jsdoc.object();
-        Status stat = (Status)jsobj["stat"].toInt();
 
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
+        QJsonObject jsonObj = jsonDoc.object();
+
+        ResponseStatus stat = (ResponseStatus)jsonObj["stat"].toInt();
+
+        reply->deleteLater();
         callback(stat);
     };
     QObject::connect(reply, &QNetworkReply::finished, this, completion);
 }
 
-void KvaserNetworkService::closeChannel(QString sessionId, int handle, std::function<void (Status)> callback)
+void KvaserNetworkService::closeChannel(QString sessionId, int handle, std::function<void (ResponseStatus)> callback)
 {
     QUrlQuery query;
     query.addQueryItem("hnd", QString::number(handle));
@@ -210,18 +245,21 @@ void KvaserNetworkService::closeChannel(QString sessionId, int handle, std::func
     auto completion = [=]() {
         if (reply->error()) {
             qDebug() << reply->errorString();
+            reply->deleteLater();
             return;
         }
-        QJsonDocument jsdoc = QJsonDocument::fromJson(reply->readAll());
-        QJsonObject jsobj = jsdoc.object();
-        Status stat = (Status)jsobj["stat"].toInt();
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
+        QJsonObject jsonObj = jsonDoc.object();
 
+        ResponseStatus stat = (ResponseStatus)jsonObj["stat"].toInt();
+
+        reply->deleteLater();
         callback(stat);
     };
     QObject::connect(reply, &QNetworkReply::finished, this, completion);
 }
 
-void KvaserNetworkService::unloadLibrary(QString sessionId, std::function<void (Status)> callback)
+void KvaserNetworkService::unloadLibrary(QString sessionId, std::function<void (ResponseStatus)> callback)
 {
     baseUrl.setPath("/" + sessionId + "/canUnloadLibrary");
 
@@ -229,12 +267,15 @@ void KvaserNetworkService::unloadLibrary(QString sessionId, std::function<void (
     auto completion = [=]() {
         if (reply->error()) {
             qDebug() << reply->errorString();
+            reply->deleteLater();
             return;
         }
-        QJsonDocument jsdoc = QJsonDocument::fromJson(reply->readAll());
-        QJsonObject jsobj = jsdoc.object();
-        Status stat = (Status)jsobj["stat"].toInt();
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
+        QJsonObject jsonObj = jsonDoc.object();
 
+        ResponseStatus stat = (ResponseStatus)jsonObj["stat"].toInt();
+
+        reply->deleteLater();
         callback(stat);
     };
     QObject::connect(reply, &QNetworkReply::finished, this, completion);

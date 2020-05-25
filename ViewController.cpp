@@ -22,7 +22,7 @@ void ViewController::connectTapped(int provider, int baudRate, const QVariantLis
     }
 
     communicationManager = new CommunicationManager((CanBusProvider)provider, pairs);
-    QObject::connect(communicationManager, SIGNAL(newCanMessageRecieved(CanMessage)), this, SLOT(onNewCanMessageRecieved(CanMessage)), Qt::BlockingQueuedConnection);
+    QObject::connect(communicationManager, SIGNAL(newCanMessageRecieved(CanMessage)), this, SLOT(onNewCanMessageRecieved(CanMessage)));
 
     communicationManager->connect("172.20.10.3", (BaudRate)baudRate);
     recievedMessages->removeAll();

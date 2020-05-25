@@ -45,6 +45,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     CanLayer/CanBusInterface.h \
     CanLayer/CanBusInterfaceFactory.h \
+    CanLayer/Kvaser/KvaserConstants.h \
     CanLayer/Kvaser/KvaserNetworkService.h \
     CanLayer/Kvaser/KvaserWirelessCan.h \
     CommunicationManager.h \
@@ -56,12 +57,6 @@ HEADERS += \
     UdsLayer/UdsConfigManager.h \
     UdsLayer/UdsManager.h \
     ViewController.h
-
-#kvaser
-unix:!macx: LIBS += -L$$PWD/../linuxcan/canlib/ -lcanlib
-
-INCLUDEPATH += $$PWD/../linuxcan/include
-DEPENDPATH += $$PWD/../linuxcan/include
 
 #isotp
 unix:!macx: LIBS += -L$$PWD/../udsclient_and_isotp/Isotp/Ubuntu/ -lisotp_lib
