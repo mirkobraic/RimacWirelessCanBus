@@ -11,9 +11,9 @@ ViewController::~ViewController()
     delete communicationManager;
 }
 
-void ViewController::connectTapped(int provider, int baudRate, const QVariantList& rxTxPairs)
+void ViewController::connectTapped(int provider, QString ipAddress, QString port, int baudRate, const QVariantList& rxTxPairs)
 {
-    delete communicationManager;
+//    delete communicationManager;
 
     std::vector<std::pair<uint32_t, uint32_t>> pairs;
     for (const QVariant& pair : rxTxPairs) {
@@ -23,8 +23,9 @@ void ViewController::connectTapped(int provider, int baudRate, const QVariantLis
 
     communicationManager = new CommunicationManager((CanBusProvider)provider, pairs);
     QObject::connect(communicationManager, SIGNAL(newCanMessageRecieved(CanMessage)), this, SLOT(onNewCanMessageRecieved(CanMessage)));
+    QObject::connect(communicationManager, SIGNAL(showAlert(QString, QString)), this, SLOT(onShowAlert(QString, QString)));
 
-    communicationManager->connect("172.20.10.3", (BaudRate)baudRate);
+    communicationManager->connect(ipAddress, port, (BaudRate)baudRate);
     recievedMessages->removeAll();
     isConnected = true;
     emit connectionChanged();
@@ -68,11 +69,14 @@ void ViewController::onNewCanMessageRecieved(CanMessage message)
     }
 }
 
+void ViewController::onShowAlert(QString title, QString message)
+{
+    emit showAlert(title, message);
+}
+
 void ViewController::checkVersion(int tx)
 {
-    communicationManager->udsCheckVersion(uint32_t(tx), [this] (QString title, QString message) {
-        emit showAlert(title, message);
-    });
+    communicationManager->udsCheckVersion(uint32_t(tx));
 }
 
 bool ViewController::getIsConnected() const

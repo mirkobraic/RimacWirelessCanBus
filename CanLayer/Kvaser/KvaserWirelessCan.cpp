@@ -9,35 +9,36 @@ KvaserWirelessCan::~KvaserWirelessCan()
     delete rxTimer;
 }
 
-void KvaserWirelessCan::connectToDevice(QString deviceIpAddress, BaudRate baudRate)
+void KvaserWirelessCan::connectToDevice(QString deviceIpAddress, QString port, BaudRate baudRate)
 {
     if (isConnected) {
         return;
     }
 
     this->deviceIpAddress = deviceIpAddress;
-    this->port = "8080";
+    this->port = port;
     kvNetService.setupDevice(this->deviceIpAddress, this->port);
 
-    kvNetService.initializeLibrary([=](ResponseStatus stat, QString sessionId) {
-        if (checkStatus("initializeLibrary", stat) == false) {
+    kvNetService.initializeLibrary([=](KvaserResponse res, QString sessionId) {
+        if (checkStatus("initializeLibrary", res) == false) {
+            emit showAlert("Error", res.message);
             return;
         }
         this->sessionId = sessionId;
 
-        kvNetService.openChannel(this->sessionId, channelNumber, canOPEN_EXCLUSIVE, [=](ResponseStatus stat, int handle) {
-            if (checkStatus("openChannel", stat) == false) {
+        kvNetService.openChannel(this->sessionId, channelNumber, canOPEN_EXCLUSIVE, [=](KvaserResponse res, int handle) {
+            if (checkStatus("openChannel", res) == false) {
                 return;
             }
             this->handle = handle;
 
-            kvNetService.setBaudRate(this->sessionId, this->handle, baudRate, [=](ResponseStatus stat) {
-                if (checkStatus("setBusParams", stat) == false) {
+            kvNetService.setBaudRate(this->sessionId, this->handle, baudRate, [=](KvaserResponse res) {
+                if (checkStatus("setBusParams", res) == false) {
                     return;
                 }
 
-                kvNetService.canBusOn(this->sessionId, this->handle, [=](ResponseStatus stat) {
-                    if (checkStatus("canBusOn", stat)) {
+                kvNetService.canBusOn(this->sessionId, this->handle, [=](KvaserResponse res) {
+                    if (checkStatus("canBusOn", res)) {
                         isConnected = true;
                         rxTimer = new QTimer(this);
                         QObject::connect(rxTimer, &QTimer::timeout, this, &KvaserWirelessCan::readMessage);
@@ -58,14 +59,14 @@ void KvaserWirelessCan::disconnectFromDevice()
     isConnected = false;
     rxTimer->stop();
 
-    kvNetService.canBusOff(sessionId, handle, [=](ResponseStatus stat) {
-        checkStatus("canBusOff", stat);
+    kvNetService.canBusOff(sessionId, handle, [=](KvaserResponse res) {
+        checkStatus("canBusOff", res);
 
-        kvNetService.closeChannel(sessionId, handle, [=](ResponseStatus stat) {
-            checkStatus("closeChannel", stat);
+        kvNetService.closeChannel(sessionId, handle, [=](KvaserResponse res) {
+            checkStatus("closeChannel", res);
 
-            kvNetService.unloadLibrary(sessionId, [=](ResponseStatus stat) {
-                checkStatus("closeChannel", stat);
+            kvNetService.unloadLibrary(sessionId, [=](KvaserResponse res) {
+                checkStatus("closeChannel", res);
             });
         });
     });
@@ -84,15 +85,15 @@ void KvaserWirelessCan::sendCanMessage(isotp::can_layer_message &message)
 
     uint flag = message.id > maxStdCanId ? canMSG_EXT : canMSG_STD;
 
-    kvNetService.canWrite(sessionId, handle, message.id, flag, data, message.data.size(), [=](ResponseStatus stat) {
-        checkStatus("canWrite", stat);
+    kvNetService.canWrite(sessionId, handle, message.id, flag, data, message.data.size(), [=](KvaserResponse res) {
+        checkStatus("canWrite", res);
     });
 }
 
 void KvaserWirelessCan::readMessage()
 {
-    kvNetService.canRead(sessionId, handle, 10, [=](ResponseStatus stat, uint32_t id, uint flag, std::vector<uint8_t> data) {
-        if (checkStatus("canRead", stat) == false) {
+    kvNetService.canRead(sessionId, handle, 10, [=](KvaserResponse res, uint32_t id, uint flag, std::vector<uint8_t> data) {
+        if (checkStatus("canRead", res) == false) {
             return;
         }
 
@@ -110,11 +111,12 @@ void KvaserWirelessCan::readMessage()
     });
 }
 
-bool KvaserWirelessCan::checkStatus(QString method, ResponseStatus status)
+bool KvaserWirelessCan::checkStatus(QString method, KvaserResponse res)
 {
-    if (status == canOK) {
+    if (res.status == canOK) {
         return true;
     }
-    qDebug() << "CanLayer: " + method + " failed with status: " + QString::number(status);
+    qDebug() << "CanLayer: " + method + " failed with status: " + QString::number(res.status);
+    emit showAlert("Error", res.message);
     return false;
 }

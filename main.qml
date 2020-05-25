@@ -115,9 +115,35 @@ Window {
             RowLayout {
                 width: parent.width
                 spacing: 10
+                clip: true
+
+                TextField {
+                    id: ipAddressTextField
+                    enabled: !viewController.isConnected
+                    Layout.fillWidth: true
+                    Layout.minimumWidth: 80
+                    Layout.maximumWidth: parent.width / 3
+
+                    text: "172.20.10.3"
+                    placeholderText: "IP Address"
+                }
+
+                TextField {
+                    id: portTextField
+                    enabled: !viewController.isConnected
+                    Layout.fillWidth: true
+                    Layout.minimumWidth: 80
+                    Layout.maximumWidth: parent.width / 3
+
+                    text: "8080"
+                    placeholderText: "Port"
+                }
+
                 Button {
                     id: connectToggle
-                    width: 100
+                    Layout.fillWidth: true
+                    Layout.minimumWidth: 80
+                    Layout.maximumWidth: parent.width / 3
                     Layout.alignment: Qt.AlignRight
 
                     enabled: {
@@ -135,18 +161,19 @@ Window {
                             viewController.disconnectTapped()
                         } else  {
                             let currentProvider = providerComboBox.model.get(providerComboBox.currentIndex).rawValue;
+                            let ipAddress = ipAddressTextField.text;
+                            let port = portTextField.text;
                             let baudRate = baudRateComboBox.model.get(baudRateComboBox.currentIndex).rawValue;
                             let rxTxPairs = [];
                             for (var i = 0; i < rxTxComboBox.model.count; i++) {
                                 rxTxPairs.push({ rx: rxTxComboBox.model.get(i).rx, tx: rxTxComboBox.model.get(i).tx })
                             }
 
-                            viewController.connectTapped(currentProvider, baudRate, rxTxPairs);
+                            viewController.connectTapped(currentProvider, ipAddress, port, baudRate, rxTxPairs);
                         }
                     }
                 }
             }
-
         }
     }
 

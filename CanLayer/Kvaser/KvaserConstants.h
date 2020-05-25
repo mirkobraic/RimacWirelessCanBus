@@ -18,7 +18,8 @@ enum ResponseStatus {
     canERR_INVALID_PASSWORD     = -128,
     canERR_NO_SUCH_FUNCTION     = -129,
     canERR_NOT_AUTHORIZED       = -130,
-    canERR_INVALID_SESSION      = -131
+    canERR_INVALID_SESSION      = -131,
+    NETWORK_ERR                 = -200
 };
 
 enum OpenFlags {

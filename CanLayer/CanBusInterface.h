@@ -19,12 +19,15 @@ class CanBusInterface : public QObject
 public:
     virtual ~CanBusInterface() {}
 
-    virtual void connectToDevice(QString deviceIpAddress, BaudRate baudRate) = 0;
+    virtual void connectToDevice(QString deviceIpAddress, QString port, BaudRate baudRate) = 0;
     virtual void disconnectFromDevice() = 0;
     virtual void sendCanMessage(isotp::can_layer_message &message) = 0;
 
     std::function<void(std::unique_ptr<isotp::can_layer_message>)> messageRecievedUdsCallback;
     std::function<void(uint32_t, std::vector<uint8_t>)> messageRecievedDirectCallback;
+
+signals:
+    void showAlert(QString title, QString message);
 
 protected:
     uint32_t maxStdCanId = 0x7FF;

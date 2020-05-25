@@ -16,15 +16,19 @@ class CommunicationManager : public QObject
 public:
     CommunicationManager(CanBusProvider provider, std::vector<std::pair<uint32_t, uint32_t>> rxTxPairs, QObject *parent = nullptr);
 
-    void connect(QString ipAddress, BaudRate baudRate);
+    void connect(QString ipAddress, QString port, BaudRate baudRate);
     void disconnect();
 
     void sendDirectCanMessage(std::vector<uint8_t> data, uint32_t id);
 
-    void udsCheckVersion(uint32_t tx, std::function<void(QString, QString)> callback);
+    void udsCheckVersion(uint32_t tx);
 
 signals:
     void newCanMessageRecieved(CanMessage message);
+    void showAlert(QString title, QString message);
+
+public slots:
+      void onShowAlert(QString title, QString message);
 
 private:
     std::vector<std::pair<uint32_t, uint32_t>> rxTxPairs;

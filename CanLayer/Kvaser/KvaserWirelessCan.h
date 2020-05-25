@@ -11,13 +11,13 @@ public:
     KvaserWirelessCan();
     ~KvaserWirelessCan();
 
-    void connectToDevice(QString deviceIpAddress, BaudRate baudRate) override;
+    void connectToDevice(QString deviceIpAddress, QString port, BaudRate baudRate) override;
     void disconnectFromDevice() override;
     void sendCanMessage(isotp::can_layer_message &message) override;
 
 private:
     void readMessage();
-    bool checkStatus(QString method, ResponseStatus status);
+    bool checkStatus(QString method, KvaserResponse res);
 
     KvaserNetworkService kvNetService;
     QTimer *rxTimer;
