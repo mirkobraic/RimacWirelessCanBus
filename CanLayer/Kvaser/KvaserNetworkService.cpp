@@ -51,7 +51,8 @@ void KvaserNetworkService::initializeLibrary(std::function<void (KvaserResponse,
     query.addQueryItem("timeout", QString::number(10));
     baseUrl.setQuery(query.query());
 
-    QNetworkReply *reply = networkManager.get(QNetworkRequest(baseUrl));
+    QNetworkAccessManager *qnam = new QNetworkAccessManager;
+    QNetworkReply *reply = qnam->get(QNetworkRequest(baseUrl));
     auto completion = [=]() {
         KvaserResponse res;
         QString sessionId;
@@ -68,6 +69,7 @@ void KvaserNetworkService::initializeLibrary(std::function<void (KvaserResponse,
             sessionId = jsonObj["session"].toString();
         }
 
+        qnam->deleteLater();
         reply->deleteLater();
         callback(res, sessionId);
     };
@@ -83,7 +85,8 @@ void KvaserNetworkService::openChannel(QString sessionId, int channel, OpenFlags
     baseUrl.setPath("/" + sessionId + "/canOpenChannel");
     baseUrl.setQuery(query.query());
 
-    QNetworkReply *reply = networkManager.get(QNetworkRequest(baseUrl));
+    QNetworkAccessManager *qnam = new QNetworkAccessManager;
+    QNetworkReply *reply = qnam->get(QNetworkRequest(baseUrl));
     auto completion = [=]() {
         KvaserResponse res;
         int handle = -1;
@@ -100,6 +103,7 @@ void KvaserNetworkService::openChannel(QString sessionId, int channel, OpenFlags
             handle = jsonObj["hnd"].toInt();
         }
 
+        qnam->deleteLater();
         reply->deleteLater();
         callback(res, handle);
     };
@@ -115,7 +119,8 @@ void KvaserNetworkService::setBaudRate(QString sessionId, int handle, BaudRate b
     baseUrl.setPath("/" + sessionId + "/canSetBusParams");
     baseUrl.setQuery(query.query());
 
-    QNetworkReply *reply = networkManager.get(QNetworkRequest(baseUrl));
+    QNetworkAccessManager *qnam = new QNetworkAccessManager;
+    QNetworkReply *reply = qnam->get(QNetworkRequest(baseUrl));
     auto completion = [=]() {
         KvaserResponse res;
 
@@ -130,6 +135,7 @@ void KvaserNetworkService::setBaudRate(QString sessionId, int handle, BaudRate b
             res.message = getMessageForStatus(res.status);
         }
 
+        qnam->deleteLater();
         reply->deleteLater();
         callback(res);
     };
@@ -144,7 +150,8 @@ void KvaserNetworkService::canBusOn(QString sessionId, int handle, std::function
     baseUrl.setPath("/" + sessionId + "/canBusOn");
     baseUrl.setQuery(query.query());
 
-    QNetworkReply *reply = networkManager.get(QNetworkRequest(baseUrl));
+    QNetworkAccessManager *qnam = new QNetworkAccessManager;
+    QNetworkReply *reply = qnam->get(QNetworkRequest(baseUrl));
     auto completion = [=]() {
         KvaserResponse res;
 
@@ -159,6 +166,7 @@ void KvaserNetworkService::canBusOn(QString sessionId, int handle, std::function
             res.message = getMessageForStatus(res.status);
         }
 
+        qnam->deleteLater();
         reply->deleteLater();
         callback(res);
     };
@@ -177,7 +185,8 @@ void KvaserNetworkService::canWrite(QString sessionId, int handle, uint32_t id, 
     baseUrl.setPath("/" + sessionId + "/canWrite");
     baseUrl.setQuery(query.query());
 
-    QNetworkReply *reply = networkManager.get(QNetworkRequest(baseUrl));
+    QNetworkAccessManager *qnam = new QNetworkAccessManager;
+    QNetworkReply *reply = qnam->get(QNetworkRequest(baseUrl));
     auto completion = [=]() {
         KvaserResponse res;
 
@@ -191,6 +200,7 @@ void KvaserNetworkService::canWrite(QString sessionId, int handle, uint32_t id, 
             res.message = getMessageForStatus(res.status);
         }
 
+        qnam->deleteLater();
         reply->deleteLater();
         callback(res);
     };
@@ -206,7 +216,8 @@ void KvaserNetworkService::canRead(QString sessionId, int handle, int max, std::
     baseUrl.setPath("/" + sessionId + "/canRead");
     baseUrl.setQuery(query.query());
 
-    QNetworkReply *reply = networkManager.get(QNetworkRequest(baseUrl));
+    QNetworkAccessManager *qnam = new QNetworkAccessManager;
+    QNetworkReply *reply = qnam->get(QNetworkRequest(baseUrl));
     auto completion = [=]() {
         KvaserResponse res;
 
@@ -237,6 +248,7 @@ void KvaserNetworkService::canRead(QString sessionId, int handle, int max, std::
             }
         }
 
+        qnam->deleteLater();
         reply->deleteLater();
     };
     QObject::connect(reply, &QNetworkReply::finished, this, completion);
@@ -250,7 +262,8 @@ void KvaserNetworkService::canBusOff(QString sessionId, int handle, std::functio
     baseUrl.setPath("/" + sessionId + "/canBusOff");
     baseUrl.setQuery(query.query());
 
-    QNetworkReply *reply = networkManager.get(QNetworkRequest(baseUrl));
+    QNetworkAccessManager *qnam = new QNetworkAccessManager;
+    QNetworkReply *reply = qnam->get(QNetworkRequest(baseUrl));
     auto completion = [=]() {
         KvaserResponse res;
 
@@ -265,6 +278,7 @@ void KvaserNetworkService::canBusOff(QString sessionId, int handle, std::functio
             res.message = getMessageForStatus(res.status);
         }
 
+        qnam->deleteLater();
         reply->deleteLater();
         callback(res);
     };
@@ -279,7 +293,8 @@ void KvaserNetworkService::closeChannel(QString sessionId, int handle, std::func
     baseUrl.setPath("/" + sessionId + "/canClose");
     baseUrl.setQuery(query.query());
 
-    QNetworkReply *reply = networkManager.get(QNetworkRequest(baseUrl));
+    QNetworkAccessManager *qnam = new QNetworkAccessManager;
+    QNetworkReply *reply = qnam->get(QNetworkRequest(baseUrl));
     auto completion = [=]() {
         KvaserResponse res;
 
@@ -294,6 +309,7 @@ void KvaserNetworkService::closeChannel(QString sessionId, int handle, std::func
             res.message = getMessageForStatus(res.status);
         }
 
+        qnam->deleteLater();
         reply->deleteLater();
         callback(res);
     };
@@ -304,7 +320,8 @@ void KvaserNetworkService::unloadLibrary(QString sessionId, std::function<void (
 {
     baseUrl.setPath("/" + sessionId + "/canUnloadLibrary");
 
-    QNetworkReply *reply = networkManager.get(QNetworkRequest(baseUrl));
+    QNetworkAccessManager *qnam = new QNetworkAccessManager;
+    QNetworkReply *reply = qnam->get(QNetworkRequest(baseUrl));
     auto completion = [=]() {
         KvaserResponse res;
 
@@ -319,6 +336,7 @@ void KvaserNetworkService::unloadLibrary(QString sessionId, std::function<void (
             res.message = getMessageForStatus(res.status);
         }
 
+        qnam->deleteLater();
         reply->deleteLater();
         callback(res);
     };

@@ -38,7 +38,6 @@ void CommunicationManager::sendDirectCanMessage(std::vector<uint8_t> data, uint3
 void CommunicationManager::udsCheckVersion(uint32_t tx)
 {
     emit toggleBusyIndicator(true);
-    auto response = udsClient->check_version_servicees.send_check_version(tx);
     auto positiveResponse = [this] (const std::pair<uds::version_params, uds::type_of_server> &pair) {
         QString message = "Version params: " + QString::number(pair.first.major) + "." + QString::number(pair.first.minor) + "." + QString::number(pair.first.patch);
         message += "\nType of server: " + QString::number((int)pair.second);
@@ -46,15 +45,17 @@ void CommunicationManager::udsCheckVersion(uint32_t tx)
         emit showAlert("Success", message);
     };
     auto negativeResponse = [this] (const uds::response::negative_response &res) {
-        QString message = "code: " + QString::number((int)res);
+        QString message = UdsConstantsUnpacker::unpackNegativeResponse(res) + "\ncode: " + QString::number((int)res);
         emit toggleBusyIndicator(false);
         emit showAlert("Negative response", message);
     };
     auto errorResponse = [this] (const uds::response::response_error &res) {
-        QString message = "code: " + QString::number((int)res);
+        QString message = UdsConstantsUnpacker::unpackResponseError(res) + "\ncode: " + QString::number((int)res);
         emit toggleBusyIndicator(false);
         emit showAlert("Error", message);
     };
+
+    auto response = udsClient->check_version_servicees.send_check_version(tx);
     response.unpack_response(positiveResponse, negativeResponse, errorResponse);
 }
 

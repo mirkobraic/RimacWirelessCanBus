@@ -23,8 +23,6 @@ public:
     int getKvaserBaudRate(BaudRate baudRate);
     QString getMessageForStatus(ResponseStatus status);
 
-    // TODO: fix check version different thread
-
     void initializeLibrary(std::function<void (KvaserResponse res, QString sessionId)> callback);
     void openChannel(QString sessionId, int channel, OpenFlags flags, std::function<void (KvaserResponse res, int handle)> callback);
     void setBaudRate(QString sessionId, int handle, BaudRate baudRate, std::function<void (KvaserResponse res)> callback);
@@ -36,7 +34,6 @@ public:
     void unloadLibrary(QString sessionId, std::function<void (KvaserResponse res)> callback);
 
 private:
-    QNetworkAccessManager networkManager;
     QUrl baseUrl;
 };
 

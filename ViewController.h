@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QDebug>
+#include <QtConcurrent>
 #include "Models/CanMessageListModel.h"
 #include "CommunicationManager.h"
 

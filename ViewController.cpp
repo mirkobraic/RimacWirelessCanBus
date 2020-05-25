@@ -1,4 +1,5 @@
 #include "ViewController.h"
+#include <QtConcurrent>
 
 ViewController::ViewController(CanMessageListModel *recievedMessages, QObject *parent)
     : QObject(parent),
@@ -13,7 +14,7 @@ ViewController::~ViewController()
 
 void ViewController::connectTapped(int provider, QString ipAddress, QString port, int baudRate, const QVariantList& rxTxPairs)
 {
-//    delete communicationManager;
+    // TODO: fix leak
 
     std::vector<std::pair<uint32_t, uint32_t>> pairs;
     for (const QVariant& pair : rxTxPairs) {
@@ -71,7 +72,7 @@ void ViewController::onNewCanMessageRecieved(CanMessage message)
 
 void ViewController::checkVersion(int tx)
 {
-    communicationManager->udsCheckVersion(uint32_t(tx));
+    QtConcurrent::run(communicationManager, &CommunicationManager::udsCheckVersion, tx);
 }
 
 void ViewController::onShowAlert(QString title, QString message)

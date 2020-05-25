@@ -41,13 +41,13 @@ void KvaserWirelessCan::connectToDevice(QString deviceIpAddress, QString port, B
                 }
 
                 kvNetService.canBusOn(this->sessionId, this->handle, [=](KvaserResponse res) {
+                    emit fetchingInProgress(false);
                     if (checkStatus("canBusOn", res)) {
-                        emit fetchingInProgress(false);
                         isConnected = true;
                         toggleConnection(true);
                         rxTimer = new QTimer(this);
                         QObject::connect(rxTimer, &QTimer::timeout, this, &KvaserWirelessCan::readMessage);
-                        rxTimer->start(400);
+                        rxTimer->start(200);
                     }
                 });
             });

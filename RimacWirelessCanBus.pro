@@ -25,6 +25,7 @@ SOURCES += \
         Models/CanMessage.cpp \
         Models/CanMessageListModel.cpp \
         UdsLayer/UdsConfigManager.cpp \
+        UdsLayer/UdsConstantsUnpacker.cpp \
         UdsLayer/UdsManager.cpp \
         ViewController.cpp \
         main.cpp
@@ -55,6 +56,7 @@ HEADERS += \
     Models/CanMessage.h \
     Models/CanMessageListModel.h \
     UdsLayer/UdsConfigManager.h \
+    UdsLayer/UdsConstantsUnpacker.h \
     UdsLayer/UdsManager.h \
     ViewController.h
 

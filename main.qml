@@ -35,7 +35,7 @@ Window {
         id: alertPopup
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
-        width: parent.width * 0.5
+        width: parent.width * 0.4
     }
 
     Rectangle {
