@@ -3,10 +3,13 @@
 
 #include <QObject>
 #include "CanLayer/CanBusInterfaceFactory.h"
+#include "Models/CanMessage.h"
+
 #include "IsotpLayer/IsotpManager.h"
+
 #include "UdsLayer/UdsConfigManager.h"
 #include "UdsLayer/UdsManager.h"
-#include "Models/CanMessage.h"
+#include "UdsLayer/UdsConstantsUnpacker.h"
 #include "uds_client_api/client_services_structures.hpp"
 
 class CommunicationManager : public QObject
@@ -16,15 +19,24 @@ class CommunicationManager : public QObject
 public:
     CommunicationManager(CanBusProvider provider, std::vector<std::pair<uint32_t, uint32_t>> rxTxPairs, QObject *parent = nullptr);
 
-    void connect(std::string name, BaudRate baudRate);
+    void connect(QString ipAddress, QString port, BaudRate baudRate);
     void disconnect();
 
     void sendDirectCanMessage(std::vector<uint8_t> data, uint32_t id);
 
-    void udsCheckVersion(uint32_t tx, std::function<void(QString, QString)> callback);
+    void udsCheckVersion(uint32_t tx);
 
 signals:
     void newCanMessageRecieved(CanMessage message);
+    void showAlert(QString title, QString message);
+    void toggleBusyIndicator(bool value);
+    void toggleConnection(bool value);
+
+public slots:
+    void onNewDirectCanMessage(uint32_t id, std::vector<uint8_t> data);
+    void onShowAlert(QString title, QString message);
+    void onFetchingInProgress(bool value);
+    void onToggleConnection(bool value);
 
 private:
     std::vector<std::pair<uint32_t, uint32_t>> rxTxPairs;

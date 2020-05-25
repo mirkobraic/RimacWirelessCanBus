@@ -18,9 +18,7 @@ Window {
 
     Connections {
         target: viewController
-        onShowAlert: {
-            alertPopup.open(title, message)
-        }
+        onShowAlert: alertPopup.open(title, message)
     }
 
     RxTxPopup {
@@ -37,7 +35,26 @@ Window {
         id: alertPopup
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
-        width: parent.width * 0.5
+        width: parent.width * 0.4
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        enabled: busyIndicator.running
+        visible: busyIndicator.running
+        color: "#11000000"
+        z: 1
+
+        MouseArea {
+            anchors.fill: parent
+        }
+
+        BusyIndicator {
+            id: busyIndicator
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.horizontalCenter: parent.horizontalCenter
+            running: viewController.fetchingInProgress
+        }
     }
 
     Item {
@@ -115,16 +132,42 @@ Window {
             RowLayout {
                 width: parent.width
                 spacing: 10
+                clip: true
+
+                TextField {
+                    id: ipAddressTextField
+                    enabled: !viewController.isConnected
+                    Layout.fillWidth: true
+                    Layout.minimumWidth: 80
+                    Layout.maximumWidth: parent.width / 3
+
+                    text: "172.20.10.3"
+                    placeholderText: "IP Address"
+                }
+
+                TextField {
+                    id: portTextField
+                    enabled: !viewController.isConnected
+                    Layout.fillWidth: true
+                    Layout.minimumWidth: 80
+                    Layout.maximumWidth: parent.width / 3
+
+                    text: "8080"
+                    placeholderText: "Port"
+                }
+
                 Button {
                     id: connectToggle
-                    width: 100
+                    Layout.fillWidth: true
+                    Layout.minimumWidth: 80
+                    Layout.maximumWidth: parent.width / 3
                     Layout.alignment: Qt.AlignRight
 
                     enabled: {
                         if (viewController.isConnected) {
                             return true
                         } else {
-                            return rxTxComboBox.model.count && providerComboBox.model.count
+                            return rxTxComboBox.model.count && providerComboBox.model.count && ipAddressTextField.text && portTextField.text
                         }
                     }
 
@@ -135,18 +178,19 @@ Window {
                             viewController.disconnectTapped()
                         } else  {
                             let currentProvider = providerComboBox.model.get(providerComboBox.currentIndex).rawValue;
+                            let ipAddress = ipAddressTextField.text;
+                            let port = portTextField.text;
                             let baudRate = baudRateComboBox.model.get(baudRateComboBox.currentIndex).rawValue;
                             let rxTxPairs = [];
                             for (var i = 0; i < rxTxComboBox.model.count; i++) {
                                 rxTxPairs.push({ rx: rxTxComboBox.model.get(i).rx, tx: rxTxComboBox.model.get(i).tx })
                             }
 
-                            viewController.connectTapped(currentProvider, baudRate, rxTxPairs);
+                            viewController.connectTapped(currentProvider, ipAddress, port, baudRate, rxTxPairs);
                         }
                     }
                 }
             }
-
         }
     }
 
@@ -194,8 +238,8 @@ Window {
                     text: "Check version"
                     enabled: viewController.isConnected
                     onClicked: {
-                        viewController.checkVersion(2)
-                        // TODO: show ProgressBar
+                        let tx = rxTxComboBox.model.get(rxTxComboBox.currentIndex).tx
+                        viewController.checkVersion(tx)
                     }
                 }
                 Button {

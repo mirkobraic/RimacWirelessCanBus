@@ -1,4 +1,5 @@
 #include "ViewController.h"
+#include <QtConcurrent>
 
 ViewController::ViewController(CanMessageListModel *recievedMessages, QObject *parent)
     : QObject(parent),
@@ -11,9 +12,9 @@ ViewController::~ViewController()
     delete communicationManager;
 }
 
-void ViewController::connectTapped(int provider, int baudRate, const QVariantList& rxTxPairs)
+void ViewController::connectTapped(int provider, QString ipAddress, QString port, int baudRate, const QVariantList& rxTxPairs)
 {
-    delete communicationManager;
+    // TODO: fix leak
 
     std::vector<std::pair<uint32_t, uint32_t>> pairs;
     for (const QVariant& pair : rxTxPairs) {
@@ -22,19 +23,18 @@ void ViewController::connectTapped(int provider, int baudRate, const QVariantLis
     }
 
     communicationManager = new CommunicationManager((CanBusProvider)provider, pairs);
-    QObject::connect(communicationManager, SIGNAL(newCanMessageRecieved(CanMessage)), this, SLOT(onNewCanMessageRecieved(CanMessage)), Qt::BlockingQueuedConnection);
+    QObject::connect(communicationManager, SIGNAL(newCanMessageRecieved(CanMessage)), this, SLOT(onNewCanMessageRecieved(CanMessage)));
+    QObject::connect(communicationManager, SIGNAL(showAlert(QString, QString)), this, SLOT(onShowAlert(QString, QString)));
+    QObject::connect(communicationManager, SIGNAL(toggleBusyIndicator(bool)), this, SLOT(onToggleBusyIndicator(bool)));
+    QObject::connect(communicationManager, SIGNAL(toggleConnection(bool)), this, SLOT(onToggleConnection(bool)));
 
-    communicationManager->connect("Todo", (BaudRate)baudRate);
+    communicationManager->connect(ipAddress, port, (BaudRate)baudRate);
     recievedMessages->removeAll();
-    isConnected = true;
-    emit connectionChanged();
 }
 
 void ViewController::disconnectTapped()
 {
     communicationManager->disconnect();
-    isConnected = false;
-    emit connectionChanged();
 }
 
 void ViewController::sendDirectCanMessage(QString messageId, const QVector<QString> &bytes)
@@ -43,6 +43,7 @@ void ViewController::sendDirectCanMessage(QString messageId, const QVector<QStri
     uint32_t id = messageId.toUInt(&success, 16);
     if (!success){
         qDebug() << "Parsing qml error: Invalid ID";
+        emit showAlert("Invalid ID", "");
         return;
     }
 
@@ -53,6 +54,7 @@ void ViewController::sendDirectCanMessage(QString messageId, const QVector<QStri
         uint8_t byte = stringByte.toUInt(&success, 16);
         if (!success){
             qDebug() << "Parsing qml error: Invalid data";
+            emit showAlert("Invalid Data", "");
             return;
         }
        data.push_back(byte);
@@ -70,9 +72,35 @@ void ViewController::onNewCanMessageRecieved(CanMessage message)
 
 void ViewController::checkVersion(int tx)
 {
-    communicationManager->udsCheckVersion(uint32_t(tx), [this] (QString title, QString message) {
-        emit showAlert(title, message);
-    });
+    QtConcurrent::run(communicationManager, &CommunicationManager::udsCheckVersion, tx);
+}
+
+void ViewController::onShowAlert(QString title, QString message)
+{
+    emit showAlert(title, message);
+}
+
+void ViewController::onToggleBusyIndicator(bool value)
+{
+    fetchingInProgress = value;
+    emit fetchingInProgressChanged();
+}
+
+void ViewController::onToggleConnection(bool value)
+{
+    isConnected = value;
+    emit connectionChanged();
+}
+
+bool ViewController::getFetchingInProgress() const
+{
+    return fetchingInProgress;
+}
+
+void ViewController::setFetchingInProgress(bool value)
+{
+    fetchingInProgress = value;
+    emit fetchingInProgressChanged();
 }
 
 bool ViewController::getIsConnected() const

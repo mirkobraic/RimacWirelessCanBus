@@ -1,4 +1,4 @@
-QT += quick concurrent
+QT += quick concurrent network
 
 CONFIG += c++17
 
@@ -16,7 +16,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-        CanLayer/KvaserWirelessCan.cpp \
+        CanLayer/Kvaser/KvaserNetworkService.cpp \
+        CanLayer/Kvaser/KvaserWirelessCan.cpp \
         CommunicationManager.cpp \
         IsotpLayer/IsotpCanProvider.cpp \
         IsotpLayer/IsotpManager.cpp \
@@ -24,6 +25,7 @@ SOURCES += \
         Models/CanMessage.cpp \
         Models/CanMessageListModel.cpp \
         UdsLayer/UdsConfigManager.cpp \
+        UdsLayer/UdsConstantsUnpacker.cpp \
         UdsLayer/UdsManager.cpp \
         ViewController.cpp \
         main.cpp
@@ -44,7 +46,9 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     CanLayer/CanBusInterface.h \
     CanLayer/CanBusInterfaceFactory.h \
-    CanLayer/KvaserWirelessCan.h \
+    CanLayer/Kvaser/KvaserConstants.h \
+    CanLayer/Kvaser/KvaserNetworkService.h \
+    CanLayer/Kvaser/KvaserWirelessCan.h \
     CommunicationManager.h \
     IsotpLayer/IsotpCanProvider.h \
     IsotpLayer/IsotpManager.h \
@@ -52,14 +56,9 @@ HEADERS += \
     Models/CanMessage.h \
     Models/CanMessageListModel.h \
     UdsLayer/UdsConfigManager.h \
+    UdsLayer/UdsConstantsUnpacker.h \
     UdsLayer/UdsManager.h \
     ViewController.h
-
-#kvaser
-unix:!macx: LIBS += -L$$PWD/../linuxcan/canlib/ -lcanlib
-
-INCLUDEPATH += $$PWD/../linuxcan/include
-DEPENDPATH += $$PWD/../linuxcan/include
 
 #isotp
 unix:!macx: LIBS += -L$$PWD/../udsclient_and_isotp/Isotp/Ubuntu/ -lisotp_lib

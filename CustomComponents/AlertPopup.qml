@@ -19,7 +19,7 @@ Item {
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
 
         Column {
-            spacing: 20
+            spacing: 18
             width: parent.width
             Text {
                 id: title

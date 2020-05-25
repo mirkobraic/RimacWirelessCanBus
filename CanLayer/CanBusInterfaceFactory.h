@@ -1,7 +1,7 @@
 #ifndef CANBUSINTERFACEFACTORY_H
 #define CANBUSINTERFACEFACTORY_H
 
-#include "KvaserWirelessCan.h"
+#include "Kvaser/KvaserWirelessCan.h"
 
 enum CanBusProvider {
     kvaser = 0,
