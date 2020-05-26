@@ -61,13 +61,13 @@ HEADERS += \
     ViewController.h
 
 #isotp
-unix:!macx: LIBS += -L$$PWD/../udsclient_and_isotp/Isotp/Ubuntu/ -lisotp_lib
+unix:!macx: LIBS += -L$$PWD/Libs/udsclient_and_isotp/Isotp/Ubuntu/ -lisotp_lib
 
-INCLUDEPATH += $$PWD/../udsclient_and_isotp/Isotp/Include
-DEPENDPATH += $$PWD/../udsclient_and_isotp/Isotp/Include
+INCLUDEPATH += $$PWD/Libs/udsclient_and_isotp/Isotp/Include
+DEPENDPATH += $$PWD/Libs/udsclient_and_isotp/Isotp/Include
 
 #uds
-unix:!macx: LIBS += -L$$PWD/../udsclient_and_isotp/UdsClient/Ubuntu/ -luds_client
+unix:!macx: LIBS += -L$$PWD/Libs/udsclient_and_isotp/UdsClient/Ubuntu/ -luds_client
 
-INCLUDEPATH += $$PWD/../udsclient_and_isotp/UdsClient/Include
-DEPENDPATH += $$PWD/../udsclient_and_isotp/UdsClient/Include
+INCLUDEPATH += $$PWD/Libs/udsclient_and_isotp/UdsClient/Include
+DEPENDPATH += $$PWD/Libs/udsclient_and_isotp/UdsClient/Include
