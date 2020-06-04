@@ -17,7 +17,6 @@ public:
     ~ViewController();
 
     Q_PROPERTY(bool isConnected READ getIsConnected NOTIFY connectionChanged)
-    Q_PROPERTY(bool isRawCanEnabled READ getIsRawCanEnabled WRITE setIsRawCanEnabled NOTIFY isRawCanEnabledChanged)
     Q_PROPERTY(bool fetchingInProgress READ getFetchingInProgress WRITE setFetchingInProgress NOTIFY fetchingInProgressChanged)
 
     Q_INVOKABLE void connectTapped(int provider, QString ipAddress, QString port, int baudRate, const QVariantList& rxTxPairs);
@@ -29,15 +28,11 @@ public:
 
     bool getIsConnected() const;
 
-    bool getIsRawCanEnabled() const;
-    void setIsRawCanEnabled(bool value);
-
     bool getFetchingInProgress() const;
     void setFetchingInProgress(bool value);
 
 signals:
     void connectionChanged();
-    void isRawCanEnabledChanged();
     void showAlert(QString title, QString message);
     void fetchingInProgressChanged();
 
@@ -54,7 +49,6 @@ private:
 
     bool isConnected = false;
     bool fetchingInProgress = false;
-    bool isRawCanEnabled = false;
 };
 
 #endif // VIEWCONTROLLER_H

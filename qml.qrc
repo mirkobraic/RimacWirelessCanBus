@@ -7,5 +7,9 @@
         <file>CustomComponents/CanMessagesListView.qml</file>
         <file>CustomComponents/SendCanMessageField.qml</file>
         <file>CustomComponents/AlertPopup.qml</file>
+        <file>qtquickcontrols2.conf</file>
+        <file>RawCanPage.qml</file>
+        <file>UdsClientPage.qml</file>
+        <file>SetupPage.qml</file>
     </qresource>
 </RCC>

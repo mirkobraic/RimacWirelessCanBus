@@ -71,3 +71,5 @@ unix:!macx: LIBS += -L$$PWD/Libs/udsclient_and_isotp/UdsClient/Ubuntu/ -luds_cli
 
 INCLUDEPATH += $$PWD/Libs/udsclient_and_isotp/UdsClient/Include
 DEPENDPATH += $$PWD/Libs/udsclient_and_isotp/UdsClient/Include
+
+DISTFILES +=
