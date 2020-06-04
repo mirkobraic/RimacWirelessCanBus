@@ -69,15 +69,29 @@ ApplicationWindow {
     footer: TabBar {
         id: tabBar
         currentIndex: swipeView.currentIndex
+        property color backgroundColor: "#fecb2e"
+        property color selectedColor: "#303030"
 
         TabButton {
             text: qsTr("Setup")
+            Rectangle {
+                anchors.fill: parent
+                color: parent.checked ? tabBar.backgroundColor : tabBar.selectedColor
+            }
         }
         TabButton {
             text: qsTr("UDS Client")
+            Rectangle {
+                anchors.fill: parent
+                color: parent.checked ? tabBar.backgroundColor : tabBar.selectedColor
+            }
         }
         TabButton {
             text: qsTr("Raw CAN")
+            Rectangle {
+                anchors.fill: parent
+                color: parent.checked ? tabBar.backgroundColor : tabBar.selectedColor
+            }
         }
     }
 }

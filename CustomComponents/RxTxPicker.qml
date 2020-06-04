@@ -1,6 +1,5 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.14
-import QtQuick.Layouts 1.14
 
 Item {
     id: root
@@ -11,78 +10,76 @@ Item {
     signal addButtonClicked()
     enabled: !viewController.isConnected
 
-    Layout.fillWidth: true
-    Layout.fillHeight: true
+    ComboBox {
+        id: comboBox
+        width: parent.width - parent.height - 1
+        height: 44
 
-    Row {
-        anchors.fill: parent
-        spacing: 1
+        textRole: "desc"
+        indicator: Canvas { }
 
-        ComboBox {
-            id: comboBox
-            width: parent.width - parent.height - 1
+        delegate: SwipeDelegate {
+            id: swipeDelegate
+            width: parent.width
+            text:  "rx: " + model.rx + "  tx: " + model.tx
 
-            textRole: "desc"
-            indicator: Canvas { }
-
-            delegate: SwipeDelegate {
-                id: swipeDelegate
+            swipe.right: Rectangle {
                 width: parent.width
-                text:  "rx: " + model.rx + "  tx: " + model.tx
+                height: parent.height
+                clip: true
+                color: Qt.darker("tomato", 1.1)
 
-                swipe.right: Rectangle {
-                    width: parent.width
-                    height: parent.height
-                    clip: true
-                    color: Qt.darker("tomato", 1.1)
+                Label {
+                    padding: 20
+                    anchors.fill: parent
 
-                    Label {
-                        padding: 20
-                        anchors.fill: parent
-
-                        horizontalAlignment: Qt.AlignRight
-                        verticalAlignment: Qt.AlignVCenter
-                        color: "white"
-                        text: "Delete"
-                        opacity: 2 * -swipeDelegate.swipe.position
-                    }
-                    SwipeDelegate.onClicked: swipeDelegate.swipe.close()
+                    horizontalAlignment: Qt.AlignRight
+                    verticalAlignment: Qt.AlignVCenter
+                    color: "white"
+                    text: "Delete"
+                    opacity: 2 * -swipeDelegate.swipe.position
                 }
+                SwipeDelegate.onClicked: swipeDelegate.swipe.close()
+            }
 
-                swipe.onCompleted: comboBox.model.remove(index)
+            swipe.onCompleted: comboBox.model.remove(index)
 
-                ListView.onRemove: SequentialAnimation {
-                    PropertyAction {
-                        target: swipeDelegate
-                        property: "ListView.delayRemove"
-                        value: true
-                    }
-                    NumberAnimation {
-                        target: swipeDelegate
-                        property: "height"
-                        to: 0
-                        easing.type: Easing.InOutQuad
-                    }
-                    PropertyAction {
-                        target: swipeDelegate
-                        property: "ListView.delayRemove"
-                        value: false
-                    }
+            ListView.onRemove: SequentialAnimation {
+                PropertyAction {
+                    target: swipeDelegate
+                    property: "ListView.delayRemove"
+                    value: true
+                }
+                NumberAnimation {
+                    target: swipeDelegate
+                    property: "height"
+                    to: 0
+                    easing.type: Easing.InOutQuad
+                }
+                PropertyAction {
+                    target: swipeDelegate
+                    property: "ListView.delayRemove"
+                    value: false
                 }
             }
         }
+    }
 
-        Button {
-            id: addButton
-            height: comboBox.height
-            width: height
-            leftPadding: 6
-            bottomPadding: 10
+    Button {
+        id: addButton
+        height: comboBox.height
+        width: height
+        leftPadding: 6
+        bottomPadding: 10
+        text: "+"
+        font.bold: false
+        font.pointSize: 20
 
-            text: "+"
-            font.bold: false
-            font.pointSize: 20
-            onClicked: root.addButtonClicked()
+        anchors {
+            left: comboBox.right
+            verticalCenter: comboBox.verticalCenter
+            leftMargin: 1
         }
+        onClicked: root.addButtonClicked()
     }
 }
