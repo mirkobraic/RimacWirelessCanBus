@@ -24,19 +24,13 @@ Item {
         model: recievedMessages
         // TODO: maybe replace this with viewController.recievedMessages
 
-        Rectangle {
-            anchors.fill: parent
-            color: "#e6e6e6"
-            z: -1
-        }
-
         Component {
             id: listViewDelegate
 
             Rectangle {
                 height: 44
                 width: parent.width
-                color: "#fbfbfb"
+                color: "#f2f2f2"
 
                 Row {
                     id: row
