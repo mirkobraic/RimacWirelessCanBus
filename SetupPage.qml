@@ -35,7 +35,6 @@ Item {
 
             anchors {
                 left: parent.left
-                leftMargin: 15
                 top: parent.top
                 topMargin: 20
             }
