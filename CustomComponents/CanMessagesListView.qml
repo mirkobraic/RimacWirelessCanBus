@@ -22,7 +22,6 @@ Item {
 
         delegate: listViewDelegate
         model: recievedMessages
-        // TODO: maybe replace this with viewController.recievedMessages
 
         Component {
             id: listViewDelegate

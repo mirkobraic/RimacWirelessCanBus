@@ -30,9 +30,7 @@ Item {
             bottom: sendField.top
             bottomMargin: 10
             right: parent.right
-            rightMargin: 0
             left: parent.left
-            leftMargin: 0
         }
     }
 

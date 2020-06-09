@@ -24,7 +24,7 @@ void ViewController::connectTapped(int provider, QString ipAddress, QString port
     communicationManager = new CommunicationManager((CanBusProvider)provider, pairs);
     QObject::connect(communicationManager, SIGNAL(newCanMessageRecieved(CanMessage)), this, SLOT(onNewCanMessageRecieved(CanMessage)));
     QObject::connect(communicationManager, SIGNAL(showAlert(QString, QString)), this, SLOT(onShowAlert(QString, QString)));
-    QObject::connect(communicationManager, SIGNAL(toggleBusyIndicator(bool)), this, SLOT(onToggleBusyIndicator(bool)));
+    QObject::connect(communicationManager, SIGNAL(fetchingInProgress(bool)), this, SLOT(onFetchingInProgress(bool)));
     QObject::connect(communicationManager, SIGNAL(toggleConnection(bool)), this, SLOT(onToggleConnection(bool)));
 
     communicationManager->connect(ipAddress, port, (BaudRate)baudRate);
@@ -67,9 +67,30 @@ void ViewController::onNewCanMessageRecieved(CanMessage message)
     recievedMessages->addMessage(message);
 }
 
-void ViewController::checkVersion(int tx)
+void ViewController::udsCheckVersion(int tx)
 {
     QtConcurrent::run(communicationManager, &CommunicationManager::udsCheckVersion, tx);
+}
+
+void ViewController::udsGetSupportedDtcsStatus(int tx)
+{
+    auto completion = [this] (const std::vector<int> &keys, const std::vector<int> &values) {
+        QVector<int> qKeys = QVector<int>(keys.begin(), keys.end());
+        QVector<int> qValues = QVector<int>(values.begin(), values.end());
+
+        emit setSupportedDtcs(qKeys, qValues);
+    };
+
+//    QVector<int> qKeys = {1, 2, 344};
+//    QVector<int> qValues = {432, 21, 32};
+//    emit setSupportedDtcs(qKeys, qValues);
+
+    QtConcurrent::run(communicationManager, &CommunicationManager::udsGetSupportedDtcsStatus, tx, completion);
+}
+
+void ViewController::udsClearDtcInformation(int tx)
+{
+    QtConcurrent::run(communicationManager, &CommunicationManager::udsClearDtcInformation, tx);
 }
 
 void ViewController::onShowAlert(QString title, QString message)
@@ -77,7 +98,7 @@ void ViewController::onShowAlert(QString title, QString message)
     emit showAlert(title, message);
 }
 
-void ViewController::onToggleBusyIndicator(bool value)
+void ViewController::onFetchingInProgress(bool value)
 {
     fetchingInProgress = value;
     emit fetchingInProgressChanged();

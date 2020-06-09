@@ -24,7 +24,9 @@ public:
 
     Q_INVOKABLE void sendDirectCanMessage(QString messageId, const QVector<QString> &bytes);
 
-    Q_INVOKABLE void checkVersion(int tx);
+    Q_INVOKABLE void udsCheckVersion(int tx);
+    Q_INVOKABLE void udsGetSupportedDtcsStatus(int tx);
+    Q_INVOKABLE void udsClearDtcInformation(int tx);
 
     bool getIsConnected() const;
 
@@ -34,12 +36,13 @@ public:
 signals:
     void connectionChanged();
     void showAlert(QString title, QString message);
+    void setSupportedDtcs(QVector<int> keys, QVector<int> values);
     void fetchingInProgressChanged();
 
 public slots:
       void onNewCanMessageRecieved(CanMessage message);
       void onShowAlert(QString title, QString message);
-      void onToggleBusyIndicator(bool value);
+      void onFetchingInProgress(bool value);
       void onToggleConnection(bool value);
 
 private:
