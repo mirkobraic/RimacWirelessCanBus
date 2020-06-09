@@ -57,6 +57,9 @@ void CommunicationManager::udsCheckVersion(uint32_t tx)
 
     auto response = udsClient->check_version_servicees.send_check_version(tx);
     response.unpack_response(positiveResponse, negativeResponse, errorResponse);
+
+    //udsClient->dtc_api_services.get_status_of_all_supported_dtcs(tx);
+    //udsClient->dtc_api_services.send_clear_dtc_information(tx, 0xFFFFFF);
 }
 
 void CommunicationManager::onNewDirectCanMessage(uint32_t id, std::vector<uint8_t> data)

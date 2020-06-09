@@ -110,7 +110,7 @@ QString CanMessageListModel::formatCanId(CanMessage message) const
     QString hexId;
     hexId.setNum(message.getId(), 16);
     int desiredLength = message.isExtended() ? 8 : 3;
-    while (hexId.length() < desiredLength){
+    while (hexId.length() < desiredLength) {
         hexId.prepend("0");
     }
     return hexId.toUpper();

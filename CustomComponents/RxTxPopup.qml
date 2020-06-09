@@ -23,7 +23,8 @@ Item {
 
         Column {
             anchors.topMargin: 10
-            spacing: 5
+            spacing: 15
+
             Text {
                 text: "Enter rx - tx pair:"
             }

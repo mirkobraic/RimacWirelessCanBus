@@ -64,9 +64,7 @@ void ViewController::sendDirectCanMessage(QString messageId, const QVector<QStri
 
 void ViewController::onNewCanMessageRecieved(CanMessage message)
 {
-    if (isRawCanEnabled) {
-        recievedMessages->addMessage(message);
-    }
+    recievedMessages->addMessage(message);
 }
 
 void ViewController::checkVersion(int tx)
@@ -105,15 +103,4 @@ void ViewController::setFetchingInProgress(bool value)
 bool ViewController::getIsConnected() const
 {
     return isConnected;
-}
-
-bool ViewController::getIsRawCanEnabled() const
-{
-    return isRawCanEnabled;
-}
-
-void ViewController::setIsRawCanEnabled(bool value)
-{
-    isRawCanEnabled = value;
-    emit isRawCanEnabledChanged();
 }
