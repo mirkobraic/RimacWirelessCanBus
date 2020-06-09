@@ -10,12 +10,27 @@ uint8_t CanMessage::getDlc() const
     return dlc;
 }
 
-QByteArray CanMessage::getData() const
+std::vector<uint8_t> CanMessage::getData() const
 {
     return data;
 }
 
-CanMessage::CanMessage(uint32_t id, uint8_t dlc, QByteArray data)
+void CanMessage::setData(const std::vector<uint8_t> &value)
+{
+    data = value;
+}
+
+void CanMessage::setId(const uint32_t &value)
+{
+    id = value;
+}
+
+void CanMessage::setDlc(const uint8_t &value)
+{
+    dlc = value;
+}
+
+CanMessage::CanMessage(uint32_t id, uint8_t dlc, std::vector<uint8_t> data)
 {
     if (id > maxExtCanId || id == 0) {
         throw std::invalid_argument("Invalid ID");
@@ -26,7 +41,7 @@ CanMessage::CanMessage(uint32_t id, uint8_t dlc, QByteArray data)
 
     this->id = id;
     this->dlc = dlc;
-    this->data = QByteArray(data.data(), dlc);  // performs deep copy
+    this->data = data;
 }
 
 bool CanMessage::isExtended()

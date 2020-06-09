@@ -2,7 +2,7 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 
-#include "CanBusManager.h"
+#include "ViewController.h"
 
 int main(int argc, char *argv[])
 {
@@ -20,8 +20,8 @@ int main(int argc, char *argv[])
     CanMessageListModel recievedMessages;
     engine.rootContext()->setContextProperty(QStringLiteral("recievedMessages"), &recievedMessages);
 
-    CanBusManager manager(kvaser, &recievedMessages);
-    engine.rootContext()->setContextProperty(QStringLiteral("canBusManager"), &manager);
+    ViewController controller(&recievedMessages);
+    engine.rootContext()->setContextProperty(QStringLiteral("viewController"), &controller);
     engine.load(url);
 
     return app.exec();

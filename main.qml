@@ -1,11 +1,9 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.14
-import QtQuick.Controls.Styles 1.4
 import QtQuick.Window 2.12
+import "CustomComponents"
 
-//import com.RimacWirelessCanBus 1.0
-
-Window {
+ApplicationWindow {
     id: mainWindow
     visible: true
     width: 480
@@ -16,254 +14,81 @@ Window {
 
     readonly property int screenMargin: 10
 
-   Item {
-        id: headerContainer
-        anchors.top: parent.top
-        anchors.topMargin: screenMargin
-        anchors.right: parent.right
-        anchors.rightMargin: screenMargin
-        anchors.left: parent.left
-        anchors.leftMargin: screenMargin
-        height: 40
+    Connections {
+        target: viewController
+        onShowAlert: alertPopup.open(title, message)
+    }
 
-        Image {
-            id: logoImgae
-            anchors.left: parent.left
-            anchors.verticalCenter: connectionButtonsRow.verticalCenter
-            fillMode: Image.PreserveAspectFit
-            height: 40
-            source: "images/rimacLogo.png"
-        }
+    AlertPopup {
+        id: alertPopup
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: parent.width * 0.4
+    }
 
-        Row {
-            id: connectionButtonsRow
-            anchors.right: parent.right
-            spacing: 10
+    Rectangle {
+        anchors.fill: parent
+        enabled: busyIndicator.running
+        visible: busyIndicator.running
+        color: "#11000000"
+        z: 1
 
-            Text {
-                id: connectionStatusText
-                anchors.bottom: chooseButton.bottom
-                anchors.bottomMargin: 0
-                text: canBusManager.isConnected ? "Connected" : "Not connected"
-                opacity: 0.6
-                font.pointSize: 9
-            }
-
-            Button {
-                id: chooseButton
-                // TODO: show list of available devices
-                text: "Choose a device"
-                enabled: false
-            }
-
-            Button {
-                id: connectToggle
-                text: canBusManager.isConnected ? "Disconnect" : "Connect"
-                onClicked: canBusManager.isConnected ? canBusManager.disconnectTapped() : canBusManager.connectTapped()
-            }
-        }
-   }
-
-    ListView {
-        id: canMessagesListView
-        topMargin: 10
-        bottomMargin: 10
-        anchors.top: headerContainer.bottom
-        anchors.topMargin: 10
-        anchors.bottom: footerContainer.top
-        anchors.bottomMargin: 10
-        anchors.right: parent.right
-        anchors.rightMargin: 0
-        anchors.left: parent.left
-        anchors.leftMargin: 0
-
-        clip: true
-        spacing: 1
-
-        onCountChanged: {
-            if (!dragging) {
-                currentIndex = count - 1
-            }
-        }
-
-        delegate: listViewDelegate
-        model: recievedMessages
-
-        Rectangle {
+        MouseArea {
             anchors.fill: parent
-            color: "#e6e6e6"
-            z: -1
         }
 
-        Component {
-            id: listViewDelegate
-
-            Rectangle {
-                height: 44
-                width: parent.width
-                color: "#fbfbfb"
-
-                Row {
-                    anchors.fill: parent
-                    anchors.leftMargin: screenMargin
-
-                    Text {
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: parent.width * 0.3
-                        font.pointSize: 12
-                        text: model.canId
-                    }
-
-                    Text {
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: parent.width * 0.7
-                        font.pointSize: 12
-                        text: model.canData
-                    }
-                }
-            }
-        }
-
-        ListModel {
-            id: listModel
-            ListElement {
-                canId: "example id"
-                data: "example data"
-            }
+        BusyIndicator {
+            id: busyIndicator
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.horizontalCenter: parent.horizontalCenter
+            running: viewController.fetchingInProgress
         }
     }
 
-    Item {
-        id: footerContainer
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: screenMargin
-        anchors.right: parent.right
-        anchors.rightMargin: screenMargin
-        anchors.left: parent.left
-        anchors.leftMargin: screenMargin
-        height: 40
+    SwipeView {
+        id: swipeView
+        anchors.fill: parent
+        currentIndex: tabBar.currentIndex
 
-        TextField {
-            id: canIdTextField
-            width: parent.width * 0.18
-            font.capitalization: Font.AllUppercase
-            horizontalAlignment: Text.AlignHCenter
-            anchors.left: parent.left
-            anchors.verticalCenter: parent.verticalCenter
-            placeholderText: "ID"
-            validator: RegExpValidator { regExp: /[0-9A-Fa-f]{0,8}/ }
-
-            function adjustIdToLength(len) {
-                while (text.length < len) {
-                    text = '0' + text;
-                }
-                while (text.length > len) {
-                    text = text.substring(1);
-                }
-            }
-
-            function setExtId() {
-                adjustIdToLength(8)
-                // highest extended can id is 0x1fffffff
-                if (text.charAt(0) > '1') {
-                    text = "1FFFFFFF";
-                }
-            }
-
-            function setStdId() {
-                adjustIdToLength(3);
-            }
-
-            function formatId() {
-                // highest standard can id is 0x7ff
-                if (parseInt(text, 16) > 0x7FF) {
-                    setExtId();
-                } else {
-                    setStdId();
-                }
-            }
-
-            onEditingFinished: {
-                if (text.length > 0) {
-                    formatId();
-                }
-            }
-            onTextChanged: {
-                color = "black"
-            }
+        SetupPage {
+            id: setupPage
         }
 
-        Row {
-            id: canDataContainer
-            anchors.left: canIdTextField.right
-            anchors.leftMargin: 10
-            anchors.right: sendButton.left
-            anchors.rightMargin: 10
-            anchors.verticalCenter: parent.verticalCenter
-            spacing: -1
-
-            readonly property real textFieldWidth: width / 8 + 1
-
-            Repeater {
-                id: canDataTextFields
-                model: 8
-
-                function checkTextFields() {
-                    let maxByte = 0;
-                    let i = 0;
-                    for (i = 0; i < count; i++) {
-                        if (itemAt(i).text) {
-                            maxByte = i;
-                        }
-                    }
-
-                    for (i = 0; i < maxByte; i++) {
-                        if (itemAt(i).text === "") {
-                            itemAt(i).text = "00";
-                        }
-                    }
-                }
-
-                TextField {
-                    placeholderText: index + 1
-                    width: canDataContainer.textFieldWidth
-                    padding: 1
-                    font.capitalization: Font.AllUppercase
-                    horizontalAlignment: Text.AlignHCenter
-                    validator: RegExpValidator { regExp: /[0-9A-Fa-f]{0,2}/ }
-
-                    onEditingFinished: {
-                        if (text.length == 1) {
-                            text = "0" + text;
-                        }
-                    }
-                    onTextChanged: {
-                        color = "black"
-                    }
-                }
-            }
+        UdsClientPage {
+            id: udsClientPage
+            currentTx: setupPage.currentTx
         }
 
-        Button {
-            id: sendButton
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-            text: "Send"
-            enabled: canBusManager.isConnected
-            onClicked: {
-                canDataTextFields.checkTextFields();
-                let data = "";
-                for (let i = 0; i < canDataTextFields.count; i++) {
-                    data += canDataTextFields.itemAt(i).text;
-                }
-                if (canIdTextField.text === "") {
-                    canIdTextField.color = "red";
-                }
-                if (data === "") {
-                    canDataTextFields.itemAt(0).color = "red";
-                }
+        RawCanPage {
+            id: rawCanPage
+        }
+    }
 
-                canBusManager.sendTapped(canIdTextField.text, data);
+    footer: TabBar {
+        id: tabBar
+        currentIndex: swipeView.currentIndex
+        property color backgroundColor: "#fecb2e"
+        property color selectedColor: "#303030"
+
+        TabButton {
+            text: qsTr("Setup")
+            Rectangle {
+                anchors.fill: parent
+                color: parent.checked ? tabBar.backgroundColor : tabBar.selectedColor
+            }
+        }
+        TabButton {
+            text: qsTr("UDS Client")
+            Rectangle {
+                anchors.fill: parent
+                color: parent.checked ? tabBar.backgroundColor : tabBar.selectedColor
+            }
+        }
+        TabButton {
+            text: qsTr("Raw CAN")
+            Rectangle {
+                anchors.fill: parent
+                color: parent.checked ? tabBar.backgroundColor : tabBar.selectedColor
             }
         }
     }
@@ -271,7 +96,9 @@ Window {
 
 /*##^##
 Designer {
-    D{i:10;anchors_x:147}D{i:9;anchors_x:"-420"}D{i:16;anchors_x:147}D{i:17;anchors_x:147}
-D{i:15;anchors_x:"-420"}
+    D{i:9;anchors_x:"-420"}D{i:10;anchors_x:147}D{i:8;anchors_x:"-420"}D{i:12;anchors_x:"-420"}
+D{i:13;anchors_x:147}D{i:14;anchors_x:"-420"}D{i:15;anchors_x:"-420"}D{i:19;anchors_x:147}
+D{i:20;anchors_x:147}D{i:21;anchors_x:"-420"}D{i:18;anchors_x:"-420"}D{i:22;anchors_x:147}
+D{i:17;anchors_x:147}D{i:16;anchors_x:147}
 }
 ##^##*/

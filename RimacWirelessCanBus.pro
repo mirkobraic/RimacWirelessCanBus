@@ -1,6 +1,8 @@
-QT += quick concurrent
+QT += quick concurrent network
 
-CONFIG += c++11
+CONFIG += c++17
+
+QMAKE_CXXFLAGS += -std=c++11
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
@@ -14,10 +16,18 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-        CanBusManager.cpp \
-        CanMessage.cpp \
-        CanMessageListModel.cpp \
-        KvaserWirelessInterface.cpp \
+        CanLayer/Kvaser/KvaserNetworkService.cpp \
+        CanLayer/Kvaser/KvaserWirelessCan.cpp \
+        CommunicationManager.cpp \
+        IsotpLayer/IsotpCanProvider.cpp \
+        IsotpLayer/IsotpManager.cpp \
+        Logger.cpp \
+        Models/CanMessage.cpp \
+        Models/CanMessageListModel.cpp \
+        UdsLayer/UdsConfigManager.cpp \
+        UdsLayer/UdsConstantsUnpacker.cpp \
+        UdsLayer/UdsManager.cpp \
+        ViewController.cpp \
         main.cpp
 
 RESOURCES += qml.qrc
@@ -33,22 +43,33 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-DISTFILES +=
-
 HEADERS += \
-    CanBusInterface.h \
-    CanBusInterfaceFactory.h \
-    CanBusManager.h \
-    CanMessage.h \
-    CanMessageListModel.h \
-    KvaserWirelessInterface.h
+    CanLayer/CanBusInterface.h \
+    CanLayer/CanBusInterfaceFactory.h \
+    CanLayer/Kvaser/KvaserConstants.h \
+    CanLayer/Kvaser/KvaserNetworkService.h \
+    CanLayer/Kvaser/KvaserWirelessCan.h \
+    CommunicationManager.h \
+    IsotpLayer/IsotpCanProvider.h \
+    IsotpLayer/IsotpManager.h \
+    Logger.h \
+    Models/CanMessage.h \
+    Models/CanMessageListModel.h \
+    UdsLayer/UdsConfigManager.h \
+    UdsLayer/UdsConstantsUnpacker.h \
+    UdsLayer/UdsManager.h \
+    ViewController.h
 
-# Kvaser libraries
-INCLUDEPATH += $$PWD/../CANlib/INC
-DEPENDPATH += $$PWD/../CANlib/INC
+#isotp
+unix:!macx: LIBS += -L$$PWD/Libs/udsclient_and_isotp/Isotp/Ubuntu/ -lisotp_lib
 
-LIBS += $$PWD/../CANlib/Lib/MS/canlib32.lib
-LIBS += $$PWD/../CANlib/Lib/x64/canlib32.lib
+INCLUDEPATH += $$PWD/Libs/udsclient_and_isotp/Isotp/Include
+DEPENDPATH += $$PWD/Libs/udsclient_and_isotp/Isotp/Include
 
-LIBS += $$PWD/../CANlib/Lib/MS/kvrlib.lib
-LIBS += $$PWD/../CANlib/Lib/x64/kvrlib.lib
+#uds
+unix:!macx: LIBS += -L$$PWD/Libs/udsclient_and_isotp/UdsClient/Ubuntu/ -luds_client
+
+INCLUDEPATH += $$PWD/Libs/udsclient_and_isotp/UdsClient/Include
+DEPENDPATH += $$PWD/Libs/udsclient_and_isotp/UdsClient/Include
+
+DISTFILES +=

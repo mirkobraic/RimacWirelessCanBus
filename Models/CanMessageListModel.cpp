@@ -33,6 +33,23 @@ QVariant CanMessageListModel::data(const QModelIndex &index, int role) const
 
 void CanMessageListModel::addMessage(const CanMessage &message)
 {
+    for (int i = 0; i < messages.count(); i++) {
+        if (messages[i].getId() == message.getId()) {
+            std::vector<uint8_t> data = message.getData();
+            QVector<uint8_t> dataVec = QVector<uint8_t>(data.begin(), data.end());
+            QList<uint8_t> dataList = QList<uint8_t>::fromVector(dataVec);
+
+            QList<QVariant> variantList;
+            foreach(uint8_t byte, dataList) {
+                variantList << QVariant(byte);
+            }
+
+            QVariant variantData(variantList);
+            setData(index(i, 0), variantData, CanData);
+            return;
+        }
+    }
+
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
     messages.append(message);
     endInsertRows();
@@ -46,6 +63,32 @@ bool CanMessageListModel::removeRows(int row, int count, const QModelIndex &pare
         messages.removeAt(i);
     }
     endRemoveRows();
+    return true;
+}
+
+bool CanMessageListModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    if (index.row() >= messages.count()) {
+        return false;
+    }
+
+    CanMessage &message = messages[index.row()];
+
+    switch (role) {
+    case CanId:
+        message.setId(value.toUInt());
+        break;
+    case CanData:
+        QList variantList = value.toList();
+        QList<uint8_t> dataList;
+        foreach(QVariant v, variantList) {
+            dataList << v.value<uint8_t>();
+        }
+        std::vector<uint8_t> data = std::vector<uint8_t>(dataList.begin(), dataList.end());
+        message.setData(data);
+        break;
+    }
+    emit dataChanged(index, index, QVector<int>() << role);
     return true;
 }
 
@@ -67,7 +110,7 @@ QString CanMessageListModel::formatCanId(CanMessage message) const
     QString hexId;
     hexId.setNum(message.getId(), 16);
     int desiredLength = message.isExtended() ? 8 : 3;
-    while (hexId.length() < desiredLength){
+    while (hexId.length() < desiredLength) {
         hexId.prepend("0");
     }
     return hexId.toUpper();
@@ -75,8 +118,12 @@ QString CanMessageListModel::formatCanId(CanMessage message) const
 
 QString CanMessageListModel::formatCanData(CanMessage message) const
 {
-    QString data = message.getData().toHex();
-    // adds space after every two characters
-    data.replace(QRegularExpression("(.{2})"), "\\1 ");
-    return data.toUpper();
+    QString formatted;
+    for(const uint8_t &byte: message.getData()) {
+        if (byte < 16) {
+            formatted += "0";
+        }
+        formatted += QString::number(byte, 16) + " ";
+    }
+    return formatted.toUpper();
 }
