@@ -29,6 +29,7 @@ void ViewController::connectTapped(int provider, QString ipAddress, QString port
 
     communicationManager->connect(ipAddress, port, (BaudRate)baudRate);
     recievedMessages->removeAll();
+    emit clearSupportedDtcs();
 }
 
 void ViewController::disconnectTapped()
@@ -80,10 +81,6 @@ void ViewController::udsGetSupportedDtcsStatus(int tx)
 
         emit setSupportedDtcs(qKeys, qValues);
     };
-
-//    QVector<int> qKeys = {1, 2, 344};
-//    QVector<int> qValues = {432, 21, 32};
-//    emit setSupportedDtcs(qKeys, qValues);
 
     QtConcurrent::run(communicationManager, &CommunicationManager::udsGetSupportedDtcsStatus, tx, completion);
 }

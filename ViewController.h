@@ -37,6 +37,7 @@ signals:
     void connectionChanged();
     void showAlert(QString title, QString message);
     void setSupportedDtcs(QVector<int> keys, QVector<int> values);
+    void clearSupportedDtcs();
     void fetchingInProgressChanged();
 
 public slots:

@@ -18,6 +18,8 @@ Item {
         }
     }
 
+
+
     Flickable {
         id: flickable
         flickableDirection: Flickable.VerticalFlick

@@ -26,23 +26,9 @@ ApplicationWindow {
         width: parent.width * 0.4
     }
 
-    Rectangle {
+    MBBusyIndicator {
         anchors.fill: parent
-        enabled: busyIndicator.running
-        visible: busyIndicator.running
-        color: "#11000000"
         z: 1
-
-        MouseArea {
-            anchors.fill: parent
-        }
-
-        BusyIndicator {
-            id: busyIndicator
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.horizontalCenter: parent.horizontalCenter
-            running: viewController.fetchingInProgress
-        }
     }
 
     SwipeView {

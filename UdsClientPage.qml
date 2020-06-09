@@ -12,75 +12,30 @@ Item {
         target: viewController
         onSetSupportedDtcs: {
             listView.model.clear();
-            console.log("AAAAAAAAAAAAAA");
             for (var i = 0; i < keys.length; i++) {
-                console.log(keys[i]);
-                listView.model.append({ "key": keys[i], "value": values[i] });
+                listView.model.append({ "firstField": keys[i], "secondField": values[i] });
             }
+        }
+
+        onClearSupportedDtcs: {
+            listView.model.clear()
         }
     }
 
-    Label {
-        id: titleLabel
-        text: "DTCs"
-        font.bold: true
-        font.pointSize: 14
-
+    TitledListView {
+        id: listView
         anchors {
             top: parent.top
             topMargin: 10
-            left: parent.left
-            leftMargin: 10
-        }
-    }
-
-    ListView {
-        id: listView
-        anchors {
-            top: titleLabel.bottom
-            topMargin: 10
             bottom: buttonBackground.top
-            bottomMargin: 10
             right: parent.right
             left: parent.left
         }
+        topMargin: 10
+        contentInset: 10
 
-        clip: true
-        spacing: 1
-
-        delegate: listViewDelegate
-        model: ListModel { }
-
-        Component {
-            id: listViewDelegate
-
-            Rectangle {
-                height: 44
-                width: parent.width
-                color: "#f2f2f2"
-
-                Row {
-                    id: row
-                    anchors.fill: parent
-
-                    Text {
-                        anchors.verticalCenter: parent.verticalCenter
-                        horizontalAlignment: Text.AlignHCenter
-                        width: parent.width * 0.5
-                        font.pointSize: 12
-                        text: model.key
-                    }
-
-                    Text {
-                        anchors.verticalCenter: parent.verticalCenter
-                        horizontalAlignment: Text.AlignHCenter
-                        width: parent.width * 0.5
-                        font.pointSize: 12
-                        text: model.value
-                    }
-                }
-            }
-        }
+        title: "DTCs"
+        horizontalTextAlignment: Text.AlignHCenter
     }
 
     DropShadow {
