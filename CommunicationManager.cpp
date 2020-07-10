@@ -39,8 +39,9 @@ void CommunicationManager::udsCheckVersion(uint32_t tx)
 {
     emit fetchingInProgress(true);
     auto positiveResponse = [this] (const std::pair<uds::version_params, uds::type_of_server> &pair) {
-        QString message = "Version params: " + QString::number(pair.first.major) + "." + QString::number(pair.first.minor) + "." + QString::number(pair.first.patch);
-        message += "\nType of server: " + QString::number((int)pair.second);
+        QString message = "Server version: " + QString::number(pair.first.major) + "." + QString::number(pair.first.minor) + "." + QString::number(pair.first.patch);
+        QString serverType = pair.second == uds::dynamic_library ? "Dynamic library" : "Embedded code";
+        message += "\n\nType of server: " + serverType;
         emit fetchingInProgress(false);
         emit showAlert("Success", message);
     };
@@ -73,7 +74,7 @@ void CommunicationManager::udsClearDtcInformation(uint32_t tx)
     emit fetchingInProgress(true);
     auto positiveResponse = [this] (const uds::response::positive_response) {
         emit fetchingInProgress(false);
-        emit showAlert("Success", "");
+        emit showAlert("Success", "DTC information has been successfully cleared.");
     };
 
     auto response = udsClient->dtc_api_services.send_clear_dtc_information(tx, 0xFFFFFF);

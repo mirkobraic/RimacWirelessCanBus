@@ -26,14 +26,14 @@ Item {
                 width: parent.width
                 text: ""
                 font.pointSize: 13
-                wrapMode: Text.WrapAnywhere
+                wrapMode: Text.WordWrap
                 horizontalAlignment: Text.AlignHCenter
             }
             Text {
                 id: message
                 width: parent.width
                 text: ""
-                wrapMode: Text.WrapAnywhere
+                wrapMode: Text.WordWrap
                 horizontalAlignment: Text.AlignHCenter
             }
         }
