@@ -86,20 +86,20 @@ void KvaserWirelessCan::disconnectFromDevice()
     });
 }
 
-void KvaserWirelessCan::sendCanMessage(isotp::can_layer_message &message)
+void KvaserWirelessCan::sendCanMessage(CanMessage &message)
 {
-    qDebug() << "CanLayer: writing ID =" << message.id << " data =" << message.data;
+    qDebug() << "CanLayer: writing ID =" << message.getId() << " data =" << message.getData();
     QString data;
-    for (size_t i = 0; i < message.data.size(); i++) {
+    for (size_t i = 0; i < message.getData().size(); i++) {
         if (i != 0) {
             data += ",";
         }
-        data += QString::number(message.data[i]);
+        data += QString::number(message.getData()[i]);
     }
 
-    uint flag = message.id > maxStdCanId ? canMSG_EXT : canMSG_STD;
+    uint flag = message.getId() > maxStdCanId ? canMSG_EXT : canMSG_STD;
 
-    kvNetService.canWrite(sessionId, handle, message.id, flag, data, message.data.size(), [=](KvaserResponse res) {
+    kvNetService.canWrite(sessionId, handle, message.getId(), flag, data, message.getData().size(), [=](KvaserResponse res) {
         checkStatus("canWrite", res);
     });
 }
@@ -117,10 +117,6 @@ void KvaserWirelessCan::readMessage()
         }
 
         qDebug() << "CanLayer: recieved ID =" << id << " data =" << data;
-        isotp::can_layer_message msg;
-        msg.id = id;
-        msg.data = data;
-        messageRecievedUdsCallback(std::make_unique<isotp::can_layer_message>(msg));
         emit newDirectCanMessage(id, data);
     });
 }

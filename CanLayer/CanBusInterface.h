@@ -4,7 +4,7 @@
 #include <memory>
 #include <functional>
 #include <QObject>
-#include "isotp_api/can/can_layer_message.hpp"
+#include "Models/CanMessage.h"
 
 enum BaudRate {
     Baud_125 = 0,
@@ -21,9 +21,7 @@ public:
 
     virtual void connectToDevice(QString deviceIpAddress, QString port, BaudRate baudRate) = 0;
     virtual void disconnectFromDevice() = 0;
-    virtual void sendCanMessage(isotp::can_layer_message &message) = 0;
-
-    std::function<void(std::unique_ptr<isotp::can_layer_message>)> messageRecievedUdsCallback;
+    virtual void sendCanMessage(CanMessage &message) = 0;
 
 signals:
     void newDirectCanMessage(uint32_t, std::vector<uint8_t>);

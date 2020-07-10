@@ -40,11 +40,6 @@ ApplicationWindow {
             id: setupPage
         }
 
-        UdsClientPage {
-            id: udsClientPage
-            currentTx: setupPage.currentTx
-        }
-
         RawCanPage {
             id: rawCanPage
         }
@@ -58,13 +53,6 @@ ApplicationWindow {
 
         TabButton {
             text: qsTr("Setup")
-            Rectangle {
-                anchors.fill: parent
-                color: parent.checked ? tabBar.backgroundColor : tabBar.selectedColor
-            }
-        }
-        TabButton {
-            text: qsTr("UDS Client")
             Rectangle {
                 anchors.fill: parent
                 color: parent.checked ? tabBar.backgroundColor : tabBar.selectedColor

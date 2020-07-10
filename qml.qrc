@@ -2,14 +2,11 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>images/rimacLogo.png</file>
-        <file>CustomComponents/RxTxPopup.qml</file>
-        <file>CustomComponents/RxTxPicker.qml</file>
         <file>CustomComponents/TitledListView.qml</file>
         <file>CustomComponents/SendCanMessageField.qml</file>
         <file>CustomComponents/AlertPopup.qml</file>
         <file>qtquickcontrols2.conf</file>
         <file>RawCanPage.qml</file>
-        <file>UdsClientPage.qml</file>
         <file>SetupPage.qml</file>
         <file>CustomComponents/MBBusyIndicator.qml</file>
     </qresource>

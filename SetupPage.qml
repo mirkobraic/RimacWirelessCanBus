@@ -5,21 +5,6 @@ import "CustomComponents"
 Item {
     id: root
 
-    property int currentTx: rxTxComboBox.model.get(rxTxComboBox.currentIndex).tx
-    property int currentRx: rxTxComboBox.model.get(rxTxComboBox.currentIndex).rx
-
-    RxTxPopup {
-        id: rxTxPopup
-        anchors.centerIn: root
-
-        onRxTxPairAdded: {
-            rxTxComboBox.model.append({ rx: rx, tx: tx, desc: "rx: " + rx + "  tx: " + tx });
-            rxTxComboBox.currentIndex = rxTxComboBox.model.count - 1
-        }
-    }
-
-
-
     Flickable {
         id: flickable
         flickableDirection: Flickable.VerticalFlick
@@ -114,29 +99,6 @@ Item {
                     width: column.firstColumnWidth
                     height: parent.height
                     verticalAlignment: Text.AlignVCenter
-                    text: "Rx-Tx pairs"
-                }
-                RxTxPicker {
-                    id: rxTxComboBox
-                    width: column.secondColumnWidth
-                    height: parent.height
-
-                    model: ListModel {
-                        ListElement { rx: 0; tx: 1; desc: "rx: 0  tx: 1" }
-                        ListElement { rx: 1; tx: 2; desc: "rx: 1  tx: 2" }
-                    }
-
-                    onAddButtonClicked: rxTxPopup.open()
-                }
-            }
-
-            // fourth row
-            Row {
-                height: column.rowHeight
-                Label {
-                    width: column.firstColumnWidth
-                    height: parent.height
-                    verticalAlignment: Text.AlignVCenter
                     text: "IP Address"
                 }
                 TextField {
@@ -149,7 +111,7 @@ Item {
                 }
             }
 
-            // fifth row
+            // fourth row
             Row {
                 height: column.rowHeight
                 Label {
@@ -208,7 +170,7 @@ Item {
                 if (viewController.isConnected) {
                     return true
                 } else {
-                    return rxTxComboBox.model.count && providerComboBox.model.count && ipAddressTextField.text && portTextField.text
+                    return providerComboBox.model.count && ipAddressTextField.text && portTextField.text
                 }
             }
 
@@ -220,12 +182,8 @@ Item {
                     let ipAddress = ipAddressTextField.text;
                     let port = portTextField.text;
                     let baudRate = baudRateComboBox.model.get(baudRateComboBox.currentIndex).rawValue;
-                    let rxTxPairs = [];
-                    for (var i = 0; i < rxTxComboBox.model.count; i++) {
-                        rxTxPairs.push({ rx: rxTxComboBox.model.get(i).rx, tx: rxTxComboBox.model.get(i).tx })
-                    }
 
-                    viewController.connectTapped(currentProvider, ipAddress, port, baudRate, rxTxPairs);
+                    viewController.connectTapped(currentProvider, ipAddress, port, baudRate);
                 }
             }
         }

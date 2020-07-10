@@ -19,14 +19,8 @@ SOURCES += \
         CanLayer/Kvaser/KvaserNetworkService.cpp \
         CanLayer/Kvaser/KvaserWirelessCan.cpp \
         CommunicationManager.cpp \
-        IsotpLayer/IsotpCanProvider.cpp \
-        IsotpLayer/IsotpManager.cpp \
-        Logger.cpp \
         Models/CanMessage.cpp \
         Models/CanMessageListModel.cpp \
-        UdsLayer/UdsConfigManager.cpp \
-        UdsLayer/UdsConstantsUnpacker.cpp \
-        UdsLayer/UdsManager.cpp \
         ViewController.cpp \
         main.cpp
 
@@ -50,26 +44,6 @@ HEADERS += \
     CanLayer/Kvaser/KvaserNetworkService.h \
     CanLayer/Kvaser/KvaserWirelessCan.h \
     CommunicationManager.h \
-    IsotpLayer/IsotpCanProvider.h \
-    IsotpLayer/IsotpManager.h \
-    Logger.h \
     Models/CanMessage.h \
     Models/CanMessageListModel.h \
-    UdsLayer/UdsConfigManager.h \
-    UdsLayer/UdsConstantsUnpacker.h \
-    UdsLayer/UdsManager.h \
     ViewController.h
-
-#isotp
-unix:!macx: LIBS += -L$$PWD/Libs/udsclient_and_isotp/Isotp/Ubuntu/ -lisotp_lib
-
-INCLUDEPATH += $$PWD/Libs/udsclient_and_isotp/Isotp/Include
-DEPENDPATH += $$PWD/Libs/udsclient_and_isotp/Isotp/Include
-
-#uds
-unix:!macx: LIBS += -L$$PWD/Libs/udsclient_and_isotp/UdsClient/Ubuntu/ -luds_client
-
-INCLUDEPATH += $$PWD/Libs/udsclient_and_isotp/UdsClient/Include
-DEPENDPATH += $$PWD/Libs/udsclient_and_isotp/UdsClient/Include
-
-DISTFILES +=

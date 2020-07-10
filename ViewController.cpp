@@ -11,17 +11,11 @@ ViewController::~ViewController()
     delete communicationManager;
 }
 
-void ViewController::connectTapped(int provider, QString ipAddress, QString port, int baudRate, const QVariantList& rxTxPairs)
+void ViewController::connectTapped(int provider, QString ipAddress, QString port, int baudRate)
 {
     // TODO: fix leak
 
-    std::vector<std::pair<uint32_t, uint32_t>> pairs;
-    for (const QVariant& pair : rxTxPairs) {
-        QMap<QString, QVariant> pairMap = pair.toMap();
-        pairs.push_back(std::make_pair(pairMap["rx"].toUInt(), pairMap["tx"].toUInt()));
-    }
-
-    communicationManager = new CommunicationManager((CanBusProvider)provider, pairs);
+    communicationManager = new CommunicationManager((CanBusProvider)provider);
     QObject::connect(communicationManager, SIGNAL(newCanMessageRecieved(CanMessage)), this, SLOT(onNewCanMessageRecieved(CanMessage)));
     QObject::connect(communicationManager, SIGNAL(showAlert(QString, QString)), this, SLOT(onShowAlert(QString, QString)));
     QObject::connect(communicationManager, SIGNAL(fetchingInProgress(bool)), this, SLOT(onFetchingInProgress(bool)));
@@ -66,28 +60,6 @@ void ViewController::sendDirectCanMessage(QString messageId, const QVector<QStri
 void ViewController::onNewCanMessageRecieved(CanMessage message)
 {
     recievedMessages->addMessage(message);
-}
-
-void ViewController::udsCheckVersion(int tx)
-{
-    QtConcurrent::run(communicationManager, &CommunicationManager::udsCheckVersion, tx);
-}
-
-void ViewController::udsGetSupportedDtcsStatus(int tx)
-{
-    auto completion = [this] (const std::vector<int> &keys, const std::vector<int> &values) {
-        QVector<int> qKeys = QVector<int>(keys.begin(), keys.end());
-        QVector<int> qValues = QVector<int>(values.begin(), values.end());
-
-        emit setSupportedDtcs(qKeys, qValues);
-    };
-
-    QtConcurrent::run(communicationManager, &CommunicationManager::udsGetSupportedDtcsStatus, tx, completion);
-}
-
-void ViewController::udsClearDtcInformation(int tx)
-{
-    QtConcurrent::run(communicationManager, &CommunicationManager::udsClearDtcInformation, tx);
 }
 
 void ViewController::onShowAlert(QString title, QString message)
