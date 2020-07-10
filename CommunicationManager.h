@@ -41,6 +41,8 @@ public slots:
     void onToggleConnection(bool value);
 
 private:
+    bool dtcCleared = false;
+    std::map<dtc_mask, dtc_status> dtcMap;
     std::vector<std::pair<uint32_t, uint32_t>> rxTxPairs;
     std::shared_ptr<Logger> logger;
 

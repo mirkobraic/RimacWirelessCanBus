@@ -39,14 +39,31 @@ void CommunicationManager::udsCheckVersion(uint32_t tx)
 {
     emit fetchingInProgress(true);
     auto positiveResponse = [this] (const std::pair<uds::version_params, uds::type_of_server> &pair) {
-        QString message = "Version params: " + QString::number(pair.first.major) + "." + QString::number(pair.first.minor) + "." + QString::number(pair.first.patch);
-        message += "\nType of server: " + QString::number((int)pair.second);
+        QString serverType = pair.second == uds::dynamic_library ? "Dynamic library" : "Embedded code";
+        QString message = "Server version: " + QString::number(pair.first.major) + "." + QString::number(pair.first.minor) + "." + QString::number(pair.first.patch);
+        message += "\n\nType of server: " + serverType;
+        emit fetchingInProgress(false);
+        emit showAlert("Success", message);
+    };
+
+
+    auto mockResponse = [this] (const uds::response::response_error) {
+        uds::version_params params = uds::version_params();
+        params.major = 3;
+        params.minor = 2;
+        params.patch = 4;
+        uds::type_of_server type = uds::type_of_server();
+        std::pair<uds::version_params, uds::type_of_server> pair = std::make_pair(params, type);
+
+        QString serverType = pair.second == uds::dynamic_library ? "Dynamic library" : "Embedded code";
+        QString message = "Server version: " + QString::number(pair.first.major) + "." + QString::number(pair.first.minor) + "." + QString::number(pair.first.patch);
+        message += "\n\nType of server: " + serverType;
         emit fetchingInProgress(false);
         emit showAlert("Success", message);
     };
 
     auto response = udsClient->check_version_servicees.send_check_version(tx);
-    response.unpack_response(positiveResponse, negativeResponse, errorResponse);
+    response.unpack_response(positiveResponse, negativeResponse, mockResponse);
 }
 
 void CommunicationManager::udsGetSupportedDtcsStatus(uint32_t tx, std::function<void (const std::vector<int>&, const std::vector<int>&)> callback)
@@ -64,8 +81,30 @@ void CommunicationManager::udsGetSupportedDtcsStatus(uint32_t tx, std::function<
         callback(keys, values);
     };
 
+    auto mockResponse = [this, callback] (const uds::response::response_error) {
+        if (dtcMap.size() == 0) {
+            for (int i = 0; i < rand() % 5 + 10; i++) {
+                dtcMap[rand () % 30] = rand() % 256;
+            }
+        }
+
+        if (dtcCleared == true) {
+            dtcMap.clear();
+        }
+
+        emit fetchingInProgress(false);
+        std::vector<int> keys;
+        std::vector<int> values;
+
+        for (auto const& [key, val] : dtcMap) {
+            keys.push_back(key);
+            values.push_back(val);
+        }
+        callback(keys, values);
+    };
+
     auto response = udsClient->dtc_api_services.get_status_of_all_supported_dtcs(tx);
-    response.unpack_response(positiveResponse, negativeResponse, errorResponse);
+    response.unpack_response(positiveResponse, negativeResponse, mockResponse);
 }
 
 void CommunicationManager::udsClearDtcInformation(uint32_t tx)
@@ -73,11 +112,18 @@ void CommunicationManager::udsClearDtcInformation(uint32_t tx)
     emit fetchingInProgress(true);
     auto positiveResponse = [this] (const uds::response::positive_response) {
         emit fetchingInProgress(false);
-        emit showAlert("Success", "");
+        emit showAlert("Success", "DTC information has been successfully cleared.");
+    };
+
+
+    auto mockResponse = [this] (const uds::response::response_error) {
+        dtcCleared = true;
+        emit fetchingInProgress(false);
+        emit showAlert("Success", "DTC information has been successfully cleared.");
     };
 
     auto response = udsClient->dtc_api_services.send_clear_dtc_information(tx, 0xFFFFFF);
-    response.unpack_response(positiveResponse, negativeResponse, errorResponse);
+    response.unpack_response(positiveResponse, negativeResponse, mockResponse);
 }
 
 void CommunicationManager::onNewDirectCanMessage(uint32_t id, std::vector<uint8_t> data)

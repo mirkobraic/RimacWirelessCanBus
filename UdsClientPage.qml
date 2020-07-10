@@ -13,7 +13,7 @@ Item {
         onSetSupportedDtcs: {
             listView.model.clear();
             for (var i = 0; i < keys.length; i++) {
-                listView.model.append({ "firstField": keys[i], "secondField": values[i] });
+                listView.model.append({ "firstField": "mask:\t" + keys[i], "secondField": "status:\t" + values[i] });
             }
         }
 
