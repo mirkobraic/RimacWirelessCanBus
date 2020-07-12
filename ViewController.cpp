@@ -22,7 +22,9 @@ void ViewController::connectTapped(int provider, QString ipAddress, QString port
     QObject::connect(communicationManager, SIGNAL(toggleConnection(bool)), this, SLOT(onToggleConnection(bool)));
 
     communicationManager->connect(ipAddress, port, (BaudRate)baudRate);
-    recievedMessages->removeAll();
+    if (recievedMessages->rowCount() > 0) {
+        recievedMessages->removeAll();
+    }
     emit clearSupportedDtcs();
 }
 
