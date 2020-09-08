@@ -1,9 +1,13 @@
 #include "ViewController.h"
+#include "foo.h"
 
 ViewController::ViewController(CanMessageListModel *recievedMessages, QObject *parent)
     : QObject(parent),
       recievedMessages(recievedMessages)
-{ }
+{
+    int a = foo();
+    qDebug() << "AAAAA " << a;
+}
 
 ViewController::~ViewController()
 {

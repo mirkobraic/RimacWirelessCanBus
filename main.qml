@@ -16,7 +16,9 @@ ApplicationWindow {
 
     Connections {
         target: viewController
-        onShowAlert: alertPopup.open(title, message)
+        function onShowAlert(title, message) {
+            alertPopup.open(title, message)
+        }
     }
 
     AlertPopup {

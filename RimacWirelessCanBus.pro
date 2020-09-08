@@ -47,3 +47,12 @@ HEADERS += \
     Models/CanMessage.h \
     Models/CanMessageListModel.h \
     ViewController.h
+
+ANDROID_ABIS = x86
+
+ANDROID_EXTRA_LIBS=$$PWD/../mirko_sample_proj/build/libsample_project.so
+
+unix:!macx: LIBS += -L$$PWD/../mirko_sample_proj/build/ -lsample_project
+
+INCLUDEPATH += $$PWD/../mirko_sample_proj/include
+DEPENDPATH += $$PWD/../mirko_sample_proj/include
