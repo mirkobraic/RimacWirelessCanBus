@@ -10,15 +10,16 @@ Item {
 
     Connections {
         target: viewController
-        onSetSupportedDtcs: {
+        function onSetSupportedDtcs() {
             listView.model.clear();
             for (var i = 0; i < keys.length; i++) {
                 listView.model.append({ "firstField": "mask:\t" + keys[i], "secondField": "status:\t" + values[i] });
             }
         }
 
-        onClearSupportedDtcs: {
+        function onClearSupportedDtcs() {
             listView.model.clear()
+
         }
     }
 
