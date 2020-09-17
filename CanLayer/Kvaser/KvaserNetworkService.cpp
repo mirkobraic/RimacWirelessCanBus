@@ -46,10 +46,6 @@ QString KvaserNetworkService::getMessageForStatus(ResponseStatus status)
 void KvaserNetworkService::initializeLibrary(std::function<void (KvaserResponse, QString)> callback)
 {
     baseUrl.setPath("/canInitializeLibrary");
-    // TODO: used in development
-    QUrlQuery query;
-    query.addQueryItem("timeout", QString::number(10));
-    baseUrl.setQuery(query.query());
 
     QNetworkAccessManager *qnam = new QNetworkAccessManager;
     QNetworkReply *reply = qnam->get(QNetworkRequest(baseUrl));

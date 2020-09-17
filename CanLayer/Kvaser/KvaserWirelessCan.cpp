@@ -15,9 +15,7 @@ void KvaserWirelessCan::connectToDevice(QString deviceIpAddress, QString port, B
         return;
     }
 
-    this->deviceIpAddress = deviceIpAddress;
-    this->port = port;
-    kvNetService.setupDevice(this->deviceIpAddress, this->port);
+    kvNetService.setupDevice(deviceIpAddress, port);
 
     emit fetchingInProgress(true);
     kvNetService.initializeLibrary([=](KvaserResponse res, QString sessionId) {

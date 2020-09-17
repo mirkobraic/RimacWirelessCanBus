@@ -22,9 +22,6 @@ private:
     KvaserNetworkService kvNetService;
     QTimer *rxTimer;
 
-    QString deviceIpAddress;
-    QString port;
-
     QString sessionId;
     int handle;
 

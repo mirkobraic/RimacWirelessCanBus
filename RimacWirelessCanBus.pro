@@ -18,6 +18,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         CanLayer/Kvaser/KvaserNetworkService.cpp \
         CanLayer/Kvaser/KvaserWirelessCan.cpp \
+        CanLayer/Wiicom/WiicomCSVParser.cpp \
+        CanLayer/Wiicom/WiicomWirelessCan.cpp \
         CommunicationManager.cpp \
         IsotpLayer/IsotpCanProvider.cpp \
         IsotpLayer/IsotpManager.cpp \
@@ -49,6 +51,8 @@ HEADERS += \
     CanLayer/Kvaser/KvaserConstants.h \
     CanLayer/Kvaser/KvaserNetworkService.h \
     CanLayer/Kvaser/KvaserWirelessCan.h \
+    CanLayer/Wiicom/WiicomCSVParser.h \
+    CanLayer/Wiicom/WiicomWirelessCan.h \
     CommunicationManager.h \
     IsotpLayer/IsotpCanProvider.h \
     IsotpLayer/IsotpManager.h \
