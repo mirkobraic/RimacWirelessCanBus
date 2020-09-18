@@ -26,7 +26,7 @@ Item {
 
     DropShadow {
         anchors.fill: sendFieldBackground
-        radius: 4
+        radius: 2
         color: "gray"
         source: sendFieldBackground
     }

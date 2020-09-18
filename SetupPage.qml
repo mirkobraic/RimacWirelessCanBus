@@ -207,7 +207,7 @@ Item {
                 text: viewController.isConnected ? "Disconnect" : "Connect"
                 font {
                     bold: true
-                    pointSize: 12
+                    pointSize: 14
                     preferShaping: true
                 }
 

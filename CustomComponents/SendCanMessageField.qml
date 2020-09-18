@@ -120,13 +120,30 @@ Item {
     Button {
         id: sendButton
         x: 580
-        width: 60
+        width: 40
         height: 40
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
 
-        text: "Send"
         enabled: viewController.isConnected
+
+        background: Rectangle {
+            color: "white"
+        }
+
+        contentItem: Text {
+            text: "Send"
+            font {
+                bold: true
+                pointSize: 14
+                preferShaping: true
+            }
+
+            color: enabled ? "#147EFB" : "#c7c7c7"
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+        }
+
         onClicked: {
             canDataTextFields.checkTextFields();
             let data = [];
