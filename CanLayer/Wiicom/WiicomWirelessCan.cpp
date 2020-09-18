@@ -20,9 +20,8 @@ void WiicomWirelessCan::connectToDevice(QString deviceIpAddress, QString port, B
 {
     Q_UNUSED(baudRate); // its not possible to configure baude rate programatically on wiicom device
     quint16 portNumber = static_cast<quint16>(port.toULong());
-    socket->connectToHost(deviceIpAddress, portNumber, QIODevice::ReadWrite, QAbstractSocket::IPv4Protocol);
-
     emit fetchingInProgress(true);
+    socket->connectToHost(deviceIpAddress, portNumber, QIODevice::ReadWrite, QAbstractSocket::IPv4Protocol);
 }
 
 void WiicomWirelessCan::disconnectFromDevice()
@@ -59,7 +58,7 @@ void WiicomWirelessCan::readyRead()
 
 void WiicomWirelessCan::errorOccurred(QAbstractSocket::SocketError)
 {
-    emit fetchingInProgress(false);
     emit showAlert("Error", socket->errorString());
+    emit fetchingInProgress(false);
 }
 

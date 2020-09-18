@@ -41,7 +41,7 @@ Item {
 
     DropShadow {
         anchors.fill: buttonBackground
-        radius: 5
+        radius: 4
         color: "gray"
         source: buttonBackground
     }
@@ -77,7 +77,8 @@ Item {
         Button {
             id: checkVersionButton
             width: grid.columnWidth
-            text: "Check version"
+            text: qsTr("Check version")
+            display: AbstractButton.TextOnly
             onClicked: {
                 viewController.udsCheckVersion(currentTx)
             }
@@ -86,7 +87,8 @@ Item {
         Button {
             id: dtcStatusButton
             width: grid.columnWidth
-            text: "Get status of supported DTCs"
+            text: "Get DTC status"
+            display: AbstractButton.TextOnly
             onClicked: {
                 viewController.udsGetSupportedDtcsStatus(currentTx)
             }
@@ -95,7 +97,8 @@ Item {
         Button {
             id: clearDtcButton
             width: grid.columnWidth
-            text: "Clear DTC infomration"
+            text: "Clear DTC info"
+            display: AbstractButton.TextOnly
             onClicked: {
                 viewController.udsClearDtcInformation(currentTx)
             }
@@ -103,7 +106,15 @@ Item {
 
         Button {
             width: grid.columnWidth
-            text: "Placeholder"
+            text: "-"
+            autoExclusive: false
+            display: AbstractButton.TextOnly
         }
     }
 }
+
+/*##^##
+Designer {
+    D{i:0;autoSize:true;height:480;width:640}
+}
+##^##*/

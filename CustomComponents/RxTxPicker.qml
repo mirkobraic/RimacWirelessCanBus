@@ -42,7 +42,13 @@ Item {
                 SwipeDelegate.onClicked: swipeDelegate.swipe.close()
             }
 
-            swipe.onCompleted: comboBox.model.remove(index)
+            swipe.onCompleted: {
+                if (comboBox.count == index + 1) {
+                    comboBox.currentIndex = index - 1;
+                }
+
+                comboBox.model.remove(index)
+            }
 
             ListView.onRemove: SequentialAnimation {
                 PropertyAction {

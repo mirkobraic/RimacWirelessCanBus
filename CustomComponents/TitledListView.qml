@@ -18,7 +18,7 @@ Item {
         id: titleLabel
         text: root.title
         font.bold: true
-        font.pointSize: 14
+        font.pointSize: 18
 
         anchors {
             top: parent.top
@@ -29,6 +29,12 @@ Item {
     }
 
     ListView {
+        Rectangle {
+            anchors.fill: parent
+            color: "#EFEFF4"
+            z: -1
+        }
+
         id: listView
         anchors {
             top: titleLabel.bottom
@@ -56,7 +62,7 @@ Item {
             Rectangle {
                 height: 44
                 width: parent.width
-                color: "#f2f2f2"
+                color: "white"
 
                 Row {
                     id: row
@@ -68,7 +74,7 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         horizontalAlignment: horizontalTextAlignment
                         width: parent.width * root.textWidthRatio
-                        font.pointSize: 12
+                        font.pointSize: 14
                         text: model.firstField
                     }
 
@@ -76,7 +82,7 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         horizontalAlignment: horizontalTextAlignment
                         width: parent.width * (1 - root.textWidthRatio)
-                        font.pointSize: 12
+                        font.pointSize: 14
                         text: model.secondField
                     }
                 }

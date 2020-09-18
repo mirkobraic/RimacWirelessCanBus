@@ -18,8 +18,6 @@ Item {
         }
     }
 
-
-
     Flickable {
         id: flickable
         flickableDirection: Flickable.VerticalFlick
@@ -31,14 +29,14 @@ Item {
 
         Image {
             id: logoImage
-            height: 60
+            height: 55
             fillMode: Image.PreserveAspectFit
             source: "images/rimacLogo.png"
 
             anchors {
                 left: parent.left
                 top: parent.top
-                topMargin: 20
+                topMargin: 30
             }
         }
 
@@ -56,12 +54,14 @@ Item {
             }
 
             property int rowHeight: 44
+            property int rowSpacing: 20
             property int firstColumnWidth: width * 0.3
-            property int secondColumnWidth: width * 0.7
+            property int secondColumnWidth: width - firstColumnWidth - rowSpacing
 
             // first row
             Row {
                 height: column.rowHeight
+                spacing: column.rowSpacing
                 Label {
                     width: column.firstColumnWidth
                     height: parent.height
@@ -85,6 +85,8 @@ Item {
             // second row
             Row {
                 height: column.rowHeight
+                spacing: column.rowSpacing
+                enabled: providerComboBox.model.get(providerComboBox.currentIndex).rawValue === 0
                 Label {
                     width: column.firstColumnWidth
                     height: parent.height
@@ -110,6 +112,7 @@ Item {
             // third row
             Row {
                 height: column.rowHeight
+                spacing: column.rowSpacing
                 Label {
                     width: column.firstColumnWidth
                     height: parent.height
@@ -133,6 +136,7 @@ Item {
             // fourth row
             Row {
                 height: column.rowHeight
+                spacing: column.rowSpacing
                 Label {
                     width: column.firstColumnWidth
                     height: parent.height
@@ -144,14 +148,19 @@ Item {
                     width: column.secondColumnWidth
                     enabled: !viewController.isConnected
 
-                    text: "172.20.10.3"
-                    placeholderText: "172.20.10.3"
+                    text: providerComboBox.model.get(providerComboBox.currentIndex).rawValue === 0 ? "172.20.10.3" : "172.20.10.5"
+                    placeholderText: "172.20.10.5"
+
+                    Keys.onReturnPressed: {
+                        portTextField.focus = true;
+                    }
                 }
             }
 
             // fifth row
             Row {
                 height: column.rowHeight
+                spacing: column.rowSpacing
                 Label {
                     width: column.firstColumnWidth
                     height: parent.height
@@ -163,8 +172,12 @@ Item {
                     width: column.secondColumnWidth
                     enabled: !viewController.isConnected
 
-                    text: "8080"
-                    placeholderText: "8080"
+                    text: providerComboBox.model.get(providerComboBox.currentIndex).rawValue === 0 ? "8080" : "65300"
+                    placeholderText: "65300"
+
+                    Keys.onReturnPressed: {
+                        focus = false;
+                    }
                 }
             }
         }

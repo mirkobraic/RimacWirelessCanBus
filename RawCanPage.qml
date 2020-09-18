@@ -20,13 +20,13 @@ Item {
         contentInset: 10
 
         title: "Recieved messages (hex)"
-        textWidthRatio: 0.3
+        textWidthRatio: 0.35
         model: recievedMessages
     }
 
     DropShadow {
         anchors.fill: sendFieldBackground
-        radius: 5
+        radius: 4
         color: "gray"
         source: sendFieldBackground
     }
