@@ -4,7 +4,7 @@ import QtQuick.Controls 2.14
 Item {
     TextField {
         id: canIdTextField
-        width: parent.width * 0.19
+        width: parent.width * 0.18
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
 
@@ -12,6 +12,10 @@ Item {
         horizontalAlignment: Text.AlignHCenter
         placeholderText: "ID"
         validator: RegExpValidator { regExp: /[0-9A-Fa-f]{0,8}/ }
+
+        Keys.onReturnPressed: {
+          canDataTextFields.itemAt(0).focus = true;
+        }
 
         function adjustIdToLength(len) {
             while (text.length < len) {
@@ -93,6 +97,13 @@ Item {
                 font.capitalization: Font.AllUppercase
                 horizontalAlignment: Text.AlignHCenter
                 validator: RegExpValidator { regExp: /[0-9A-Fa-f]{0,2}/ }
+                Keys.onReturnPressed: {
+                    if (index == 7) {
+                        focus = false;
+                    } else {
+                        canDataTextFields.itemAt(index + 1).focus = true;
+                    }
+                }
 
                 onEditingFinished: {
                     if (text.length == 1) {
@@ -108,11 +119,31 @@ Item {
 
     Button {
         id: sendButton
+        x: 580
+        width: 40
+        height: 40
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
 
-        text: "Send"
         enabled: viewController.isConnected
+
+        background: Rectangle {
+            color: "white"
+        }
+
+        contentItem: Text {
+            text: "Send"
+            font {
+                bold: true
+                pointSize: 14
+                preferShaping: true
+            }
+
+            color: enabled ? "#147EFB" : "#c7c7c7"
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+        }
+
         onClicked: {
             canDataTextFields.checkTextFields();
             let data = [];
@@ -133,3 +164,9 @@ Item {
         }
     }
 }
+
+/*##^##
+Designer {
+    D{i:0;autoSize:true;height:480;width:640}
+}
+##^##*/

@@ -37,29 +37,49 @@ void CommunicationManager::sendDirectCanMessage(std::vector<uint8_t> data, uint3
 
 void CommunicationManager::udsCheckVersion(uint32_t tx)
 {
-    emit toggleBusyIndicator(true);
+//    udsClient->security_levels_and_sessions_services.send_switch_to_session(tx, 0x3);
+    emit fetchingInProgress(true);
     auto positiveResponse = [this] (const std::pair<uds::version_params, uds::type_of_server> &pair) {
-        QString message = "Version params: " + QString::number(pair.first.major) + "." + QString::number(pair.first.minor) + "." + QString::number(pair.first.patch);
-        message += "\nType of server: " + QString::number((int)pair.second);
-        emit toggleBusyIndicator(false);
+        QString message = "Server version: " + QString::number(pair.first.major) + "." + QString::number(pair.first.minor) + "." + QString::number(pair.first.patch);
+        QString serverType = pair.second == uds::dynamic_library ? "Dynamic library" : "Embedded code";
+        message += "\n\nType of server: " + serverType;
+        emit fetchingInProgress(false);
         emit showAlert("Success", message);
-    };
-    auto negativeResponse = [this] (const uds::response::negative_response &res) {
-        QString message = UdsConstantsUnpacker::unpackNegativeResponse(res) + "\ncode: " + QString::number((int)res);
-        emit toggleBusyIndicator(false);
-        emit showAlert("Negative response", message);
-    };
-    auto errorResponse = [this] (const uds::response::response_error &res) {
-        QString message = UdsConstantsUnpacker::unpackResponseError(res) + "\ncode: " + QString::number((int)res);
-        emit toggleBusyIndicator(false);
-        emit showAlert("Error", message);
     };
 
     auto response = udsClient->check_version_servicees.send_check_version(tx);
     response.unpack_response(positiveResponse, negativeResponse, errorResponse);
+}
 
-    //udsClient->dtc_api_services.get_status_of_all_supported_dtcs(tx);
-    //udsClient->dtc_api_services.send_clear_dtc_information(tx, 0xFFFFFF);
+void CommunicationManager::udsGetSupportedDtcsStatus(uint32_t tx, std::function<void (const std::vector<int>&, const std::vector<int>&)> callback)
+{
+    emit fetchingInProgress(true);
+    auto positiveResponse = [this, callback] (const std::map<dtc_mask, dtc_status> &res) {
+        emit fetchingInProgress(false);
+        std::vector<int> keys;
+        std::vector<int> values;
+
+        for (auto const& [key, val] : res) {
+            keys.push_back(key);
+            values.push_back(val);
+        }
+        callback(keys, values);
+    };
+
+    auto response = udsClient->dtc_api_services.get_status_of_all_supported_dtcs(tx);
+    response.unpack_response(positiveResponse, negativeResponse, errorResponse);
+}
+
+void CommunicationManager::udsClearDtcInformation(uint32_t tx)
+{
+    emit fetchingInProgress(true);
+    auto positiveResponse = [this] (const uds::response::positive_response) {
+        emit fetchingInProgress(false);
+        emit showAlert("Success", "DTC information has been successfully cleared.");
+    };
+
+    auto response = udsClient->dtc_api_services.send_clear_dtc_information(tx, 0xFFFFFF);
+    response.unpack_response(positiveResponse, negativeResponse, errorResponse);
 }
 
 void CommunicationManager::onNewDirectCanMessage(uint32_t id, std::vector<uint8_t> data)
@@ -79,7 +99,7 @@ void CommunicationManager::onShowAlert(QString title, QString message)
 
 void CommunicationManager::onFetchingInProgress(bool value)
 {
-    emit toggleBusyIndicator(value);
+    emit fetchingInProgress(value);
 }
 
 void CommunicationManager::onToggleConnection(bool value)

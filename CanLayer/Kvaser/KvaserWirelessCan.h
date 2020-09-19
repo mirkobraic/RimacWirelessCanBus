@@ -3,6 +3,7 @@
 
 #include "../CanBusInterface.h"
 #include "KvaserNetworkService.h"
+#include <QtConcurrent>
 
 class KvaserWirelessCan : public CanBusInterface
 {
@@ -21,9 +22,6 @@ private:
 
     KvaserNetworkService kvNetService;
     QTimer *rxTimer;
-
-    QString deviceIpAddress;
-    QString port;
 
     QString sessionId;
     int handle;

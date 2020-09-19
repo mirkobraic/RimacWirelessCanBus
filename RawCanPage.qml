@@ -6,39 +6,27 @@ import "CustomComponents"
 Item {
     id: root
 
-    Label {
-        id: titleLabel
-        text: "Recieved messages (hex)"
-        font.bold: true
-        font.pointSize: 14
-
+    TitledListView {
         anchors {
             top: parent.top
-            topMargin: 10
-            left: parent.left
-            leftMargin: 10
-        }
-    }
-
-    CanMessagesListView {
-        topMargin: 10
-        bottomMargin: 10
-        contentInset: 10
-        anchors {
-            top: titleLabel.bottom
             topMargin: 10
             bottom: sendField.top
             bottomMargin: 10
             right: parent.right
-            rightMargin: 0
             left: parent.left
-            leftMargin: 0
         }
+        topMargin: 10
+        bottomMargin: 10
+        contentInset: 10
+
+        title: "Recieved messages (hex)"
+        textWidthRatio: 0.35
+        model: recievedMessages
     }
 
     DropShadow {
         anchors.fill: sendFieldBackground
-        radius: 5
+        radius: 2
         color: "gray"
         source: sendFieldBackground
     }

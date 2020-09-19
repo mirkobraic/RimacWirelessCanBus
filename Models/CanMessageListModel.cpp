@@ -95,8 +95,8 @@ bool CanMessageListModel::setData(const QModelIndex &index, const QVariant &valu
 QHash<int, QByteArray> CanMessageListModel::roleNames() const
 {
     QHash<int, QByteArray> names;
-    names[CanId] = "canId";
-    names[CanData] = "canData";
+    names[CanId] = "firstField";
+    names[CanData] = "secondField";
     return names;
 }
 

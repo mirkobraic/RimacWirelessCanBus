@@ -1,4 +1,4 @@
-QT += quick concurrent network
+QT += quick concurrent network widgets
 
 CONFIG += c++17
 
@@ -18,6 +18,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         CanLayer/Kvaser/KvaserNetworkService.cpp \
         CanLayer/Kvaser/KvaserWirelessCan.cpp \
+        CanLayer/Wiicom/WiicomCSVParser.cpp \
+        CanLayer/Wiicom/WiicomWirelessCan.cpp \
         CommunicationManager.cpp \
         IsotpLayer/IsotpCanProvider.cpp \
         IsotpLayer/IsotpManager.cpp \
@@ -49,6 +51,8 @@ HEADERS += \
     CanLayer/Kvaser/KvaserConstants.h \
     CanLayer/Kvaser/KvaserNetworkService.h \
     CanLayer/Kvaser/KvaserWirelessCan.h \
+    CanLayer/Wiicom/WiicomCSVParser.h \
+    CanLayer/Wiicom/WiicomWirelessCan.h \
     CommunicationManager.h \
     IsotpLayer/IsotpCanProvider.h \
     IsotpLayer/IsotpManager.h \
@@ -60,16 +64,19 @@ HEADERS += \
     UdsLayer/UdsManager.h \
     ViewController.h
 
-#isotp
-unix:!macx: LIBS += -L$$PWD/Libs/udsclient_and_isotp/Isotp/Ubuntu/ -lisotp_lib
 
-INCLUDEPATH += $$PWD/Libs/udsclient_and_isotp/Isotp/Include
-DEPENDPATH += $$PWD/Libs/udsclient_and_isotp/Isotp/Include
+# uds
+ANDROID_EXTRA_LIBS = $$PWD/../udsAndroid/android_build/libuds_client.so
+LIBS += -L$$PWD/../udsAndroid/android_build/ -luds_client
 
-#uds
-unix:!macx: LIBS += -L$$PWD/Libs/udsclient_and_isotp/UdsClient/Ubuntu/ -luds_client
+INCLUDEPATH += $$PWD/../udsAndroid/include
+DEPENDPATH += $$PWD/../udsAndroid/include
 
-INCLUDEPATH += $$PWD/Libs/udsclient_and_isotp/UdsClient/Include
-DEPENDPATH += $$PWD/Libs/udsclient_and_isotp/UdsClient/Include
+# isotp
+ANDROID_EXTRA_LIBS += $$PWD/../isotpAndroid/android_isotp_build/libisotp_lib.so
+LIBS += -L$$PWD/../isotpAndroid/android_isotp_build/ -lisotp_lib
 
-DISTFILES +=
+INCLUDEPATH += $$PWD/../isotpAndroid/include
+DEPENDPATH += $$PWD/../isotpAndroid/include
+
+ANDROID_ABIS = armeabi-v7a
