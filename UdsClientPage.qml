@@ -10,7 +10,7 @@ Item {
 
     Connections {
         target: viewController
-        function onSetSupportedDtcs() {
+        function onSetSupportedDtcs(keys, values) {
             listView.model.clear();
             for (var i = 0; i < keys.length; i++) {
                 listView.model.append({ "firstField": "mask:\t" + keys[i], "secondField": "status:\t" + values[i] });

@@ -18,7 +18,7 @@ WiicomWirelessCan::~WiicomWirelessCan()
 
 void WiicomWirelessCan::connectToDevice(QString deviceIpAddress, QString port, BaudRate baudRate)
 {
-    Q_UNUSED(baudRate); // its not possible to configure baude rate programatically on wiicom device
+    Q_UNUSED(baudRate); // it's not possible to configure baude rate programatically on wiicom device
     quint16 portNumber = static_cast<quint16>(port.toULong());
     emit fetchingInProgress(true);
     socket->connectToHost(deviceIpAddress, portNumber, QIODevice::ReadWrite, QAbstractSocket::IPv4Protocol);
@@ -32,8 +32,11 @@ void WiicomWirelessCan::disconnectFromDevice()
 
 void WiicomWirelessCan::sendCanMessage(isotp::can_layer_message &message)
 {
-    QByteArray csvMsg = csvParser.convertMessage(message, message.id > maxStdCanId);
-    socket->write(csvMsg);
+    bool isExtended = message.id > maxStdCanId;
+    QByteArray csvMsg = csvParser.convertMessage(message, isExtended);
+    dispatchToMainThread([this, csvMsg] {
+        socket->write(csvMsg);
+    });
 }
 
 void WiicomWirelessCan::connected()
@@ -49,7 +52,9 @@ void WiicomWirelessCan::disconnected()
 
 void WiicomWirelessCan::readyRead()
 {
-    QVector<isotp::can_layer_message> messages = csvParser.parseInput(socket->readAll());
+    QByteArray input = socket->readAll();
+    QVector<isotp::can_layer_message> messages = csvParser.parseInput(input);
+    qDebug() << "Recieved... " << input;
     for(isotp::can_layer_message msg : messages)  {
         messageRecievedUdsCallback(std::make_unique<isotp::can_layer_message>(msg));
         newDirectCanMessage(msg.id, msg.data);

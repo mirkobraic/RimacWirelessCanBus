@@ -1,4 +1,4 @@
-QT += quick concurrent network
+QT += quick concurrent network widgets
 
 CONFIG += c++17
 

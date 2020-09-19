@@ -125,8 +125,8 @@ Item {
                     height: parent.height
 
                     model: ListModel {
-                        ListElement { rx: 0; tx: 1; desc: "rx: 0  tx: 1" }
-                        ListElement { rx: 1; tx: 2; desc: "rx: 1  tx: 2" }
+                        ListElement { rx: 1106; tx: 1107; desc: "rx: 1106  tx: 1107" }
+//                        ListElement { rx: 1; tx: 2; desc: "rx: 1  tx: 2" }
                     }
 
                     onAddButtonClicked: rxTxPopup.open()

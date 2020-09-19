@@ -1,9 +1,9 @@
 #ifndef WIICOMWIRELESSCAN_H
 #define WIICOMWIRELESSCAN_H
 
+#include <QTcpSocket>
 #include "../CanBusInterface.h"
 #include "WiicomCSVParser.h"
-#include <QTcpSocket>
 
 class WiicomWirelessCan : public CanBusInterface
 {

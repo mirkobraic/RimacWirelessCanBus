@@ -45,7 +45,9 @@ void KvaserWirelessCan::connectToDevice(QString deviceIpAddress, QString port, B
                         toggleConnection(true);
                         rxTimer = new QTimer(this);
                         QObject::connect(rxTimer, &QTimer::timeout, this, &KvaserWirelessCan::readMessage);
-                        rxTimer->start(200);
+                        rxTimer->start(10);
+
+//                        QtConcurrent::run(this, &KvaserWirelessCan::readMessage);
                     }
                 });
             });
@@ -97,29 +99,31 @@ void KvaserWirelessCan::sendCanMessage(isotp::can_layer_message &message)
 
     uint flag = message.id > maxStdCanId ? canMSG_EXT : canMSG_STD;
 
-    kvNetService.canWrite(sessionId, handle, message.id, flag, data, message.data.size(), [=](KvaserResponse res) {
-        checkStatus("canWrite", res);
+    dispatchToMainThread([this, message, flag, data] {
+        kvNetService.canWrite(sessionId, handle, message.id, flag, data, message.data.size(), [=](KvaserResponse res) {
+            checkStatus("canWrite", res);
+        });
     });
 }
 
 void KvaserWirelessCan::readMessage()
 {
     kvNetService.canRead(sessionId, handle, 10, [=](KvaserResponse res, uint32_t id, uint flag, std::vector<uint8_t> data) {
-        if (checkStatus("canRead", res) == false) {
-            return;
-        }
 
         if (flag & canMSG_ERROR_FRAME) {
             qDebug() << "Error frame recieved!";
             return;
         }
 
-        qDebug() << "CanLayer: recieved ID =" << id << " data =" << data;
-        isotp::can_layer_message msg;
-        msg.id = id;
-        msg.data = data;
-        messageRecievedUdsCallback(std::make_unique<isotp::can_layer_message>(msg));
-        emit newDirectCanMessage(id, data);
+        if (id == 1106) {
+
+            qDebug() << "CanLayer: recieved ID =" << id << " data =" << data;
+            isotp::can_layer_message msg;
+            msg.id = id;
+            msg.data = data;
+            messageRecievedUdsCallback(std::make_unique<isotp::can_layer_message>(msg));
+            emit newDirectCanMessage(id, data);
+        }
     });
 }
 

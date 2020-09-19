@@ -43,7 +43,7 @@ QByteArray WiicomCSVParser::convertMessage(isotp::can_layer_message msg, bool is
     QString id = QString::number(msg.id, 16);
     output.append(id + ",");
 
-    QString flag = isExtended ? "00" : "01";
+    QString flag = isExtended ? "01" : "00";
     output.append(flag + ",");
 
     QString dlc = QString::number(msg.data.size(), 16);
@@ -55,6 +55,6 @@ QByteArray WiicomCSVParser::convertMessage(isotp::can_layer_message msg, bool is
     }
 
     output.append("#");
-    qDebug() << "Output.. " << output;
+    qDebug() << "Sending.. " << output;
     return output;
 }
