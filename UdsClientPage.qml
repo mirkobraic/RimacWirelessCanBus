@@ -6,8 +6,6 @@ import "CustomComponents"
 Item {
     id: root
 
-    property int currentTx
-
     Connections {
         target: viewController
         function onSetSupportedDtcs(keys, values) {
@@ -19,7 +17,6 @@ Item {
 
         function onClearSupportedDtcs() {
             listView.model.clear()
-
         }
     }
 
@@ -78,7 +75,7 @@ Item {
             id: checkVersionButton
             width: grid.columnWidth
             onClicked: {
-                viewController.udsCheckVersion(currentTx)
+                viewController.udsCheckVersion()
             }
 
             background: Rectangle {
@@ -104,7 +101,7 @@ Item {
             id: dtcStatusButton
             width: grid.columnWidth
             onClicked: {
-                viewController.udsGetSupportedDtcsStatus(currentTx)
+                viewController.udsGetSupportedDtcsStatus()
             }
 
             background: Rectangle {
@@ -130,7 +127,7 @@ Item {
             id: clearDtcButton
             width: grid.columnWidth
             onClicked: {
-                viewController.udsClearDtcInformation(currentTx)
+                viewController.udsClearDtcInformation()
             }
 
             background: Rectangle {

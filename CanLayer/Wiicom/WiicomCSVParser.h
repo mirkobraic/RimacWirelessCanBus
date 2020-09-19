@@ -3,6 +3,8 @@
 
 #include "isotp_api/can/can_layer_message.hpp"
 #include <QVector>
+#include <QList>
+#include <QDebug>
 
 class WiicomCSVParser
 {

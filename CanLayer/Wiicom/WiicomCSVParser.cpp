@@ -1,5 +1,4 @@
 #include "WiicomCSVParser.h"
-#include <QDebug>
 
 WiicomCSVParser::WiicomCSVParser()
 { }

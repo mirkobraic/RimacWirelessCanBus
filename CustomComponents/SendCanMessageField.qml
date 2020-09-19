@@ -14,7 +14,7 @@ Item {
         validator: RegExpValidator { regExp: /[0-9A-Fa-f]{0,8}/ }
 
         Keys.onReturnPressed: {
-          canDataTextFields.itemAt(0).focus = true;
+            focus = false
         }
 
         function adjustIdToLength(len) {
@@ -98,11 +98,7 @@ Item {
                 horizontalAlignment: Text.AlignHCenter
                 validator: RegExpValidator { regExp: /[0-9A-Fa-f]{0,2}/ }
                 Keys.onReturnPressed: {
-                    if (index == 7) {
-                        focus = false;
-                    } else {
-                        canDataTextFields.itemAt(index + 1).focus = true;
-                    }
+                    focus = false
                 }
 
                 onEditingFinished: {

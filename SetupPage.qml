@@ -5,19 +5,6 @@ import "CustomComponents"
 Item {
     id: root
 
-    property int currentTx: rxTxComboBox.model.get(rxTxComboBox.currentIndex).tx
-    property int currentRx: rxTxComboBox.model.get(rxTxComboBox.currentIndex).rx
-
-    RxTxPopup {
-        id: rxTxPopup
-        anchors.centerIn: root
-
-        onRxTxPairAdded: {
-            rxTxComboBox.model.append({ rx: rx, tx: tx, desc: "rx: " + rx + "  tx: " + tx });
-            rxTxComboBox.currentIndex = rxTxComboBox.model.count - 1
-        }
-    }
-
     Flickable {
         id: flickable
         flickableDirection: Flickable.VerticalFlick
@@ -91,7 +78,7 @@ Item {
                     width: column.firstColumnWidth
                     height: parent.height
                     verticalAlignment: Text.AlignVCenter
-                    text: "Baud rate"
+                    text: "Baudrate"
                 }
                 ComboBox {
                     id: baudRateComboBox
@@ -117,19 +104,37 @@ Item {
                     width: column.firstColumnWidth
                     height: parent.height
                     verticalAlignment: Text.AlignVCenter
-                    text: "Rx-Tx pairs"
+                    text: "rx-tx pair (hex)"
                 }
-                RxTxPicker {
-                    id: rxTxComboBox
+                Row {
+                    height: column.rowHeight
                     width: column.secondColumnWidth
-                    height: parent.height
+                    spacing: 20
 
-                    model: ListModel {
-                        ListElement { rx: 1106; tx: 1107; desc: "rx: 1106  tx: 1107" }
-//                        ListElement { rx: 1; tx: 2; desc: "rx: 1  tx: 2" }
+                    TextField {
+                        id: rxTextField
+                        width: parent.width / 2 - 10
+                        enabled: !viewController.isConnected
+
+                        text: ""
+                        placeholderText: "rx"
+
+                        Keys.onReturnPressed: {
+                            focus = false
+                        }
                     }
+                    TextField {
+                        id: txTextField
+                        width: parent.width / 2 - 10
+                        enabled: !viewController.isConnected
 
-                    onAddButtonClicked: rxTxPopup.open()
+                        text: ""
+                        placeholderText: "tx"
+
+                        Keys.onReturnPressed: {
+                            focus = false
+                        }
+                    }
                 }
             }
 
@@ -152,7 +157,7 @@ Item {
                     placeholderText: "172.20.10.5"
 
                     Keys.onReturnPressed: {
-                        portTextField.focus = true;
+                        focus = false
                     }
                 }
             }
@@ -176,7 +181,7 @@ Item {
                     placeholderText: "65300"
 
                     Keys.onReturnPressed: {
-                        focus = false;
+                        focus = false
                     }
                 }
             }
@@ -221,7 +226,7 @@ Item {
                 if (viewController.isConnected) {
                     return true
                 } else {
-                    return rxTxComboBox.model.count && providerComboBox.model.count && ipAddressTextField.text && portTextField.text
+                    return rxTextField.text && txTextField.text && providerComboBox.model.count && ipAddressTextField.text && portTextField.text
                 }
             }
 
@@ -233,12 +238,10 @@ Item {
                     let ipAddress = ipAddressTextField.text;
                     let port = portTextField.text;
                     let baudRate = baudRateComboBox.model.get(baudRateComboBox.currentIndex).rawValue;
-                    let rxTxPairs = [];
-                    for (var i = 0; i < rxTxComboBox.model.count; i++) {
-                        rxTxPairs.push({ rx: rxTxComboBox.model.get(i).rx, tx: rxTxComboBox.model.get(i).tx })
-                    }
 
-                    viewController.connectTapped(currentProvider, ipAddress, port, baudRate, rxTxPairs);
+                    let rxTxPair = { rx: rxTextField.text, tx: txTextField.text }
+
+                    viewController.connectTapped(currentProvider, ipAddress, port, baudRate, rxTxPair);
                 }
             }
         }

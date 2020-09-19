@@ -44,7 +44,6 @@ ApplicationWindow {
 
         UdsClientPage {
             id: udsClientPage
-            currentTx: setupPage.currentTx
         }
 
         RawCanPage {

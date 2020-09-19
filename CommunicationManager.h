@@ -20,16 +20,16 @@ class CommunicationManager : public QObject
     Q_OBJECT
 
 public:
-    CommunicationManager(CanBusProvider provider, std::vector<std::pair<uint32_t, uint32_t>> rxTxPairs, QObject *parent = nullptr);
+    CommunicationManager(CanBusProvider provider, std::pair<uint32_t, uint32_t> rxTxPair, QObject *parent = nullptr);
 
     void connect(QString ipAddress, QString port, BaudRate baudRate);
     void disconnect();
 
     void sendDirectCanMessage(std::vector<uint8_t> data, uint32_t id);
 
-    void udsCheckVersion(uint32_t tx);
-    void udsGetSupportedDtcsStatus(uint32_t tx, std::function<void (const std::vector<int>&, const std::vector<int>&)>);
-    void udsClearDtcInformation(uint32_t tx);
+    void udsCheckVersion();
+    void udsGetSupportedDtcsStatus(std::function<void (const std::vector<int>&, const std::vector<int>&)>);
+    void udsClearDtcInformation();
 
 signals:
     void newCanMessageRecieved(CanMessage message);
@@ -44,7 +44,7 @@ public slots:
     void onToggleConnection(bool value);
 
 private:
-    std::vector<std::pair<uint32_t, uint32_t>> rxTxPairs;
+    std::pair<uint32_t, uint32_t> rxTxPair;
     std::shared_ptr<Logger> logger;
 
     std::shared_ptr<CanBusInterface> canBusInterface;

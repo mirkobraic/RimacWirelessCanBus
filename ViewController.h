@@ -19,14 +19,14 @@ public:
     Q_PROPERTY(bool isConnected READ getIsConnected NOTIFY connectionChanged)
     Q_PROPERTY(bool fetchingInProgress READ getFetchingInProgress WRITE setFetchingInProgress NOTIFY fetchingInProgressChanged)
 
-    Q_INVOKABLE void connectTapped(int provider, QString ipAddress, QString port, int baudRate, const QVariantList& rxTxPairs);
+    Q_INVOKABLE void connectTapped(int provider, QString ipAddress, QString port, int baudRate, const QVariantMap& rxTxPair);
     Q_INVOKABLE void disconnectTapped();
 
     Q_INVOKABLE void sendDirectCanMessage(QString messageId, const QVector<QString> &bytes);
 
-    Q_INVOKABLE void udsCheckVersion(int tx);
-    Q_INVOKABLE void udsGetSupportedDtcsStatus(int tx);
-    Q_INVOKABLE void udsClearDtcInformation(int tx);
+    Q_INVOKABLE void udsCheckVersion();
+    Q_INVOKABLE void udsGetSupportedDtcsStatus();
+    Q_INVOKABLE void udsClearDtcInformation();
 
     bool getIsConnected() const;
 

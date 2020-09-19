@@ -11,17 +11,15 @@ ViewController::~ViewController()
     delete communicationManager;
 }
 
-void ViewController::connectTapped(int provider, QString ipAddress, QString port, int baudRate, const QVariantList& rxTxPairs)
+void ViewController::connectTapped(int provider, QString ipAddress, QString port, int baudRate, const QVariantMap& rxTxPair)
 {
     // TODO: fix leak
 
-    std::vector<std::pair<uint32_t, uint32_t>> pairs;
-    for (const QVariant& pair : rxTxPairs) {
-        QMap<QString, QVariant> pairMap = pair.toMap();
-        pairs.push_back(std::make_pair(pairMap["rx"].toUInt(), pairMap["tx"].toUInt()));
-    }
+    std::pair<uint32_t, uint32_t> pair;
+    pair.first = rxTxPair.first().toString().toUInt(nullptr, 16);
+    pair.second = rxTxPair.last().toString().toUInt(nullptr, 16);
 
-    communicationManager = new CommunicationManager((CanBusProvider)provider, pairs);
+    communicationManager = new CommunicationManager((CanBusProvider)provider, pair);
     QObject::connect(communicationManager, SIGNAL(newCanMessageRecieved(CanMessage)), this, SLOT(onNewCanMessageRecieved(CanMessage)));
     QObject::connect(communicationManager, SIGNAL(showAlert(QString, QString)), this, SLOT(onShowAlert(QString, QString)));
     QObject::connect(communicationManager, SIGNAL(fetchingInProgress(bool)), this, SLOT(onFetchingInProgress(bool)));
@@ -68,12 +66,12 @@ void ViewController::onNewCanMessageRecieved(CanMessage message)
     recievedMessages->addMessage(message);
 }
 
-void ViewController::udsCheckVersion(int tx)
+void ViewController::udsCheckVersion()
 {
-    QtConcurrent::run(communicationManager, &CommunicationManager::udsCheckVersion, tx);
+    QtConcurrent::run(communicationManager, &CommunicationManager::udsCheckVersion);
 }
 
-void ViewController::udsGetSupportedDtcsStatus(int tx)
+void ViewController::udsGetSupportedDtcsStatus()
 {
     auto completion = [this] (const std::vector<int> &keys, const std::vector<int> &values) {
         QVector<int> qKeys = QVector<int>(keys.begin(), keys.end());
@@ -82,12 +80,12 @@ void ViewController::udsGetSupportedDtcsStatus(int tx)
         emit setSupportedDtcs(qKeys, qValues);
     };
 
-    QtConcurrent::run(communicationManager, &CommunicationManager::udsGetSupportedDtcsStatus, tx, completion);
+    QtConcurrent::run(communicationManager, &CommunicationManager::udsGetSupportedDtcsStatus, completion);
 }
 
-void ViewController::udsClearDtcInformation(int tx)
+void ViewController::udsClearDtcInformation()
 {
-    QtConcurrent::run(communicationManager, &CommunicationManager::udsClearDtcInformation, tx);
+    QtConcurrent::run(communicationManager, &CommunicationManager::udsClearDtcInformation);
 }
 
 void ViewController::onShowAlert(QString title, QString message)
