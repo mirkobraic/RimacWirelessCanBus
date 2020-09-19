@@ -25,7 +25,6 @@ Item {
                 id: title
                 width: parent.width
                 text: ""
-                font.pointSize: 13
                 wrapMode: Text.WordWrap
                 horizontalAlignment: Text.AlignHCenter
             }
@@ -33,6 +32,7 @@ Item {
                 id: message
                 width: parent.width
                 text: ""
+                font.pointSize: 13
                 wrapMode: Text.WordWrap
                 horizontalAlignment: Text.AlignHCenter
             }

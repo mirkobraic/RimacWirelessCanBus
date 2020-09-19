@@ -35,6 +35,10 @@ Item {
                 onTextChanged: {
                     color = "black"
                 }
+
+                Keys.onReturnPressed: {
+                    txTextField.focus = true;
+                }
             }
             TextField {
                 id: txTextField
@@ -42,6 +46,10 @@ Item {
                 validator: IntValidator { bottom: 0; top: 2147483647 }
                 onTextChanged: {
                     color = "black"
+                }
+
+                Keys.onReturnPressed: {
+                    focus = false;
                 }
             }
             Row {

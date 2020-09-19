@@ -2,8 +2,10 @@
 #define CANBUSINTERFACEFACTORY_H
 
 #include "Kvaser/KvaserWirelessCan.h"
+#include "Wiicom/WiicomWirelessCan.h"
 
 enum CanBusProvider {
+    // raw value is connected with qml
     kvaser = 0,
     wiicom = 1
 };
@@ -15,8 +17,8 @@ public:
         switch (provider) {
         case kvaser:
             return std::make_shared<KvaserWirelessCan>();
-        default:
-            return nullptr;
+        case wiicom:
+            return std::make_shared<WiicomWirelessCan>();
         }
     }
 

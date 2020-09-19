@@ -2,6 +2,9 @@
 #define COMMUNICATIONMANAGER_H
 
 #include <QObject>
+//#include <QtConcurrent>
+//#include <QFutureWatcher>
+
 #include "CanLayer/CanBusInterfaceFactory.h"
 #include "Models/CanMessage.h"
 
@@ -60,6 +63,7 @@ private:
         emit fetchingInProgress(false);
         emit showAlert("Error", message);
     };
+
 };
 
 #endif // COMMUNICATIONMANAGER_H

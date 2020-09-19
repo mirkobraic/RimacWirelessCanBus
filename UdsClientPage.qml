@@ -10,7 +10,7 @@ Item {
 
     Connections {
         target: viewController
-        function onSetSupportedDtcs() {
+        function onSetSupportedDtcs(keys, values) {
             listView.model.clear();
             for (var i = 0; i < keys.length; i++) {
                 listView.model.append({ "firstField": "mask:\t" + keys[i], "secondField": "status:\t" + values[i] });
@@ -41,7 +41,7 @@ Item {
 
     DropShadow {
         anchors.fill: buttonBackground
-        radius: 5
+        radius: 2
         color: "gray"
         source: buttonBackground
     }
@@ -77,33 +77,107 @@ Item {
         Button {
             id: checkVersionButton
             width: grid.columnWidth
-            text: "Check version"
             onClicked: {
                 viewController.udsCheckVersion(currentTx)
+            }
+
+            background: Rectangle {
+                color: "#e6e6e6"
+                radius: 4
+            }
+
+            contentItem: Text {
+                text: "Check version"
+                font {
+                    bold: false
+                    pointSize: 14
+                    preferShaping: true
+                }
+
+                color: enabled ? "black" : "#bdbdbd"
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
             }
         }
 
         Button {
             id: dtcStatusButton
             width: grid.columnWidth
-            text: "Get status of supported DTCs"
             onClicked: {
                 viewController.udsGetSupportedDtcsStatus(currentTx)
+            }
+
+            background: Rectangle {
+                color: "#e6e6e6"
+                radius: 4
+            }
+
+            contentItem: Text {
+                text: "Get DTC status"
+                font {
+                    bold: false
+                    pointSize: 14
+                    preferShaping: true
+                }
+
+                color: enabled ? "black" : "#bdbdbd"
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
             }
         }
 
         Button {
             id: clearDtcButton
             width: grid.columnWidth
-            text: "Clear DTC infomration"
             onClicked: {
                 viewController.udsClearDtcInformation(currentTx)
+            }
+
+            background: Rectangle {
+                color: "#e6e6e6"
+                radius: 4
+            }
+
+            contentItem: Text {
+                text: "Clear DTC info"
+                font {
+                    bold: false
+                    pointSize: 14
+                    preferShaping: true
+                }
+
+                color: enabled ? "black" : "#bdbdbd"
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
             }
         }
 
         Button {
             width: grid.columnWidth
-            text: "Placeholder"
+
+            background: Rectangle {
+                color: "#e6e6e6"
+                radius: 4
+            }
+
+            contentItem: Text {
+                text: "-"
+                font {
+                    bold: false
+                    pointSize: 14
+                    preferShaping: true
+                }
+
+                color: enabled ? "black" : "#bdbdbd"
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
         }
     }
 }
+
+/*##^##
+Designer {
+    D{i:0;autoSize:true;height:480;width:640}
+}
+##^##*/

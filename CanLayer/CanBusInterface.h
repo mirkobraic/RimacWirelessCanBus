@@ -4,6 +4,8 @@
 #include <memory>
 #include <functional>
 #include <QObject>
+#include <QTimer>
+#include <QApplication>
 #include "isotp_api/can/can_layer_message.hpp"
 
 enum BaudRate {
@@ -24,6 +26,17 @@ public:
     virtual void sendCanMessage(isotp::can_layer_message &message) = 0;
 
     std::function<void(std::unique_ptr<isotp::can_layer_message>)> messageRecievedUdsCallback;
+
+    void dispatchToMainThread(std::function<void()> callback) {
+        QTimer* timer = new QTimer();
+        timer->moveToThread(qApp->thread());
+        timer->setSingleShot(true);
+        QObject::connect(timer, &QTimer::timeout, [=]() {
+            callback();
+            timer->deleteLater();
+        });
+        QMetaObject::invokeMethod(timer, "start", Qt::QueuedConnection, Q_ARG(int, 0));
+    }
 
 signals:
     void newDirectCanMessage(uint32_t, std::vector<uint8_t>);
