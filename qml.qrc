@@ -10,5 +10,10 @@
         <file>UdsClientPage.qml</file>
         <file>SetupPage.qml</file>
         <file>CustomComponents/MBBusyIndicator.qml</file>
+        <file>CustomComponents/RawCanListView.qml</file>
+        <file>images/clearIcon.png</file>
+        <file>images/sendIcon.png</file>
+        <file>images/overrideOff.png</file>
+        <file>images/overrideOn.png</file>
     </qresource>
 </RCC>

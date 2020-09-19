@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.15
 import QtQuick.Controls 2.14
 
 Item {
@@ -127,17 +127,10 @@ Item {
             color: "white"
         }
 
-        contentItem: Text {
-            text: "Send"
-            font {
-                bold: true
-                pointSize: 14
-                preferShaping: true
-            }
-
-            color: enabled ? "#147EFB" : "#c7c7c7"
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
+        contentItem: Image {
+            fillMode: Image.PreserveAspectFit
+            source: "../images/sendIcon.png"
+            mipmap: true
         }
 
         onClicked: {

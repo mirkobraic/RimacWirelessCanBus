@@ -6,7 +6,7 @@ import "CustomComponents"
 Item {
     id: root
 
-    TitledListView {
+    RawCanListView {
         anchors {
             top: parent.top
             topMargin: 10
@@ -15,13 +15,10 @@ Item {
             right: parent.right
             left: parent.left
         }
+
         topMargin: 10
         bottomMargin: 10
         contentInset: 10
-
-        title: "Recieved messages (hex)"
-        textWidthRatio: 0.35
-        model: recievedMessages
     }
 
     DropShadow {
@@ -51,7 +48,7 @@ Item {
             bottom: parent.bottom
             bottomMargin: 10
             leftMargin: 10
-            rightMargin: 10
+            rightMargin: 5
         }
     }
 }

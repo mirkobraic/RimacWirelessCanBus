@@ -5,6 +5,29 @@ CanMessageListModel::CanMessageListModel(QObject *parent)
 {
 }
 
+void CanMessageListModel::clearMessages()
+{
+    removeRows(0, rowCount());
+}
+
+void CanMessageListModel::toggleOverride(bool on)
+{
+    if (isOverrideOn == false && on == true) {
+        // delete extra messages
+        // start from the back and remove duplicates
+        QVector<uint32_t> uniqueIds;
+        for (int i = rowCount() - 1; i >= 0; i--) {
+            uint32_t msgId = messages[i].getId();
+            if (uniqueIds.contains(msgId)) {
+                removeRow(i);
+            } else {
+                uniqueIds.append(msgId);
+            }
+        }
+    }
+    isOverrideOn = on;
+}
+
 int CanMessageListModel::rowCount(const QModelIndex &parent) const
 {
     // For list models only the root node (an invalid parent) should return the list's size. For all
@@ -33,20 +56,22 @@ QVariant CanMessageListModel::data(const QModelIndex &index, int role) const
 
 void CanMessageListModel::addMessage(const CanMessage &message)
 {
-    for (int i = 0; i < messages.count(); i++) {
-        if (messages[i].getId() == message.getId()) {
-            std::vector<uint8_t> data = message.getData();
-            QVector<uint8_t> dataVec = QVector<uint8_t>(data.begin(), data.end());
-            QList<uint8_t> dataList = QList<uint8_t>::fromVector(dataVec);
+    if (isOverrideOn) {
+        for (int i = 0; i < messages.count(); i++) {
+            if (messages[i].getId() == message.getId()) {
+                std::vector<uint8_t> data = message.getData();
+                QVector<uint8_t> dataVec = QVector<uint8_t>(data.begin(), data.end());
+                QList<uint8_t> dataList = QList<uint8_t>::fromVector(dataVec);
 
-            QList<QVariant> variantList;
-            foreach(uint8_t byte, dataList) {
-                variantList << QVariant(byte);
+                QList<QVariant> variantList;
+                foreach(uint8_t byte, dataList) {
+                    variantList << QVariant(byte);
+                }
+
+                QVariant variantData(variantList);
+                setData(index(i, 0), variantData, CanData);
+                return;
             }
-
-            QVariant variantData(variantList);
-            setData(index(i, 0), variantData, CanData);
-            return;
         }
     }
 

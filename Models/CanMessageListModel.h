@@ -17,6 +17,9 @@ public:
         CanData
     };
 
+    Q_INVOKABLE void clearMessages();
+    Q_INVOKABLE void toggleOverride(bool on);
+
     // Basic functionality:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
 
@@ -40,6 +43,7 @@ private:
     QString formatCanData(CanMessage messsage) const;
 
     QList<CanMessage> messages;
+    bool isOverrideOn = false;
 };
 
 #endif // CANMESSAGESLISTMODEL_H
