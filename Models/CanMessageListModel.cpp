@@ -49,6 +49,8 @@ QVariant CanMessageListModel::data(const QModelIndex &index, int role) const
         return QVariant(formatCanId(message));
     case CanData:
         return QVariant(formatCanData(message));
+    case Timestamp:
+        return QVariant(message.getTimestamp());
     default:
         return QVariant();
     }
@@ -70,6 +72,9 @@ void CanMessageListModel::addMessage(const CanMessage &message)
 
                 QVariant variantData(variantList);
                 setData(index(i, 0), variantData, CanData);
+
+                QVariant variantTimestamp(message.getTimestamp());
+                setData(index(i, 0), variantTimestamp, Timestamp);
                 return;
             }
         }
@@ -103,7 +108,7 @@ bool CanMessageListModel::setData(const QModelIndex &index, const QVariant &valu
     case CanId:
         message.setId(value.toUInt());
         break;
-    case CanData:
+    case CanData: {
         QList variantList = value.toList();
         QList<uint8_t> dataList;
         foreach(QVariant v, variantList) {
@@ -113,6 +118,11 @@ bool CanMessageListModel::setData(const QModelIndex &index, const QVariant &valu
         message.setData(data);
         break;
     }
+    case Timestamp:
+        message.setTimestamp(value.toLongLong());
+        break;
+
+    }
     emit dataChanged(index, index, QVector<int>() << role);
     return true;
 }
@@ -120,8 +130,9 @@ bool CanMessageListModel::setData(const QModelIndex &index, const QVariant &valu
 QHash<int, QByteArray> CanMessageListModel::roleNames() const
 {
     QHash<int, QByteArray> names;
-    names[CanId] = "firstField";
-    names[CanData] = "secondField";
+    names[CanId] = "CanId";
+    names[CanData] = "CanData";
+    names[Timestamp] = "Timestamp";
     return names;
 }
 
@@ -138,7 +149,9 @@ QString CanMessageListModel::formatCanId(CanMessage message) const
     while (hexId.length() < desiredLength) {
         hexId.prepend("0");
     }
-    return hexId.toUpper();
+    QString output = hexId.toUpper();
+    output.prepend("0x");
+    return output;
 }
 
 QString CanMessageListModel::formatCanData(CanMessage message) const

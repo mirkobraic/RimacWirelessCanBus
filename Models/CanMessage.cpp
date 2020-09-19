@@ -20,6 +20,16 @@ void CanMessage::setData(const std::vector<uint8_t> &value)
     data = value;
 }
 
+qint64 CanMessage::getTimestamp() const
+{
+    return timestamp;
+}
+
+void CanMessage::setTimestamp(const qint64 &value)
+{
+    timestamp = value;
+}
+
 void CanMessage::setId(const uint32_t &value)
 {
     id = value;

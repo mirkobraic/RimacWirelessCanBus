@@ -14,6 +14,8 @@ CommunicationManager::CommunicationManager(CanBusProvider provider, std::pair<ui
     isotpTransport = IsotpManager::makeTransportLayer(canBusInterface, rxTxPair, logger);
 
     udsClient = UdsManager::makeUdsClient(isotpTransport, rxTxPair, logger);
+
+    timer.start();
 }
 
 void CommunicationManager::connect(QString ipAddress, QString port, BaudRate baudRate)
@@ -88,6 +90,7 @@ void CommunicationManager::onNewDirectCanMessage(uint32_t id, std::vector<uint8_
 {
     try {
         CanMessage canMessage = CanMessage(id, data.size(), data);
+        canMessage.setTimestamp(timer.elapsed());
         emit newCanMessageRecieved(canMessage);
     } catch (std::exception e) {
         qDebug() << "CanMessage constructor error:  " << e.what();

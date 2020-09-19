@@ -115,6 +115,7 @@ Item {
                         id: rxTextField
                         width: parent.width / 2 - 10
                         enabled: !viewController.isConnected
+                        font.capitalization: Font.AllUppercase
 
                         text: ""
                         placeholderText: "rx"
@@ -127,6 +128,7 @@ Item {
                         id: txTextField
                         width: parent.width / 2 - 10
                         enabled: !viewController.isConnected
+                        font.capitalization: Font.AllUppercase
 
                         text: ""
                         placeholderText: "tx"

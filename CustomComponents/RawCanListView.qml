@@ -8,7 +8,6 @@ Item {
     property alias bottomMargin: listView.bottomMargin
     property int contentInset: 10
 
-    property real textWidthRatio: 0.35
     property var horizontalTextAlignment: Text.AlignLeft
 
     property alias model: listView.model
@@ -126,17 +125,24 @@ Item {
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
                         horizontalAlignment: horizontalTextAlignment
-                        width: parent.width * root.textWidthRatio
-                        font.pointSize: 14
-                        text: model.firstField
+                        width: parent.width * 0.3
+                        font.pointSize: 12
+                        text: model.CanId
                     }
 
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
                         horizontalAlignment: horizontalTextAlignment
-                        width: parent.width * (1 - root.textWidthRatio)
-                        font.pointSize: 14
-                        text: model.secondField
+                        width: parent.width * 0.55
+                        font.pointSize: 12
+                        text: model.CanData
+                    }
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        horizontalAlignment: horizontalTextAlignment
+                        width: parent.width * 0.15
+                        font.pointSize: 10
+                        text: model.Timestamp
                     }
                 }
             }

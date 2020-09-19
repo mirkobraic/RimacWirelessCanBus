@@ -41,7 +41,6 @@ void ViewController::sendDirectCanMessage(QString messageId, const QVector<QStri
     uint32_t id = messageId.toUInt(&success, 16);
     if (!success){
         qDebug() << "Parsing qml error: Invalid ID";
-        emit showAlert("Invalid ID", "");
         return;
     }
 
@@ -52,7 +51,6 @@ void ViewController::sendDirectCanMessage(QString messageId, const QVector<QStri
         uint8_t byte = stringByte.toUInt(&success, 16);
         if (!success){
             qDebug() << "Parsing qml error: Invalid data";
-            emit showAlert("Invalid Data", "");
             return;
         }
        data.push_back(byte);

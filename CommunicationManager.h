@@ -53,6 +53,8 @@ private:
 
     std::unique_ptr<uds_client::uds_client_with_u32_ids> udsClient;
 
+    QElapsedTimer timer;
+
     std::function<void(const uds::response::negative_response&)> negativeResponse = [this] (const uds::response::negative_response &res) {
         QString message = UdsConstantsUnpacker::unpackNegativeResponse(res) + "\ncode: " + QString::number((int)res);
         emit fetchingInProgress(false);

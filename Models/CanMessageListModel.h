@@ -14,7 +14,8 @@ public:
 
     enum Roles {
         CanId = Qt::UserRole,
-        CanData
+        CanData,
+        Timestamp
     };
 
     Q_INVOKABLE void clearMessages();
