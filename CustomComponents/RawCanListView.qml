@@ -14,7 +14,7 @@ Item {
 
     Label {
         id: titleLabel
-        text: "Recieved messages (hex)"
+        text: "Recieved messages"
         font.bold: true
         font.pointSize: 16
 
@@ -61,6 +61,11 @@ Item {
         }
 
         checkable: true
+        checked: settingsManager.rawCanOverride
+        onCheckedChanged: {
+            settingsManager.rawCanOverride = checked
+        }
+
         height: 48
         width: 48
 

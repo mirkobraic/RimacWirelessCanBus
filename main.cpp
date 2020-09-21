@@ -3,6 +3,7 @@
 #include <QQmlContext>
 
 #include "ViewController.h"
+#include "SettingsManager.h"
 
 int main(int argc, char *argv[])
 {
@@ -19,6 +20,9 @@ int main(int argc, char *argv[])
 
     CanMessageListModel recievedMessages;
     engine.rootContext()->setContextProperty(QStringLiteral("recievedMessages"), &recievedMessages);
+
+    SettingsManager settingsManager;
+    engine.rootContext()->setContextProperty(QStringLiteral("settingsManager"), &settingsManager);
 
     ViewController controller(&recievedMessages);
     engine.rootContext()->setContextProperty(QStringLiteral("viewController"), &controller);

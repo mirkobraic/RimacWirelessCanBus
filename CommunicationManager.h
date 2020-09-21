@@ -2,8 +2,6 @@
 #define COMMUNICATIONMANAGER_H
 
 #include <QObject>
-//#include <QtConcurrent>
-//#include <QFutureWatcher>
 
 #include "CanLayer/CanBusInterfaceFactory.h"
 #include "Models/CanMessage.h"
