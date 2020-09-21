@@ -30,7 +30,7 @@ Item {
 
     Row {
         id: titleRow
-        height: 24
+        height: 19
         anchors {
             top: parent.top
             topMargin: 10

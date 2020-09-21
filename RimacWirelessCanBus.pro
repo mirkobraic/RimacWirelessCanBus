@@ -26,6 +26,7 @@ SOURCES += \
         Logger.cpp \
         Models/CanMessage.cpp \
         Models/CanMessageListModel.cpp \
+        SettingsManager.cpp \
         UdsLayer/UdsConfigManager.cpp \
         UdsLayer/UdsConstantsUnpacker.cpp \
         UdsLayer/UdsManager.cpp \
@@ -59,6 +60,7 @@ HEADERS += \
     Logger.h \
     Models/CanMessage.h \
     Models/CanMessageListModel.h \
+    SettingsManager.h \
     UdsLayer/UdsConfigManager.h \
     UdsLayer/UdsConstantsUnpacker.h \
     UdsLayer/UdsManager.h \

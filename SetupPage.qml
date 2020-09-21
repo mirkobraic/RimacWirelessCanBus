@@ -66,6 +66,13 @@ Item {
                         ListElement { text: "Kvaser"; rawValue: 0 }
                         ListElement { text: "Wiicom"; rawValue: 1 }
                     }
+
+                    currentIndex: settingsManager.defaultProvider
+                    onCurrentIndexChanged: {
+                        settingsManager.defaultProvider = currentIndex
+                        ipAddressTextField.text = settingsManager.defaultIpAddress
+                        portTextField.text = settingsManager.defaultPort
+                    }
                 }
             }
 
@@ -93,6 +100,11 @@ Item {
                         ListElement { text: "500k"; rawValue: 2 }
                         ListElement { text: "1000k"; rawValue: 3 }
                     }
+
+                    currentIndex: settingsManager.defaultBaudrate
+                    onCurrentIndexChanged: {
+                        settingsManager.defaultBaudrate = baudRateComboBox.currentIndex
+                    }
                 }
             }
 
@@ -117,11 +129,12 @@ Item {
                         enabled: !viewController.isConnected
                         font.capitalization: Font.AllUppercase
 
-                        text: ""
+                        text: settingsManager.rx
                         placeholderText: "rx"
 
                         Keys.onReturnPressed: {
                             focus = false
+                            settingsManager.rx = rxTextField.text
                         }
                     }
                     TextField {
@@ -130,11 +143,12 @@ Item {
                         enabled: !viewController.isConnected
                         font.capitalization: Font.AllUppercase
 
-                        text: ""
+                        text: settingsManager.tx
                         placeholderText: "tx"
 
                         Keys.onReturnPressed: {
                             focus = false
+                            settingsManager.tx = txTextField.text
                         }
                     }
                 }
@@ -155,11 +169,12 @@ Item {
                     width: column.secondColumnWidth
                     enabled: !viewController.isConnected
 
-                    text: providerComboBox.model.get(providerComboBox.currentIndex).rawValue === 0 ? "172.20.10.3" : "172.20.10.5"
-                    placeholderText: "172.20.10.5"
+                    text: settingsManager.defaultIpAddress
+                    placeholderText: providerComboBox.model.get(providerComboBox.currentIndex).rawValue === 0 ? "172.20.10.3" : "172.20.10.5"
 
                     Keys.onReturnPressed: {
                         focus = false
+                        settingsManager.defaultIpAddress = ipAddressTextField.text
                     }
                 }
             }
@@ -179,11 +194,12 @@ Item {
                     width: column.secondColumnWidth
                     enabled: !viewController.isConnected
 
-                    text: providerComboBox.model.get(providerComboBox.currentIndex).rawValue === 0 ? "8080" : "65300"
-                    placeholderText: "65300"
+                    text: settingsManager.defaultPort
+                    placeholderText: providerComboBox.model.get(providerComboBox.currentIndex).rawValue === 0 ? "8080" : "65300"
 
                     Keys.onReturnPressed: {
                         focus = false
+                        settingsManager.defaultPort = portTextField.text
                     }
                 }
             }
