@@ -7,6 +7,7 @@ Item {
     id: root
 
     RawCanListView {
+        id: rawCanListView
         anchors {
             top: parent.top
             topMargin: 10

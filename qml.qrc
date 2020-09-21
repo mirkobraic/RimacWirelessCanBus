@@ -2,7 +2,6 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>images/rimacLogo.png</file>
-        <file>CustomComponents/TitledListView.qml</file>
         <file>CustomComponents/SendCanMessageField.qml</file>
         <file>CustomComponents/AlertPopup.qml</file>
         <file>qtquickcontrols2.conf</file>
@@ -15,5 +14,6 @@
         <file>images/sendIcon.png</file>
         <file>images/overrideOff.png</file>
         <file>images/overrideOn.png</file>
+        <file>CustomComponents/UdsDtcListView.qml</file>
     </qresource>
 </RCC>

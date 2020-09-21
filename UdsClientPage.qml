@@ -6,22 +6,8 @@ import "CustomComponents"
 Item {
     id: root
 
-    Connections {
-        target: viewController
-        function onSetSupportedDtcs(keys, values) {
-            listView.model.clear();
-            for (var i = 0; i < keys.length; i++) {
-                listView.model.append({ "firstField": "mask:\t" + keys[i], "secondField": "status:\t" + values[i] });
-            }
-        }
-
-        function onClearSupportedDtcs() {
-            listView.model.clear()
-        }
-    }
-
-    TitledListView {
-        id: listView
+    UdsDtcListView {
+        id: udsDtcsListView
         anchors {
             top: parent.top
             topMargin: 10
@@ -31,9 +17,6 @@ Item {
         }
         topMargin: 10
         contentInset: 10
-
-        title: "DTCs"
-        horizontalTextAlignment: Text.AlignHCenter
     }
 
     DropShadow {

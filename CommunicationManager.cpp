@@ -58,14 +58,14 @@ void CommunicationManager::udsGetSupportedDtcsStatus(std::function<void (const s
     emit fetchingInProgress(true);
     auto positiveResponse = [this, callback] (const std::map<dtc_mask, dtc_status> &res) {
         emit fetchingInProgress(false);
-        std::vector<int> keys;
-        std::vector<int> values;
+        std::vector<int> masks;
+        std::vector<int> statuses;
 
         for (auto const& [key, val] : res) {
-            keys.push_back(key);
-            values.push_back(val);
+            masks.push_back(key);
+            statuses.push_back(val);
         }
-        callback(keys, values);
+        callback(masks, statuses);
     };
 
     uint32_t tx = rxTxPair.second;
