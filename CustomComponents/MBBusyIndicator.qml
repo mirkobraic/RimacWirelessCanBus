@@ -16,8 +16,7 @@ Item {
 
         BusyIndicator {
             id: busyIndicator
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.centerIn: parent
             running: viewController.fetchingInProgress
         }
     }

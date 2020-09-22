@@ -140,13 +140,6 @@ Item {
                 }
             }
 
-            if (canIdTextField.text === "") {
-                canIdTextField.color = "red";
-            }
-            if (data.length === 0) {
-                canDataTextFields.itemAt(0).color = "red";
-            }
-
             viewController.sendDirectCanMessage(canIdTextField.text, data);
         }
     }

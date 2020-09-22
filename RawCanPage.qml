@@ -11,9 +11,7 @@ Item {
         id: rawCanListView
         anchors {
             top: parent.top
-            topMargin: 10
             bottom: sendField.top
-            bottomMargin: 10
             right: parent.right
             left: parent.left
         }

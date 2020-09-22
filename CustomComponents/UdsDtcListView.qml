@@ -61,8 +61,6 @@ Item {
         }
     }
 
-
-
     ListView {
         Rectangle {
             anchors.fill: parent
@@ -81,12 +79,6 @@ Item {
 
         clip: true
         spacing: 1
-
-        onCountChanged: {
-            if (!dragging) {
-                currentIndex = count - 1
-            }
-        }
 
         delegate: listViewDelegate
         model: ListModel { }
@@ -118,6 +110,7 @@ Item {
                         horizontalAlignment: Text.AlignHCenter
                         width: parent.width * 0.5
                         font.pointSize: 14
+                        font.bold: true
                         text: model.status
                         color: isStatusPassed(model.status) ? "green" : "red"
                     }

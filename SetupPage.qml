@@ -114,7 +114,7 @@ Item {
                     width: column.firstColumnWidth
                     height: parent.height
                     verticalAlignment: Text.AlignVCenter
-                    text: "rx-tx pair (hex)"
+                    text: "RX-TX ID's (hex)"
                 }
                 Row {
                     height: column.rowHeight
