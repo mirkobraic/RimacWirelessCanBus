@@ -127,6 +127,7 @@ Item {
                         font.capitalization: Font.AllUppercase
 
                         text: settingsManager.rx
+                        horizontalAlignment: Text.AlignHCenter
                         placeholderText: "rx"
 
                         Keys.onReturnPressed: {
@@ -142,6 +143,7 @@ Item {
                         font.capitalization: Font.AllUppercase
 
                         text: settingsManager.tx
+                        horizontalAlignment: Text.AlignHCenter
                         placeholderText: "tx"
 
                         Keys.onReturnPressed: {

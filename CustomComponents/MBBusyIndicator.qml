@@ -3,6 +3,7 @@ import QtQuick.Controls 2.14
 
 Item {
     id: root
+
     Rectangle {
         anchors.fill: parent
         enabled: busyIndicator.running

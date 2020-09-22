@@ -36,11 +36,11 @@ Item {
             rightMargin: 10
         }
 
-        height: 32
+        height: 40
         width: 40
 
         background: Rectangle {
-            color: "white"
+            color: "transparent"
         }
 
         contentItem: Image {
@@ -69,7 +69,7 @@ Item {
         width: 48
 
         background: Rectangle {
-            color: "white"
+            color: "transparent"
         }
 
         contentItem: Image {

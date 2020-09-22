@@ -46,6 +46,7 @@ Item {
             MainMenuButton {
                 width: grid.cellWidth
                 height: grid.cellHeight
+                iconSize: 55
                 text: "UDS Client"
                 iconSource: "../images/checkCarIcon.png"
 

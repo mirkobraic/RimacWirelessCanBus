@@ -4,9 +4,9 @@ import QtQuick.Controls 2.14
 Item {
     id: root
     function open(titleString, messageString) {
-        title.text = titleString
-        message.text = messageString
-        popup.open()
+        title.text = titleString;
+        message.text = messageString;
+        popup.open();
     }
 
     Popup {
@@ -15,7 +15,6 @@ Item {
         contentWidth: parent.width
 
         modal: true
-        focus: true
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
 
         background: Rectangle {

@@ -38,7 +38,6 @@ void CommunicationManager::sendDirectCanMessage(std::vector<uint8_t> data, uint3
 
 void CommunicationManager::udsCheckVersion()
 {
-//    udsClient->security_levels_and_sessions_services.send_switch_to_session(tx, 0x3);
     emit fetchingInProgress(true);
     auto positiveResponse = [this] (const std::pair<uds::version_params, uds::type_of_server> &pair) {
         QString message = "Server version: " + QString::number(pair.first.major) + "." + QString::number(pair.first.minor) + "." + QString::number(pair.first.patch);

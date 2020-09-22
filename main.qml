@@ -23,8 +23,7 @@ ApplicationWindow {
 
     AlertPopup {
         id: alertPopup
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.centerIn: parent
         width: parent.width * 0.4
     }
 

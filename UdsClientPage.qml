@@ -42,67 +42,31 @@ Item {
             right: parent.right
             bottom: parent.bottom
             left: parent.left
-            leftMargin: 10
+            leftMargin: 15
             bottomMargin: 10
-            rightMargin: 10
+            rightMargin: 15
         }
         columns: 2
-        columnSpacing: 5
-        rowSpacing: 5
+        columnSpacing: 15
+        rowSpacing: 15
 
-        property real columnWidth: (width - 5) / 2
+        property real columnWidth: (width - 15) / 2
 
         Button {
             id: dtcStatusButton
-            height: 44
             width: grid.columnWidth
+            text: "Get DTC status"
             onClicked: {
                 viewController.udsGetSupportedDtcsStatus()
-            }
-
-            background: Rectangle {
-                color: "#e6e6e6"
-                radius: 4
-            }
-
-            contentItem: Text {
-                text: "Get DTC status"
-                font {
-                    bold: false
-                    pointSize: 14
-                    preferShaping: true
-                }
-
-                color: enabled ? "black" : "#bdbdbd"
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
             }
         }
 
         Button {
             id: clearDtcButton
-            height: 44
             width: grid.columnWidth
+            text: "Clear DTC info"
             onClicked: {
                 viewController.udsClearDtcInformation()
-            }
-
-            background: Rectangle {
-                color: "#e6e6e6"
-                radius: 4
-            }
-
-            contentItem: Text {
-                text: "Clear DTC info"
-                font {
-                    bold: false
-                    pointSize: 14
-                    preferShaping: true
-                }
-
-                color: enabled ? "black" : "#bdbdbd"
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
             }
         }
     }
