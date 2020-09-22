@@ -2,7 +2,6 @@
 #define CANMESSAGESLISTMODEL_H
 
 #include <QAbstractListModel>
-#include <QDebug>
 #include "CanMessage.h"
 
 class CanMessageListModel : public QAbstractListModel

@@ -5,6 +5,7 @@ import "CustomComponents"
 
 Item {
     id: root
+    property string title: "Raw CAN"
 
     RawCanListView {
         id: rawCanListView

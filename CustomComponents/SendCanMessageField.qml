@@ -121,8 +121,6 @@ Item {
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
 
-        enabled: viewController.isConnected
-
         background: Rectangle {
             color: "white"
         }

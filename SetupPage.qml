@@ -59,7 +59,6 @@ Item {
                     id: providerComboBox
                     width: column.secondColumnWidth
 
-                    enabled: !viewController.isConnected
                     textRole: "text"
                     indicator: Canvas { }
                     model: ListModel {
@@ -91,7 +90,6 @@ Item {
                     id: baudRateComboBox
                     width: column.secondColumnWidth
 
-                    enabled: !viewController.isConnected
                     textRole: "text"
                     indicator: Canvas { }
                     model: ListModel {
@@ -126,7 +124,6 @@ Item {
                     TextField {
                         id: rxTextField
                         width: parent.width / 2 - 10
-                        enabled: !viewController.isConnected
                         font.capitalization: Font.AllUppercase
 
                         text: settingsManager.rx
@@ -134,13 +131,14 @@ Item {
 
                         Keys.onReturnPressed: {
                             focus = false
+                        }
+                        onFocusChanged:  {
                             settingsManager.rx = rxTextField.text
                         }
                     }
                     TextField {
                         id: txTextField
                         width: parent.width / 2 - 10
-                        enabled: !viewController.isConnected
                         font.capitalization: Font.AllUppercase
 
                         text: settingsManager.tx
@@ -148,6 +146,9 @@ Item {
 
                         Keys.onReturnPressed: {
                             focus = false
+                            settingsManager.tx = txTextField.text
+                        }
+                        onFocusChanged:  {
                             settingsManager.tx = txTextField.text
                         }
                     }
@@ -167,13 +168,15 @@ Item {
                 TextField {
                     id: ipAddressTextField
                     width: column.secondColumnWidth
-                    enabled: !viewController.isConnected
 
                     text: settingsManager.defaultIpAddress
                     placeholderText: providerComboBox.model.get(providerComboBox.currentIndex).rawValue === 0 ? "172.20.10.3" : "172.20.10.5"
 
                     Keys.onReturnPressed: {
                         focus = false
+                        settingsManager.defaultIpAddress = ipAddressTextField.text
+                    }
+                    onFocusChanged:  {
                         settingsManager.defaultIpAddress = ipAddressTextField.text
                     }
                 }
@@ -192,13 +195,14 @@ Item {
                 TextField {
                     id: portTextField
                     width: column.secondColumnWidth
-                    enabled: !viewController.isConnected
 
                     text: settingsManager.defaultPort
                     placeholderText: providerComboBox.model.get(providerComboBox.currentIndex).rawValue === 0 ? "8080" : "65300"
 
                     Keys.onReturnPressed: {
                         focus = false
+                    }
+                    onFocusChanged:  {
                         settingsManager.defaultPort = portTextField.text
                     }
                 }
@@ -206,7 +210,7 @@ Item {
         }
 
         Button {
-            id: connectToggle
+            id: connectButton
             anchors {
                 horizontalCenter: parent.horizontalCenter
                 top: column.bottom
@@ -218,16 +222,11 @@ Item {
 
             background: Rectangle {
                 radius: 6
-                color: {
-                    if (enabled)
-                        return viewController.isConnected ? "#FC3D39" : "#147EFB"
-                    else
-                        return viewController.isConnected ? Qt.lighter("#FC3D39") : Qt.lighter("#147EFB")
-                }
+                color: enabled ? "#147EFB" : Qt.lighter("#147EFB")
             }
 
             contentItem: Text {
-                text: viewController.isConnected ? "Disconnect" : "Connect"
+                text: "Connect"
                 font {
                     bold: true
                     pointSize: 14
@@ -241,26 +240,18 @@ Item {
             }
 
             enabled: {
-                if (viewController.isConnected) {
-                    return true
-                } else {
-                    return rxTextField.text && txTextField.text && providerComboBox.model.count && ipAddressTextField.text && portTextField.text
-                }
+                return rxTextField.text && txTextField.text && providerComboBox.model.count && ipAddressTextField.text && portTextField.text
             }
 
             onClicked: {
-                if (viewController.isConnected) {
-                    viewController.disconnectTapped()
-                } else  {
-                    let currentProvider = providerComboBox.model.get(providerComboBox.currentIndex).rawValue;
-                    let ipAddress = ipAddressTextField.text;
-                    let port = portTextField.text;
-                    let baudRate = baudRateComboBox.model.get(baudRateComboBox.currentIndex).rawValue;
+                let currentProvider = providerComboBox.model.get(providerComboBox.currentIndex).rawValue;
+                let ipAddress = ipAddressTextField.text;
+                let port = portTextField.text;
+                let baudRate = baudRateComboBox.model.get(baudRateComboBox.currentIndex).rawValue;
 
-                    let rxTxPair = { rx: rxTextField.text, tx: txTextField.text }
+                let rxTxPair = { rx: rxTextField.text, tx: txTextField.text }
 
-                    viewController.connectTapped(currentProvider, ipAddress, port, baudRate, rxTxPair);
-                }
+                viewController.connectTapped(currentProvider, ipAddress, port, baudRate, rxTxPair);
             }
         }
     }
