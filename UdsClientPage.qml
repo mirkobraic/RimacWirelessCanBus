@@ -6,25 +6,8 @@ import "CustomComponents"
 Item {
     id: root
 
-    property int currentTx
-
-    Connections {
-        target: viewController
-        function onSetSupportedDtcs(keys, values) {
-            listView.model.clear();
-            for (var i = 0; i < keys.length; i++) {
-                listView.model.append({ "firstField": "mask:\t" + keys[i], "secondField": "status:\t" + values[i] });
-            }
-        }
-
-        function onClearSupportedDtcs() {
-            listView.model.clear()
-
-        }
-    }
-
-    TitledListView {
-        id: listView
+    UdsDtcListView {
+        id: udsDtcsListView
         anchors {
             top: parent.top
             topMargin: 10
@@ -34,9 +17,6 @@ Item {
         }
         topMargin: 10
         contentInset: 10
-
-        title: "DTCs"
-        horizontalTextAlignment: Text.AlignHCenter
     }
 
     DropShadow {
@@ -78,7 +58,7 @@ Item {
             id: checkVersionButton
             width: grid.columnWidth
             onClicked: {
-                viewController.udsCheckVersion(currentTx)
+                viewController.udsCheckVersion()
             }
 
             background: Rectangle {
@@ -104,7 +84,7 @@ Item {
             id: dtcStatusButton
             width: grid.columnWidth
             onClicked: {
-                viewController.udsGetSupportedDtcsStatus(currentTx)
+                viewController.udsGetSupportedDtcsStatus()
             }
 
             background: Rectangle {
@@ -130,7 +110,7 @@ Item {
             id: clearDtcButton
             width: grid.columnWidth
             onClicked: {
-                viewController.udsClearDtcInformation(currentTx)
+                viewController.udsClearDtcInformation()
             }
 
             background: Rectangle {

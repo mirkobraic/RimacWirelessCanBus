@@ -3,7 +3,6 @@
 
 #include "../CanBusInterface.h"
 #include "KvaserNetworkService.h"
-#include <QtConcurrent>
 
 class KvaserWirelessCan : public CanBusInterface
 {

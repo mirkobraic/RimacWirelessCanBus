@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.15
 import QtQuick.Controls 2.14
 
 Item {
@@ -14,7 +14,7 @@ Item {
         validator: RegExpValidator { regExp: /[0-9A-Fa-f]{0,8}/ }
 
         Keys.onReturnPressed: {
-          canDataTextFields.itemAt(0).focus = true;
+            focus = false
         }
 
         function adjustIdToLength(len) {
@@ -98,11 +98,7 @@ Item {
                 horizontalAlignment: Text.AlignHCenter
                 validator: RegExpValidator { regExp: /[0-9A-Fa-f]{0,2}/ }
                 Keys.onReturnPressed: {
-                    if (index == 7) {
-                        focus = false;
-                    } else {
-                        canDataTextFields.itemAt(index + 1).focus = true;
-                    }
+                    focus = false
                 }
 
                 onEditingFinished: {
@@ -131,17 +127,10 @@ Item {
             color: "white"
         }
 
-        contentItem: Text {
-            text: "Send"
-            font {
-                bold: true
-                pointSize: 14
-                preferShaping: true
-            }
-
-            color: enabled ? "#147EFB" : "#c7c7c7"
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
+        contentItem: Image {
+            fillMode: Image.PreserveAspectFit
+            source: "../images/sendIcon.png"
+            mipmap: true
         }
 
         onClicked: {

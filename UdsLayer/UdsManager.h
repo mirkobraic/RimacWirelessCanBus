@@ -9,7 +9,7 @@ class UdsManager
 {
 public:
     static std::unique_ptr<uds_client::uds_client_with_u32_ids> makeUdsClient(std::shared_ptr<uds::transport_layer<uint32_t>> transport,
-                                                                              std::vector<std::pair<uint32_t, uint32_t>> rxTxPairs,
+                                                                              std::pair<uint32_t, uint32_t> rxTxPairs,
                                                                               std::shared_ptr<Logger> logger);
 
 private:

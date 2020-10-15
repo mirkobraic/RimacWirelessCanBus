@@ -24,10 +24,14 @@ public:
     std::vector<uint8_t> getData() const;
     void setData(const std::vector<uint8_t> &value);
 
+    qint64 getTimestamp() const;
+    void setTimestamp(const qint64 &value);
+
 private:
     uint32_t id;
     uint8_t dlc;
     std::vector<uint8_t> data;
+    qint64 timestamp;
 };
 
 #endif // CANMESSAGE_H

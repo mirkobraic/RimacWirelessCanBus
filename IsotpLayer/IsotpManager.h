@@ -10,7 +10,7 @@ class IsotpManager
 {
 public:
     static std::shared_ptr<isotp::isotp_transport_layer> makeTransportLayer(std::shared_ptr<CanBusInterface> canBusInterface,
-                                                                            std::vector<std::pair<uint32_t, uint32_t>> rxTxPairs,
+                                                                            std::pair<uint32_t, uint32_t> rxTxPairs,
                                                                             std::shared_ptr<Logger> logger);
 
 private:

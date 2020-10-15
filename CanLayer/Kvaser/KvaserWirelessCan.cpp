@@ -46,8 +46,6 @@ void KvaserWirelessCan::connectToDevice(QString deviceIpAddress, QString port, B
                         rxTimer = new QTimer(this);
                         QObject::connect(rxTimer, &QTimer::timeout, this, &KvaserWirelessCan::readMessage);
                         rxTimer->start(10);
-
-//                        QtConcurrent::run(this, &KvaserWirelessCan::readMessage);
                     }
                 });
             });

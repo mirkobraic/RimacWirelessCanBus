@@ -34,6 +34,7 @@ void WiicomWirelessCan::sendCanMessage(isotp::can_layer_message &message)
 {
     bool isExtended = message.id > maxStdCanId;
     QByteArray csvMsg = csvParser.convertMessage(message, isExtended);
+    qDebug() << "CanLayer: Sending " << csvMsg;
     dispatchToMainThread([this, csvMsg] {
         socket->write(csvMsg);
     });
@@ -54,7 +55,7 @@ void WiicomWirelessCan::readyRead()
 {
     QByteArray input = socket->readAll();
     QVector<isotp::can_layer_message> messages = csvParser.parseInput(input);
-    qDebug() << "Recieved... " << input;
+     qDebug() << "CanLayer: Recieved " << input;
     for(isotp::can_layer_message msg : messages)  {
         messageRecievedUdsCallback(std::make_unique<isotp::can_layer_message>(msg));
         newDirectCanMessage(msg.id, msg.data);

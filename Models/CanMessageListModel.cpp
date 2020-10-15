@@ -5,6 +5,29 @@ CanMessageListModel::CanMessageListModel(QObject *parent)
 {
 }
 
+void CanMessageListModel::clearMessages()
+{
+    removeRows(0, rowCount());
+}
+
+void CanMessageListModel::toggleOverride(bool on)
+{
+    if (isOverrideOn == false && on == true) {
+        // delete extra messages
+        // start from the back and remove duplicates
+        QVector<uint32_t> uniqueIds;
+        for (int i = rowCount() - 1; i >= 0; i--) {
+            uint32_t msgId = messages[i].getId();
+            if (uniqueIds.contains(msgId)) {
+                removeRow(i);
+            } else {
+                uniqueIds.append(msgId);
+            }
+        }
+    }
+    isOverrideOn = on;
+}
+
 int CanMessageListModel::rowCount(const QModelIndex &parent) const
 {
     // For list models only the root node (an invalid parent) should return the list's size. For all
@@ -26,6 +49,8 @@ QVariant CanMessageListModel::data(const QModelIndex &index, int role) const
         return QVariant(formatCanId(message));
     case CanData:
         return QVariant(formatCanData(message));
+    case Timestamp:
+        return QVariant(message.getTimestamp());
     default:
         return QVariant();
     }
@@ -33,20 +58,25 @@ QVariant CanMessageListModel::data(const QModelIndex &index, int role) const
 
 void CanMessageListModel::addMessage(const CanMessage &message)
 {
-    for (int i = 0; i < messages.count(); i++) {
-        if (messages[i].getId() == message.getId()) {
-            std::vector<uint8_t> data = message.getData();
-            QVector<uint8_t> dataVec = QVector<uint8_t>(data.begin(), data.end());
-            QList<uint8_t> dataList = QList<uint8_t>::fromVector(dataVec);
+    if (isOverrideOn) {
+        for (int i = 0; i < messages.count(); i++) {
+            if (messages[i].getId() == message.getId()) {
+                std::vector<uint8_t> data = message.getData();
+                QVector<uint8_t> dataVec = QVector<uint8_t>(data.begin(), data.end());
+                QList<uint8_t> dataList = QList<uint8_t>::fromVector(dataVec);
 
-            QList<QVariant> variantList;
-            foreach(uint8_t byte, dataList) {
-                variantList << QVariant(byte);
+                QList<QVariant> variantList;
+                foreach(uint8_t byte, dataList) {
+                    variantList << QVariant(byte);
+                }
+
+                QVariant variantData(variantList);
+                setData(index(i, 0), variantData, CanData);
+
+                QVariant variantTimestamp(message.getTimestamp());
+                setData(index(i, 0), variantTimestamp, Timestamp);
+                return;
             }
-
-            QVariant variantData(variantList);
-            setData(index(i, 0), variantData, CanData);
-            return;
         }
     }
 
@@ -78,7 +108,7 @@ bool CanMessageListModel::setData(const QModelIndex &index, const QVariant &valu
     case CanId:
         message.setId(value.toUInt());
         break;
-    case CanData:
+    case CanData: {
         QList variantList = value.toList();
         QList<uint8_t> dataList;
         foreach(QVariant v, variantList) {
@@ -88,6 +118,11 @@ bool CanMessageListModel::setData(const QModelIndex &index, const QVariant &valu
         message.setData(data);
         break;
     }
+    case Timestamp:
+        message.setTimestamp(value.toLongLong());
+        break;
+
+    }
     emit dataChanged(index, index, QVector<int>() << role);
     return true;
 }
@@ -95,8 +130,9 @@ bool CanMessageListModel::setData(const QModelIndex &index, const QVariant &valu
 QHash<int, QByteArray> CanMessageListModel::roleNames() const
 {
     QHash<int, QByteArray> names;
-    names[CanId] = "firstField";
-    names[CanData] = "secondField";
+    names[CanId] = "CanId";
+    names[CanData] = "CanData";
+    names[Timestamp] = "Timestamp";
     return names;
 }
 
@@ -113,7 +149,9 @@ QString CanMessageListModel::formatCanId(CanMessage message) const
     while (hexId.length() < desiredLength) {
         hexId.prepend("0");
     }
-    return hexId.toUpper();
+    QString output = hexId.toUpper();
+    output.prepend("0x");
+    return output;
 }
 
 QString CanMessageListModel::formatCanData(CanMessage message) const

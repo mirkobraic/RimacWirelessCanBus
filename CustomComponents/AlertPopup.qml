@@ -18,6 +18,11 @@ Item {
         focus: true
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
 
+        background: Rectangle {
+            radius: 6
+            color: "#ddffffff"
+        }
+
         Column {
             spacing: 18
             width: parent.width
