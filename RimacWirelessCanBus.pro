@@ -68,17 +68,17 @@ HEADERS += \
 
 
 # uds
-ANDROID_EXTRA_LIBS = $$PWD/../udsAndroid/android_build/libuds_client.so
-LIBS += -L$$PWD/../udsAndroid/android_build/ -luds_client
+ANDROID_EXTRA_LIBS = $$PWD/Libs/udsclient_and_isotp/UdsClient/Android/Device/libuds_client.so
+LIBS += -L$$PWD/Libs/udsclient_and_isotp/UdsClient/Android/Device/ -luds_client
 
-INCLUDEPATH += $$PWD/../udsAndroid/include
-DEPENDPATH += $$PWD/../udsAndroid/include
+INCLUDEPATH += $$PWD/Libs/udsclient_and_isotp/UdsClient/include
+DEPENDPATH += $$PWD/Libs/udsclient_and_isotp/UdsClient/include
 
 # isotp
-ANDROID_EXTRA_LIBS += $$PWD/../isotpAndroid/android_isotp_build/libisotp_lib.so
-LIBS += -L$$PWD/../isotpAndroid/android_isotp_build/ -lisotp_lib
+ANDROID_EXTRA_LIBS += $$PWD/Libs/udsclient_and_isotp/Isotp/Android/Device/libisotp_lib.so
+LIBS += -L$$PWD/Libs/udsclient_and_isotp/Isotp/Android/Device/ -lisotp_lib
 
-INCLUDEPATH += $$PWD/../isotpAndroid/include
-DEPENDPATH += $$PWD/../isotpAndroid/include
+INCLUDEPATH += $$PWD/Libs/udsclient_and_isotp/Isotp/include
+DEPENDPATH += $$PWD/Libs/udsclient_and_isotp/Isotp/include
 
 ANDROID_ABIS = armeabi-v7a
