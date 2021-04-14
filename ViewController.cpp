@@ -51,6 +51,10 @@ void ViewController::sendDirectCanMessage(QString messageId, const QVector<QStri
         }
        data.push_back(byte);
     }
+    if (data.size() == 0) {
+        qDebug() << "Cannot send empty message";
+        return;
+    }
 
     communicationManager->sendDirectCanMessage(data, id);
 }

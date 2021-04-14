@@ -28,6 +28,7 @@ void CommunicationManager::sendDirectCanMessage(std::vector<uint8_t> data, uint3
     canBusInterface->sendCanMessage(msg);
 }
 
+
 void CommunicationManager::onNewDirectCanMessage(uint32_t id, std::vector<uint8_t> data)
 {
     try {

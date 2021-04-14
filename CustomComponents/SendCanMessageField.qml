@@ -121,8 +121,6 @@ Item {
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
 
-        enabled: viewController.isConnected
-
         background: Rectangle {
             color: "white"
         }
@@ -140,13 +138,6 @@ Item {
                 if (canDataTextFields.itemAt(i).text) {
                     data.push(canDataTextFields.itemAt(i).text);
                 }
-            }
-
-            if (canIdTextField.text === "") {
-                canIdTextField.color = "red";
-            }
-            if (data.length === 0) {
-                canDataTextFields.itemAt(0).color = "red";
             }
 
             viewController.sendDirectCanMessage(canIdTextField.text, data);

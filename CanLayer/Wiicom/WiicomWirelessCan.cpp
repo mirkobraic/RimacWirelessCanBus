@@ -54,11 +54,7 @@ void WiicomWirelessCan::disconnected()
 void WiicomWirelessCan::readyRead()
 {
     QByteArray input = socket->readAll();
-    QVector<CanMessage> messages = csvParser.parseInput(input);
-     qDebug() << "CanLayer: Recieved " << input;
-    for(CanMessage msg : messages)  {
-        messageRecievedUdsCallback(std::make_unique<CanMessage>(msg));
-        newDirectCanMessage(msg.getId(), msg.getData());
+
     }
 }
 

@@ -10,7 +10,9 @@ Item {
 
     property var horizontalTextAlignment: Text.AlignLeft
 
-    property alias model: listView.model
+    Component.onCompleted: {
+        recievedMessages.toggleOverride(overrideButton.checked);
+    }
 
     Label {
         id: titleLabel
@@ -34,11 +36,11 @@ Item {
             rightMargin: 10
         }
 
-        height: 32
+        height: 40
         width: 40
 
         background: Rectangle {
-            color: "white"
+            color: "transparent"
         }
 
         contentItem: Image {
@@ -62,15 +64,12 @@ Item {
 
         checkable: true
         checked: settingsManager.rawCanOverride
-        onCheckedChanged: {
-            settingsManager.rawCanOverride = checked
-        }
 
         height: 48
         width: 48
 
         background: Rectangle {
-            color: "white"
+            color: "transparent"
         }
 
         contentItem: Image {
@@ -81,6 +80,7 @@ Item {
 
         onClicked: {
             recievedMessages.toggleOverride(checked);
+            settingsManager.rawCanOverride = checked
         }
     }
 

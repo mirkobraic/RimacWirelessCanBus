@@ -15,5 +15,13 @@
         <file>images/overrideOff.png</file>
         <file>images/overrideOn.png</file>
         <file>CustomComponents/UdsDtcListView.qml</file>
+        <file>MainMenu.qml</file>
+        <file>images/backIcon.png</file>
+        <file>images/checkCarIcon.png</file>
+        <file>images/canBusIcon.png</file>
+        <file>images/infoIcon.png</file>
+        <file>CustomComponents/MainMenuButton.qml</file>
+        <file>images/disconnectIcon.png</file>
+        <file>images/rimacLogoBig.png</file>
     </qresource>
 </RCC>
