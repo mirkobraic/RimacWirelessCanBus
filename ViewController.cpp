@@ -72,8 +72,8 @@ void ViewController::udsCheckVersion()
 void ViewController::udsGetSupportedDtcsStatus()
 {
     auto completion = [this] (const std::vector<int> &keys, const std::vector<int> &values) {
-        QVector<int> qKeys = QVector<int>(keys.begin(), keys.end());
-        QVector<int> qValues = QVector<int>(values.begin(), values.end());
+        QVector<int> qKeys = QVector<int>::fromStdVector(keys);
+        QVector<int> qValues = QVector<int>::fromStdVector(values);
 
         emit setSupportedDtcs(qKeys, qValues);
     };
