@@ -23,8 +23,7 @@ ApplicationWindow {
 
     AlertPopup {
         id: alertPopup
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.centerIn: parent
         width: parent.width * 0.4
     }
 
@@ -33,51 +32,60 @@ ApplicationWindow {
         z: 1
     }
 
-    SwipeView {
-        id: swipeView
+    SetupPage {
         anchors.fill: parent
-        currentIndex: tabBar.currentIndex
+        visible: !viewController.isConnected
+        enabled: !viewController.isConnected
+    }
 
-        SetupPage {
-            id: setupPage
+    header: ToolBar {
+        Rectangle {
+            anchors.fill: parent
+            z: -1
+            color: "#191947"
         }
 
-        UdsClientPage {
-            id: udsClientPage
+        visible: viewController.isConnected
+        enabled: viewController.isConnected
+        contentHeight: 30
+
+        ToolButton {
+            id: toolButton
+            height: 34
+            width: 44
+            anchors.verticalCenter: parent.verticalCenter
+            background: Rectangle {
+                color: "#191947"
+            }
+            contentItem: Image {
+                fillMode: Image.PreserveAspectFit
+                source: "../images/backIcon.png"
+                mipmap: true
+            }
+            enabled: stackView.depth > 1
+            visible: stackView.depth > 1
+            onClicked: {
+                if (stackView.depth > 1) {
+                    stackView.pop()
+                }
+            }
         }
 
-        RawCanPage {
-            id: rawCanPage
+        Label {
+            text: stackView.currentItem.title
+            color: "white"
+            anchors.centerIn: parent
+            font.pixelSize: 17
+            font.bold: true
         }
     }
 
-    footer: TabBar {
-        id: tabBar
-        currentIndex: swipeView.currentIndex
-        property color backgroundColor: "#fecb2e"
-        property color selectedColor: "#303030"
-
-        TabButton {
-            text: qsTr("Setup")
-            Rectangle {
-                anchors.fill: parent
-                color: parent.checked ? tabBar.backgroundColor : tabBar.selectedColor
-            }
-        }
-        TabButton {
-            text: qsTr("UDS Client")
-            Rectangle {
-                anchors.fill: parent
-                color: parent.checked ? tabBar.backgroundColor : tabBar.selectedColor
-            }
-        }
-        TabButton {
-            text: qsTr("Raw CAN")
-            Rectangle {
-                anchors.fill: parent
-                color: parent.checked ? tabBar.backgroundColor : tabBar.selectedColor
-            }
-        }
+    StackView {
+        id: stackView
+        anchors.fill: parent
+        initialItem: "MainMenu.qml"
+        visible: viewController.isConnected
+        enabled: viewController.isConnected
     }
 }
 

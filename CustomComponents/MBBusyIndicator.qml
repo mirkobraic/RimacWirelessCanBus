@@ -3,6 +3,7 @@ import QtQuick.Controls 2.14
 
 Item {
     id: root
+
     Rectangle {
         anchors.fill: parent
         enabled: busyIndicator.running
@@ -15,8 +16,7 @@ Item {
 
         BusyIndicator {
             id: busyIndicator
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.centerIn: parent
             running: viewController.fetchingInProgress
         }
     }

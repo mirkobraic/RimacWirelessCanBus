@@ -55,7 +55,7 @@ void WiicomWirelessCan::readyRead()
 {
     QByteArray input = socket->readAll();
     QVector<isotp::can_layer_message> messages = csvParser.parseInput(input);
-     qDebug() << "CanLayer: Recieved " << input;
+    qDebug() << "CanLayer: Recieved " << input;
     for(isotp::can_layer_message msg : messages)  {
         messageRecievedUdsCallback(std::make_unique<isotp::can_layer_message>(msg));
         newDirectCanMessage(msg.id, msg.data);

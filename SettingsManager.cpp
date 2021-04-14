@@ -1,5 +1,4 @@
 #include "SettingsManager.h"
-#include <QDebug>
 
 SettingsManager::SettingsManager(QObject *parent) : QObject(parent)
 {
@@ -87,6 +86,6 @@ QString SettingsManager::getDefaultPort()
 
 void SettingsManager::setDefaultPort(const QString &value)
 {
-    settings.setValue("defaultPortr" + QString::number(defaultProvider), value);
+    settings.setValue("defaultPort" + QString::number(defaultProvider), value);
     defaultPort = value;
 }

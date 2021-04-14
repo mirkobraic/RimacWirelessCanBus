@@ -48,9 +48,9 @@ void KvaserNetworkService::initializeLibrary(std::function<void (KvaserResponse,
     baseUrl.setPath("/canInitializeLibrary");
 
     // TODO: used in development
-//    QUrlQuery query;
-//    query.addQueryItem("timeout", QString::number(10));
-//    baseUrl.setQuery(query.query());
+    QUrlQuery query;
+    query.addQueryItem("timeout", QString::number(15));
+    baseUrl.setQuery(query.query());
 
     QNetworkAccessManager *qnam = new QNetworkAccessManager;
     QNetworkReply *reply = qnam->get(QNetworkRequest(baseUrl));

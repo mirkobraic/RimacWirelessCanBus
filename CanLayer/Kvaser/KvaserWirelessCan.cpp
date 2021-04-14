@@ -45,7 +45,7 @@ void KvaserWirelessCan::connectToDevice(QString deviceIpAddress, QString port, B
                         toggleConnection(true);
                         rxTimer = new QTimer(this);
                         QObject::connect(rxTimer, &QTimer::timeout, this, &KvaserWirelessCan::readMessage);
-                        rxTimer->start(10);
+                        rxTimer->start(20);
                     }
                 });
             });
@@ -60,25 +60,27 @@ void KvaserWirelessCan::disconnectFromDevice()
     }
 
     isConnected = false;
-    toggleConnection(false);
     rxTimer->stop();
 
     emit fetchingInProgress(true);
     kvNetService.canBusOff(sessionId, handle, [=](KvaserResponse res) {
         if (checkStatus("canBusOff", res) == false) {
             emit fetchingInProgress(false);
+            toggleConnection(false);
             return;
         }
 
         kvNetService.closeChannel(sessionId, handle, [=](KvaserResponse res) {
             if (checkStatus("closeChannel", res) == false) {
                 emit fetchingInProgress(false);
+                toggleConnection(false);
                 return;
             }
 
             kvNetService.unloadLibrary(sessionId, [=](KvaserResponse res) {
                 checkStatus("unloadLibrary", res);
                 emit fetchingInProgress(false);
+                toggleConnection(false);
             });
         });
     });
@@ -107,21 +109,21 @@ void KvaserWirelessCan::sendCanMessage(isotp::can_layer_message &message)
 void KvaserWirelessCan::readMessage()
 {
     kvNetService.canRead(sessionId, handle, 10, [=](KvaserResponse res, uint32_t id, uint flag, std::vector<uint8_t> data) {
-
+        Q_UNUSED(res); // we don't want to check status on every read
         if (flag & canMSG_ERROR_FRAME) {
             qDebug() << "Error frame recieved!";
             return;
         }
 
-        if (id == 1106) {
+        qDebug() << "CanLayer: recieved ID =" << id << " data =" << data;
+        if (id == 0) { return; }
 
-            qDebug() << "CanLayer: recieved ID =" << id << " data =" << data;
-            isotp::can_layer_message msg;
-            msg.id = id;
-            msg.data = data;
-            messageRecievedUdsCallback(std::make_unique<isotp::can_layer_message>(msg));
-            emit newDirectCanMessage(id, data);
-        }
+        isotp::can_layer_message msg;
+        msg.id = id;
+        msg.data = data;
+        messageRecievedUdsCallback(std::make_unique<isotp::can_layer_message>(msg));
+        emit newDirectCanMessage(id, data);
+
     });
 }
 
