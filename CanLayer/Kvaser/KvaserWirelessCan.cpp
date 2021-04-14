@@ -118,10 +118,8 @@ void KvaserWirelessCan::readMessage()
         qDebug() << "CanLayer: recieved ID =" << id << " data =" << data;
         if (id == 0) { return; }
 
-        isotp::can_layer_message msg;
-        msg.id = id;
-        msg.data = data;
-        messageRecievedUdsCallback(std::make_unique<isotp::can_layer_message>(msg));
+        CanMessage msg = CanMessage(id, data.size(), data);
+        messageRecievedUdsCallback(std::make_unique<CanMessage>(msg));
         emit newDirectCanMessage(id, data);
 
 

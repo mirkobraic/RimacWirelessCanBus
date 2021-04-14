@@ -54,8 +54,6 @@ void WiicomWirelessCan::disconnected()
 void WiicomWirelessCan::readyRead()
 {
     QByteArray input = socket->readAll();
-
-    }
 }
 
 void WiicomWirelessCan::errorOccurred(QAbstractSocket::SocketError)
