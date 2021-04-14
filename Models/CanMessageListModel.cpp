@@ -62,7 +62,7 @@ void CanMessageListModel::addMessage(const CanMessage &message)
         for (int i = 0; i < messages.count(); i++) {
             if (messages[i].getId() == message.getId()) {
                 std::vector<uint8_t> data = message.getData();
-                QVector<uint8_t> dataVec = QVector<uint8_t>(data.begin(), data.end());
+                QVector<uint8_t> dataVec = QVector<uint8_t>::fromStdVector(data);
                 QList<uint8_t> dataList = QList<uint8_t>::fromVector(dataVec);
 
                 QList<QVariant> variantList;
