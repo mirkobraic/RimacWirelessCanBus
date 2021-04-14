@@ -13,7 +13,7 @@ public:
 
     void connectToDevice(QString deviceIpAddress, QString port, BaudRate baudRate) override;
     void disconnectFromDevice() override;
-    void sendCanMessage(isotp::can_layer_message &message) override;
+    void sendCanMessage(CanMessage &message) override;
 
 private:
     void readMessage();

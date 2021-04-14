@@ -30,9 +30,9 @@ void WiicomWirelessCan::disconnectFromDevice()
     emit toggleConnection(false);
 }
 
-void WiicomWirelessCan::sendCanMessage(isotp::can_layer_message &message)
+void WiicomWirelessCan::sendCanMessage(CanMessage &message)
 {
-    bool isExtended = message.id > maxStdCanId;
+    bool isExtended = message.getId() > maxStdCanId;
     QByteArray csvMsg = csvParser.convertMessage(message, isExtended);
     qDebug() << "CanLayer: Sending " << csvMsg;
     dispatchToMainThread([this, csvMsg] {
@@ -54,11 +54,11 @@ void WiicomWirelessCan::disconnected()
 void WiicomWirelessCan::readyRead()
 {
     QByteArray input = socket->readAll();
-    QVector<isotp::can_layer_message> messages = csvParser.parseInput(input);
+    QVector<CanMessage> messages = csvParser.parseInput(input);
      qDebug() << "CanLayer: Recieved " << input;
-    for(isotp::can_layer_message msg : messages)  {
-        messageRecievedUdsCallback(std::make_unique<isotp::can_layer_message>(msg));
-        newDirectCanMessage(msg.id, msg.data);
+    for(CanMessage msg : messages)  {
+        messageRecievedUdsCallback(std::make_unique<CanMessage>(msg));
+        newDirectCanMessage(msg.getId(), msg.getData());
     }
 }
 

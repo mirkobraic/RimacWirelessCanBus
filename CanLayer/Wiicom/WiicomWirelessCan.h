@@ -2,6 +2,7 @@
 #define WIICOMWIRELESSCAN_H
 
 #include <QTcpSocket>
+#include "../../Models/CanMessage.h"
 #include "../CanBusInterface.h"
 #include "WiicomCSVParser.h"
 
@@ -14,7 +15,7 @@ public:
 
     void connectToDevice(QString deviceIpAddress, QString port, BaudRate baudRate) override;
     void disconnectFromDevice() override;
-    void sendCanMessage(isotp::can_layer_message &message) override;
+    void sendCanMessage(CanMessage &message) override;
 
 public slots:
     void connected();

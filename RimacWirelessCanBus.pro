@@ -21,15 +21,9 @@ SOURCES += \
         CanLayer/Wiicom/WiicomCSVParser.cpp \
         CanLayer/Wiicom/WiicomWirelessCan.cpp \
         CommunicationManager.cpp \
-        IsotpLayer/IsotpCanProvider.cpp \
-        IsotpLayer/IsotpManager.cpp \
-        Logger.cpp \
         Models/CanMessage.cpp \
         Models/CanMessageListModel.cpp \
         SettingsManager.cpp \
-        UdsLayer/UdsConfigManager.cpp \
-        UdsLayer/UdsConstantsUnpacker.cpp \
-        UdsLayer/UdsManager.cpp \
         ViewController.cpp \
         main.cpp
 
@@ -55,30 +49,10 @@ HEADERS += \
     CanLayer/Wiicom/WiicomCSVParser.h \
     CanLayer/Wiicom/WiicomWirelessCan.h \
     CommunicationManager.h \
-    IsotpLayer/IsotpCanProvider.h \
-    IsotpLayer/IsotpManager.h \
-    Logger.h \
     Models/CanMessage.h \
     Models/CanMessageListModel.h \
     SettingsManager.h \
-    UdsLayer/UdsConfigManager.h \
-    UdsLayer/UdsConstantsUnpacker.h \
-    UdsLayer/UdsManager.h \
     ViewController.h
 
-
-# uds
-ANDROID_EXTRA_LIBS = $$PWD/Libs/udsclient_and_isotp/UdsClient/Android/Simulator/libuds_client.so
-LIBS += -L$$PWD/Libs/udsclient_and_isotp/UdsClient/Android/Simulator/ -luds_client
-
-INCLUDEPATH += $$PWD/Libs/udsclient_and_isotp/UdsClient/Include
-DEPENDPATH += $$PWD/Libs/udsclient_and_isotp/UdsClient/Include
-
-# isotp
-ANDROID_EXTRA_LIBS += $$PWD/Libs/udsclient_and_isotp/Isotp/Android/Simulator/libisotp_lib.so
-LIBS += -L$$PWD/Libs/udsclient_and_isotp/Isotp/Android/Simulator/ -lisotp_lib
-
-INCLUDEPATH += $$PWD/Libs/udsclient_and_isotp/Isotp/Include
-DEPENDPATH += $$PWD/Libs/udsclient_and_isotp/Isotp/Include
 
 ANDROID_ABIS = armeabi-v7a

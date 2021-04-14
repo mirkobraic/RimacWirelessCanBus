@@ -15,11 +15,7 @@ void ViewController::connectTapped(int provider, QString ipAddress, QString port
 {
     // TODO: fix leak
 
-    std::pair<uint32_t, uint32_t> pair;
-    pair.first = rxTxPair.first().toString().toUInt(nullptr, 16);
-    pair.second = rxTxPair.last().toString().toUInt(nullptr, 16);
-
-    communicationManager = new CommunicationManager((CanBusProvider)provider, pair);
+    communicationManager = new CommunicationManager((CanBusProvider)provider);
     QObject::connect(communicationManager, SIGNAL(newCanMessageRecieved(CanMessage)), this, SLOT(onNewCanMessageRecieved(CanMessage)));
     QObject::connect(communicationManager, SIGNAL(showAlert(QString, QString)), this, SLOT(onShowAlert(QString, QString)));
     QObject::connect(communicationManager, SIGNAL(fetchingInProgress(bool)), this, SLOT(onFetchingInProgress(bool)));
@@ -66,24 +62,17 @@ void ViewController::onNewCanMessageRecieved(CanMessage message)
 
 void ViewController::udsCheckVersion()
 {
-    QtConcurrent::run(communicationManager, &CommunicationManager::udsCheckVersion);
+    // not implemented in this version
 }
 
 void ViewController::udsGetSupportedDtcsStatus()
 {
-    auto completion = [this] (const std::vector<int> &keys, const std::vector<int> &values) {
-        QVector<int> qKeys = QVector<int>::fromStdVector(keys);
-        QVector<int> qValues = QVector<int>::fromStdVector(values);
-
-        emit setSupportedDtcs(qKeys, qValues);
-    };
-
-    QtConcurrent::run(communicationManager, &CommunicationManager::udsGetSupportedDtcsStatus, completion);
+    // not implemented in this version
 }
 
 void ViewController::udsClearDtcInformation()
 {
-    QtConcurrent::run(communicationManager, &CommunicationManager::udsClearDtcInformation);
+    // not implemented in this version
 }
 
 void ViewController::onShowAlert(QString title, QString message)

@@ -1,6 +1,6 @@
-import QtQuick 2.12
-import QtQuick.Controls 2.14
-import QtQuick.Window 2.12
+import QtQuick 2.0
+import QtQuick.Controls 2.0
+import QtQuick.Window 2.0
 import "CustomComponents"
 
 ApplicationWindow {
@@ -14,12 +14,12 @@ ApplicationWindow {
 
     readonly property int screenMargin: 10
 
-    Connections {
-        target: viewController
-        function onShowAlert(title, message) {
-            alertPopup.open(title, message)
-        }
-    }
+//    Connections {
+//        target: viewController
+//        function onShowAlert(title, message) {
+//            alertPopup.open(title, message)
+//        }
+//    }
 
     AlertPopup {
         id: alertPopup

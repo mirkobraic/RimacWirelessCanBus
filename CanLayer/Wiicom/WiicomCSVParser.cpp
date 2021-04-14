@@ -3,9 +3,9 @@
 WiicomCSVParser::WiicomCSVParser()
 { }
 
-QVector<isotp::can_layer_message> WiicomCSVParser::parseInput(QByteArray input)
+QVector<CanMessage> WiicomCSVParser::parseInput(QByteArray input)
 {
-    QVector<isotp::can_layer_message> output = QVector<isotp::can_layer_message>();
+    QVector<CanMessage> output = {};
 
     QList<QByteArray> messages = input.split('#');
     messages.removeLast();
@@ -18,15 +18,15 @@ QVector<isotp::can_layer_message> WiicomCSVParser::parseInput(QByteArray input)
             continue;
         }
 
-        isotp::can_layer_message outputMsg = isotp::can_layer_message();
-        outputMsg.id = msgParts[1].toUInt(nullptr, 16);
-//        int type = msgParts[2].toInt(nullptr, 16);
-        uint dlc = msgParts[3].toUInt(nullptr, 16);
-
+        uint32_t id = msgParts[1].toUInt(nullptr, 16);
+        uint8_t dlc = msgParts[3].toUInt(nullptr, 16);
+        std::vector<uint8_t> data = {};
         for(int i = 4; i < msgParts.count(); i++) {
-            outputMsg.data.push_back(msgParts[i].toUInt(nullptr, 16));
+            data.push_back(msgParts[i].toUInt(nullptr, 16));
         }
-        if (outputMsg.data.size() == dlc) {
+
+        CanMessage outputMsg = CanMessage(id, dlc, data);
+        if (outputMsg.getData().size() == dlc) {
             output.append(outputMsg);
         }
     }
@@ -34,22 +34,22 @@ QVector<isotp::can_layer_message> WiicomCSVParser::parseInput(QByteArray input)
     return output;
 }
 
-QByteArray WiicomCSVParser::convertMessage(isotp::can_layer_message msg, bool isExtended)
+QByteArray WiicomCSVParser::convertMessage(CanMessage msg, bool isExtended)
 {
     QByteArray output = QByteArray();
     output.append("*,");
 
-    QString id = QString::number(msg.id, 16);
+    QString id = QString::number(msg.getId(), 16);
     output.append(id + ",");
 
     QString flag = isExtended ? "01" : "00";
     output.append(flag + ",");
 
-    QString dlc = QString::number(msg.data.size(), 16);
+    QString dlc = QString::number(msg.getData().size(), 16);
     output.append(dlc + ",");
 
-    for (size_t i = 0; i < msg.data.size(); i++) {
-        QString byte = QString::number(msg.data[i], 16);
+    for (size_t i = 0; i < msg.getData().size(); i++) {
+        QString byte = QString::number(msg.getData()[i], 16);
         output.append(byte + ",");
     }
 

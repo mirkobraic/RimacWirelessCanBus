@@ -9,6 +9,7 @@ class CanMessage
 {
 public:
     CanMessage(uint32_t id, uint8_t dlc, std::vector<uint8_t> data);
+    CanMessage() { id = 0; dlc = 0; data = {}; };
 
     const static uint32_t maxStdCanId = 0x7FF;
     const static uint32_t maxExtCanId = 0x1FFFFFFF;

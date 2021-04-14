@@ -1,5 +1,5 @@
 import QtQuick 2.0
-import QtQuick.Controls 2.14
+import QtQuick.Controls 2.0
 
 Item {
     id: root
@@ -11,7 +11,7 @@ Item {
 
     Popup {
         id: popup
-        anchors.centerIn: parent
+        // anchors.centerIn: parent
         contentWidth: parent.width
 
         modal: true

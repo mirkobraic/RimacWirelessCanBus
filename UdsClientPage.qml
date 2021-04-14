@@ -1,6 +1,6 @@
 import QtQuick 2.0
-import QtQuick.Controls 2.14
-import QtGraphicalEffects 1.12
+import QtQuick.Controls 2.0
+import QtGraphicalEffects 1.0
 import "CustomComponents"
 
 Item {

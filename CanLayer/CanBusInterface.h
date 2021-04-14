@@ -6,7 +6,7 @@
 #include <QObject>
 #include <QTimer>
 #include <QApplication>
-#include "isotp_api/can/can_layer_message.hpp"
+#include "../Models/CanMessage.h"
 
 enum BaudRate {
     Baud_125 = 0,
@@ -23,9 +23,9 @@ public:
 
     virtual void connectToDevice(QString deviceIpAddress, QString port, BaudRate baudRate) = 0;
     virtual void disconnectFromDevice() = 0;
-    virtual void sendCanMessage(isotp::can_layer_message &message) = 0;
+    virtual void sendCanMessage(CanMessage &message) = 0;
 
-    std::function<void(std::unique_ptr<isotp::can_layer_message>)> messageRecievedUdsCallback;
+    std::function<void(std::unique_ptr<CanMessage>)> messageRecievedUdsCallback;
 
     void dispatchToMainThread(std::function<void()> callback) {
         QTimer* timer = new QTimer();
