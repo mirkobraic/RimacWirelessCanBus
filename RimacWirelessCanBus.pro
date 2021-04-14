@@ -2,7 +2,7 @@ QT += quick concurrent network widgets
 
 CONFIG += c++17
 
-QMAKE_CXXFLAGS += -std=c++11
+QMAKE_CXXFLAGS += -std=c++17
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
@@ -68,17 +68,17 @@ HEADERS += \
 
 
 # uds
-ANDROID_EXTRA_LIBS = $$PWD/Libs/udsclient_and_isotp/UdsClient/Android/Device/libuds_client.so
-LIBS += -L$$PWD/Libs/udsclient_and_isotp/UdsClient/Android/Device/ -luds_client
+ANDROID_EXTRA_LIBS = $$PWD/Libs/udsclient_and_isotp/UdsClient/Android/Simulator/libuds_client.so
+LIBS += -L$$PWD/Libs/udsclient_and_isotp/UdsClient/Android/Simulator/ -luds_client
 
-INCLUDEPATH += $$PWD/Libs/udsclient_and_isotp/UdsClient/include
-DEPENDPATH += $$PWD/Libs/udsclient_and_isotp/UdsClient/include
+INCLUDEPATH += $$PWD/Libs/udsclient_and_isotp/UdsClient/Include
+DEPENDPATH += $$PWD/Libs/udsclient_and_isotp/UdsClient/Include
 
 # isotp
-ANDROID_EXTRA_LIBS += $$PWD/Libs/udsclient_and_isotp/Isotp/Android/Device/libisotp_lib.so
-LIBS += -L$$PWD/Libs/udsclient_and_isotp/Isotp/Android/Device/ -lisotp_lib
+ANDROID_EXTRA_LIBS += $$PWD/Libs/udsclient_and_isotp/Isotp/Android/Simulator/libisotp_lib.so
+LIBS += -L$$PWD/Libs/udsclient_and_isotp/Isotp/Android/Simulator/ -lisotp_lib
 
-INCLUDEPATH += $$PWD/Libs/udsclient_and_isotp/Isotp/include
-DEPENDPATH += $$PWD/Libs/udsclient_and_isotp/Isotp/include
+INCLUDEPATH += $$PWD/Libs/udsclient_and_isotp/Isotp/Include
+DEPENDPATH += $$PWD/Libs/udsclient_and_isotp/Isotp/Include
 
 ANDROID_ABIS = armeabi-v7a
