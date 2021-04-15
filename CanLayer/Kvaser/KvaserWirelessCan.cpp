@@ -119,10 +119,7 @@ void KvaserWirelessCan::readMessage()
         if (id == 0) { return; }
 
         CanMessage msg = CanMessage(id, data.size(), data);
-        messageRecievedUdsCallback(std::make_unique<CanMessage>(msg));
         emit newDirectCanMessage(id, data);
-
-
     });
 }
 

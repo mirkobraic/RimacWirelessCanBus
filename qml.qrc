@@ -23,5 +23,9 @@
         <file>CustomComponents/MainMenuButton.qml</file>
         <file>images/disconnectIcon.png</file>
         <file>images/rimacLogoBig.png</file>
+        <file>images/fesbRacingLogo.png</file>
+        <file>images/controlIcon.png</file>
+        <file>ControlOutputsPage.qml</file>
+        <file>CustomComponents/ControlOutputItem.qml</file>
     </qresource>
 </RCC>

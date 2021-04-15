@@ -13,20 +13,20 @@ Item {
         return (binaryMask & status) === 0;
     }
 
-//    Connections {
-//        target: viewController
-//        function onSetSupportedDtcs(masks, statuses) {
-//            listView.model.clear();
-//            for (var i = 0; i < masks.length; i++) {
-//                let hexMask = masks[i].toString(16).toUpperCase();
-//                listView.model.append({ "mask": "0x" + hexMask, "status": statuses[i] });
-//            }
-//        }
+    Connections {
+        target: viewController
+        function onSetSupportedDtcs(masks, statuses) {
+            listView.model.clear();
+            for (var i = 0; i < masks.length; i++) {
+                let hexMask = masks[i].toString(16).toUpperCase();
+                listView.model.append({ "mask": "0x" + hexMask, "status": statuses[i] });
+            }
+        }
 
-//        function onClearSupportedDtcs() {
-//            listView.model.clear()
-//        }
-//    }
+        function onClearSupportedDtcs() {
+            listView.model.clear()
+        }
+    }
 
     Row {
         id: titleRow

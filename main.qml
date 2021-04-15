@@ -14,12 +14,12 @@ ApplicationWindow {
 
     readonly property int screenMargin: 10
 
-//    Connections {
-//        target: viewController
-//        function onShowAlert(title, message) {
-//            alertPopup.open(title, message)
-//        }
-//    }
+    Connections {
+        target: viewController
+        function onShowAlert(title, message) {
+            alertPopup.open(title, message)
+        }
+    }
 
     AlertPopup {
         id: alertPopup

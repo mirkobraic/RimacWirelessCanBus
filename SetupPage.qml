@@ -18,7 +18,7 @@ Item {
             id: logoImage
             height: 55
             fillMode: Image.PreserveAspectFit
-            source: "images/rimacLogo.png"
+            source: "images/fesbRacingLogo.png"
 
             anchors {
                 left: parent.left

@@ -25,8 +25,6 @@ public:
     virtual void disconnectFromDevice() = 0;
     virtual void sendCanMessage(CanMessage &message) = 0;
 
-    std::function<void(std::unique_ptr<CanMessage>)> messageRecievedUdsCallback;
-
     void dispatchToMainThread(std::function<void()> callback) {
         QTimer* timer = new QTimer();
         timer->moveToThread(qApp->thread());

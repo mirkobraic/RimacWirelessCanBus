@@ -4,7 +4,7 @@ import "CustomComponents"
 
 Item {
     id: root
-    property string title: "Rimac Wireless CAN bus"
+    property string title: "FESB Racing CAN bus"
 
     Rectangle {
         anchors.fill: parent
@@ -59,6 +59,18 @@ Item {
                 width: grid.cellWidth
                 height: grid.cellHeight
                 iconSize: 45
+                text: "Server info"
+                iconSource: "../images/infoIcon.png"
+
+                onClicked: {
+                    viewController.udsCheckVersion()
+                }
+            }
+
+            MainMenuButton {
+                width: grid.cellWidth
+                height: grid.cellHeight
+                iconSize: 45
                 text: "Raw CAN"
                 iconSource: "../images/canBusIcon.png"
 
@@ -71,11 +83,11 @@ Item {
                 width: grid.cellWidth
                 height: grid.cellHeight
                 iconSize: 45
-                text: "Server info"
-                iconSource: "../images/infoIcon.png"
+                text: "Control outputs"
+                iconSource: "../images/controlIcon.png"
 
                 onClicked: {
-                    viewController.udsCheckVersion()
+                    stackView.push("ControlOutputsPage.qml")
                 }
             }
 
